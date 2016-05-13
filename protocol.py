@@ -169,7 +169,7 @@ class Protocol(object):
 
         return response
 
-    def command_nopass(self, cmd, params=bytearray()):
+    def command_nopass(self, cmd, params = bytearray()):
         """
         Метод отправки команды без пароля оператора.
 
@@ -233,7 +233,7 @@ class Driver(object):
 
     TABLES_COUNT = 15
 
-    def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
+    def __init__(self, port = '/dev/ttyS0', baudrate = 9600, timeout = None, password = None, admin_password = None):
         """
         :type port: str
         :param port: порт взаимодействия с устройством
@@ -282,15 +282,25 @@ class Driver(object):
         """
         Состояние ККМ.
         """
-
         return self.protocol.command(0x11, self.password)
 
-    def cut(self, partial=False):
+    def cut(self, partial = False):
         """
         Обрезка чека.
         """
-
         return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
+
+    def test_start(self, minute):
+        """
+        Тестовый прогон
+        """
+        return self.protocol.command (0x19, self.password, CAST_SIZE['1'](minute))
+
+    def test_stop(self):
+        """
+        Прерывание тестового прогона
+        """
+        return self.protocol.command (0x2B, self.password)
 
     def model(self):
         return self.protocol.command_nopass(0xFC)
@@ -378,5 +388,6 @@ if __name__ == '__main__':
     p = Driver()
     p.connect()
     # print(repr(p.command(0x13, p.DEFAULT_CASHIER_PASSWORD)).decode('unicode-escape'))
-    print(repr(p.model()).decode('unicode-escape'))
+#    print(repr(p.test_start(1)).decode('unicode-escape'))
+    print(repr(p.test_stop()).decode('unicode-escape'))
     # print(repr(p.command_nopass(0xFC)).decode('unicode-escape'))

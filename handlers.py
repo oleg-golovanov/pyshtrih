@@ -11,7 +11,7 @@ COMMANDS = {
     0x13: u'Гудок',
     # 0x15: u'Чтение параметров обмена',
     # 0x17: u'Печать строки',
-    # 0x19: u'Тестовый прогон',
+    0x19: u'Тестовый прогон',
     # 0x1B: u'Запрос операционного регистра',
     # 0x1E: u'Запись таблицы',
     # 0x1F: u'Чтение таблицы',
@@ -20,8 +20,8 @@ COMMANDS = {
     # 0x23: u'Подтверждение программирования даты',
     0x25: u'Отрезка чека',
     # 0x28: u'Открыть денежный ящик',
-    # 0x29: u'Протяжка',
-    # 0x2B: u'Прерывание тестового прогона',
+    0x29: u'Протяжка',
+    0x2B: u'Прерывание тестового прогона',
     # 0x2D: u'Запрос структуры таблицы',
     # 0x2E: u'Запрос структуры поля',
     # 0x40: u'Суточный отчет без гашения',
@@ -44,12 +44,13 @@ COMMANDS = {
 
 ERROR_CODE_STR = u'Код ошибки'
 ERROR_CODE_STRUCT = (0, None, ERROR_CODE_STR)
+OPERATOR_INDEX_NUMBER_STRUCT = (1, None, u'Порядковый номер оператора')
 
 HANDLERS = {
     # TODO: написать обработчики режимов ФР
     0x11: (
         ERROR_CODE_STRUCT,
-        (1, None, u'Порядковый номер оператора'),
+        OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, 4), FuncChain(handle_version, UNCAST_SIZE['11']), u'Версия ПО ФР'),
         (slice(4, 6), UNCAST_SIZE['2'], u'Сборка ПО ФР'),
         (slice(6, 9), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата ПО ФР'),
@@ -74,7 +75,7 @@ HANDLERS = {
     ),
     0x13: (
         ERROR_CODE_STRUCT,
-        (1, None, u'Порядковый номер оператора'),
+        OPERATOR_INDEX_NUMBER_STRUCT,
     ),
     # TODO: написать обработчики
     0x15: (
@@ -82,9 +83,17 @@ HANDLERS = {
         (1, None, u'Код скорости обмена'),
         (2, None, u'Тайм аут приема байта')
     ),
+    0x19: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
     0x25: (
         ERROR_CODE_STRUCT,
-        (1, None, u'Порядковый номер оператора'),
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    0x2B: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
     ),
     # TODO: дописать
     0x1F: (
