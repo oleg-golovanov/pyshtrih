@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from misc import decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
+from misc import default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
     handle_fr_flags, FuncChain, UNCAST_SIZE
 
 
@@ -43,8 +43,8 @@ COMMANDS = {
 }
 
 ERROR_CODE_STR = u'Код ошибки'
-ERROR_CODE_STRUCT = (0, None, ERROR_CODE_STR)
-OPERATOR_INDEX_NUMBER_STRUCT = (1, None, u'Порядковый номер оператора')
+ERROR_CODE_STRUCT = (slice(0, 1), default, ERROR_CODE_STR)
+OPERATOR_INDEX_NUMBER_STRUCT = (slice(1, 2), default, u'Порядковый номер оператора')
 
 HANDLERS = {
     # TODO: написать обработчики режимов ФР
@@ -54,23 +54,23 @@ HANDLERS = {
         (slice(2, 4), FuncChain(handle_version, UNCAST_SIZE['11']), u'Версия ПО ФР'),
         (slice(4, 6), UNCAST_SIZE['2'], u'Сборка ПО ФР'),
         (slice(6, 9), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата ПО ФР'),
-        (9, None, u'Номер в зале'),
+        (slice(9, 10), default, u'Номер в зале'),
         (slice(10, 12), UNCAST_SIZE['2'], u'Сквозной номер текущего документа'),
         (slice(12, 14), FuncChain(handle_fr_flags, UNCAST_SIZE['2']), u'Флаги ФР'),
-        (14, None, u'Режим ФР'),
-        (15, None, u'Подрежим ФР'),
-        (16, None, u'Порт ФР'),
+        (slice(14, 15), default, u'Режим ФР'),
+        (slice(15, 16), default, u'Подрежим ФР'),
+        (slice(16, 17), default, u'Порт ФР'),
         (slice(17, 19), FuncChain(handle_version, UNCAST_SIZE['11']), u'Версия ПО ФП'),
         (slice(19, 21), UNCAST_SIZE['2'], u'Сборка ПО ФП'),
         (slice(21, 24), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата ПО ФП'),
         (slice(24, 27), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата'),
         (slice(27, 30), FuncChain(handle_time, UNCAST_SIZE['111']), u'Время'),
-        (30, handle_fp_flags, u'Флаги ФП'),
+        (slice(30, 31), handle_fp_flags, u'Флаги ФП'),
         (slice(31, 35), UNCAST_SIZE['4'], u'Заводской номер'),
         (slice(35, 37), UNCAST_SIZE['2'], u'Номер последней закрытой смены'),
         (slice(37, 39), UNCAST_SIZE['2'], u'Количество свободных записей в ФП'),
-        (39, None, u'Количество перерегистраций (фискализаций)'),
-        (40, None, u'Количество оставшихся перерегистраций (фискализаций)'),
+        (slice(39, 40), default, u'Количество перерегистраций (фискализаций)'),
+        (slice(40, 41), default, u'Количество оставшихся перерегистраций (фискализаций)'),
         (slice(41, 47), handle_inn, u'ИНН')
     ),
     0x13: (
@@ -80,8 +80,8 @@ HANDLERS = {
     # TODO: написать обработчики
     0x15: (
         ERROR_CODE_STRUCT,
-        (1, None, u'Код скорости обмена'),
-        (2, None, u'Тайм аут приема байта')
+        (slice(1, 2), default, u'Код скорости обмена'),
+        (slice(2, 3), default, u'Тайм аут приема байта')
     ),
     0x19: (
         ERROR_CODE_STRUCT,
@@ -101,12 +101,12 @@ HANDLERS = {
     ),
     0xFC: (
         ERROR_CODE_STRUCT,
-        (1, None, u'Тип устройства'),
-        (2, None, u'Подтип устройства'),
-        (3, None, u'Версия протокола для данного устройства'),
-        (4, None, u'Подверсия протокола для данного устройства'),
-        (5, None, u'Модель устройства'),
-        (6, None, u'Язык устройства'),
+        (slice(1, 2), default, u'Тип устройства'),
+        (slice(2, 3), default, u'Подтип устройства'),
+        (slice(3, 4), default, u'Версия протокола для данного устройства'),
+        (slice(4, 5), default, u'Подверсия протокола для данного устройства'),
+        (slice(5, 6), default, u'Модель устройства'),
+        (slice(6, 7), default, u'Язык устройства'),
         (slice(7, None), decode, u'Название устройства')
     )
 }
