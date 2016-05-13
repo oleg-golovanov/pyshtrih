@@ -9,6 +9,22 @@ from binascii import hexlify
 from itertools import compress
 
 
+def default(arg):
+    """
+    Обработчик по-умолчанию одного байта ответа.
+
+    :type arg: bytearray
+    :param arg: bytearray из одного байта
+
+    :rtype: int or None
+    :return: целочисленное значение байта или None, если входной bytearray пуст
+    """
+
+    if arg:
+        return UNCAST_SIZE['1'](arg)
+    return
+
+
 def bytearray_cast(arg):
     if not isinstance(arg, bytearray):
         return bytearray(arg)
