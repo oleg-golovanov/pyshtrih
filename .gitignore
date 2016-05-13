@@ -1,0 +1,5 @@
+*.py[cod]
+
+.idea
+.project
+.pydevproject
