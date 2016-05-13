@@ -32,7 +32,6 @@ class Error(ProtocolError):
 class Protocol(object):
     MAX_ATTEMPTS = 10
 
-    # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
     def __init__(self, port, baudrate, timeout):
         """
         Класс описывающий протокол взаимодействия в устройством.
@@ -157,8 +156,7 @@ class Protocol(object):
 
         if handler:
             result = {
-                name: func(response[_slice]) if func else response[_slice]
-                for _slice, func, name in handler
+                name: func(response[_slice]) for _slice, func, name in handler
             }
 
             error = result.get(ERROR_CODE_STR, 0)
@@ -233,6 +231,7 @@ class Driver(object):
 
     TABLES_COUNT = 15
 
+    # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
     def __init__(self, port = '/dev/ttyS0', baudrate = 9600, timeout = None, password = None, admin_password = None):
         """
         :type port: str
