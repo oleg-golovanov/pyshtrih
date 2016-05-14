@@ -3,7 +3,7 @@
 
 import serial
 
-from misc import lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE
 from handlers import HANDLERS, ERROR_CODE_STR
 
 
@@ -323,9 +323,10 @@ class Protocol(object):
         handler = HANDLERS.get(cmd)
 
         if handler:
-            result = {
-                name: func(response[_slice]) for _slice, func, name in handler
-            }
+            result = {}
+            for _slice, func, name in handler:
+                chunk = _slice(response) if isinstance(_slice, mslice) else response[_slice]
+                result[name] = func(chunk) if func else chunk
 
             error = result.get(ERROR_CODE_STR, 0)
             if error != 0:
@@ -445,6 +446,13 @@ class Driver(object):
         self.protocol.disconnect()
         self.connected = False
 
+    def state(self):
+        """
+        Состояние ККМ в коротком виде.
+        """
+
+        return self.protocol.command(0x10, self.password)
+
     def full_state(self):
         """
         Состояние ККМ.
@@ -452,19 +460,19 @@ class Driver(object):
 
         return self.protocol.command(0x11, self.password)
 
-    def cut(self, partial=False):
-        """
-        Обрезка чека.
-        """
-
-        return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
-
     def test_start(self, minute):
         """
         Тестовый прогон
         """
 
         return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
+
+    def cut(self, partial=False):
+        """
+        Обрезка чека.
+        """
+
+        return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
 
     def test_stop(self):
         """
