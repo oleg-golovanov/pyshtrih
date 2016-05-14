@@ -39,7 +39,35 @@ def bytearray_concat(*args):
     """
     Функция конкатенирования нескольких bytearray в один.
     """
+
     return bytearray_cast(reduce(concat, args))
+
+
+class mslice(object):
+    def __init__(self, *args):
+        """
+        Класс множественных срезов.
+
+        :param args: набор объектов класса slice
+        """
+
+        if not all(map(lambda i: isinstance(i, slice), args)):
+            raise TypeError('support only slice objects')
+
+        self.slices = args
+
+    def __call__(self, arg):
+        """
+        Вызов.
+
+        :type arg: bytearray
+        :param arg: нарезаемый объект
+
+        :rtype: bytearray
+        :return: нарезанный объект
+        """
+
+        return bytearray_concat(*(arg[s] for s in self.slices))
 
 
 def lrc(buff):
@@ -54,6 +82,7 @@ def encode(text):
     """
     кодирование текста для передачи фискальному регистратору
     """
+
     return unicode(text).encode('cp1251')
 
 
@@ -61,6 +90,7 @@ def decode(text):
     """
     декодирование текста полученного с фискального регистратора
     """
+
     return text.decode('cp1251')
 
 
@@ -240,6 +270,7 @@ class FuncChain(object):
     def __init__(self, *funcs):
         self.funcs = funcs
 
+    # TODO: доделать возврат None при пустых входных параметрах
     def __call__(self, *args, **kwargs):
         if not self.funcs:
             return
