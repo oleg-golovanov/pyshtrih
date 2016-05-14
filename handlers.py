@@ -2,12 +2,12 @@
 
 
 from misc import default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
-    handle_fr_flags, FuncChain, UNCAST_SIZE
+    handle_fr_flags, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
 COMMANDS = {
     # 0x10: u'Короткий запрос состояния ФР',
-    # 0x11: u'Запрос состояния ФР',
+    0x11: u'Запрос состояния ФР',
     0x13: u'Гудок',
     # 0x15: u'Чтение параметров обмена',
     # 0x17: u'Печать строки',
@@ -47,7 +47,6 @@ ERROR_CODE_STRUCT = (slice(0, 1), default, ERROR_CODE_STR)
 OPERATOR_INDEX_NUMBER_STRUCT = (slice(1, 2), default, u'Порядковый номер оператора')
 
 HANDLERS = {
-    # TODO: написать обработчики режимов ФР
     0x11: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
@@ -57,15 +56,15 @@ HANDLERS = {
         (slice(9, 10), default, u'Номер в зале'),
         (slice(10, 12), UNCAST_SIZE['2'], u'Сквозной номер текущего документа'),
         (slice(12, 14), FuncChain(handle_fr_flags, UNCAST_SIZE['2']), u'Флаги ФР'),
-        (slice(14, 15), default, u'Режим ФР'),
-        (slice(15, 16), default, u'Подрежим ФР'),
+        (slice(14, 15), FuncChain(FRMode, UNCAST_SIZE['1']), u'Режим ФР'),
+        (slice(15, 16), FuncChain(FRSubMode, UNCAST_SIZE['1']), u'Подрежим ФР'),
         (slice(16, 17), default, u'Порт ФР'),
         (slice(17, 19), FuncChain(handle_version, UNCAST_SIZE['11']), u'Версия ПО ФП'),
         (slice(19, 21), UNCAST_SIZE['2'], u'Сборка ПО ФП'),
         (slice(21, 24), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата ПО ФП'),
         (slice(24, 27), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата'),
         (slice(27, 30), FuncChain(handle_time, UNCAST_SIZE['111']), u'Время'),
-        (slice(30, 31), handle_fp_flags, u'Флаги ФП'),
+        (slice(30, 31), FuncChain(handle_fp_flags, UNCAST_SIZE['1']), u'Флаги ФП'),
         (slice(31, 35), UNCAST_SIZE['4'], u'Заводской номер'),
         (slice(35, 37), UNCAST_SIZE['2'], u'Номер последней закрытой смены'),
         (slice(37, 39), UNCAST_SIZE['2'], u'Количество свободных записей в ФП'),
