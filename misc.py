@@ -2,11 +2,15 @@
 
 
 import struct
+import locale
 from operator import concat, xor, itemgetter
 from functools import partial
 from datetime import date, time
 from binascii import hexlify
 from itertools import compress
+
+
+LOCALE = locale.getpreferredencoding()
 
 
 def default(arg):
@@ -38,7 +42,7 @@ def bytearray_concat(*args):
     return bytearray_cast(reduce(concat, args))
 
 
-def lrc (buff):
+def lrc(buff):
     """
     Расчет контрольной суммы
     """
@@ -46,18 +50,18 @@ def lrc (buff):
     return reduce(xor, buff)
 
 
-def encode (text):
+def encode(text):
     """
     кодирование текста для передачи фискальному регистратору
     """
-    return unicode (text).encode ('cp1251')
+    return unicode(text).encode('cp1251')
 
 
-def decode (text):
+def decode(text):
     """
     декодирование текста полученного с фискального регистратора
     """
-    return text.decode ('cp1251')
+    return text.decode('cp1251')
 
 
 def int_to_bitmask(num, length=8):
@@ -77,6 +81,7 @@ def handle_time(arg):
     return time(*arg)
 
 
+# TODO: проверить правильность реализации
 def handle_fr_flags(arg):
     def get_keys(revision):
         return (
@@ -118,6 +123,101 @@ def handle_fr_flags(arg):
         )
     )
 handle_fr_flags.model = -1
+
+
+class FRMode(object):
+    MODE_DESCR = {
+        0: u'Принтер в рабочем режиме.',
+        1: u'Выдача данных.',
+        2: u'Открытая смена, 24 часа не кончились.',
+        3: u'Открытая смена, 24 часа кончились.',
+        4: u'Закрытая смена.',
+        5: u'Блокировка по неправильному паролю налогового инспектора.',
+        6: u'Ожидание подтверждения ввода даты.',
+        7: u'Разрешение изменения положения десятичной точки.',
+        8: u'Открытый документ:',
+        9: u'Режим разрешения технологического обнуления.',
+        10: u'Тестовый прогон.',
+        11: u'Печать полного фис. отчета.',
+        12: u'Печать отчёта ЭКЛЗ.',
+        13: u'Работа с фискальным подкладным документом:',
+        14: u'Печать подкладного документа:',
+        15: u'Фискальный подкладной документ сформирован.'
+    }
+    MODE_STATUS = {
+        8: {
+            0: u'Продажа.',
+            1: u'Покупка.',
+            2: u'Возврат продажи.',
+            3: u'Возврат покупки.'
+        },
+        13: {
+            0: u'Продажа (открыт).',
+            1: u'Покупка (открыт).',
+            2: u'Возврат продажи (открыт).',
+            3: u'Возврат покупки (открыт).'
+        },
+        14: {
+            0: u'Ожидание загрузки.',
+            1: u'Загрузка и позиционирование.',
+            2: u'Позиционирование.',
+            3: u'Печать.',
+            4: u'Печать закончена.',
+            5: u'Выброс документа.',
+            6: u'Ожидание извлечения.',
+        }
+    }
+
+    def __init__(self, code):
+        self.num = code & 0x0f
+        self.status = code >> 4
+
+        if self.num not in self.MODE_STATUS:
+            self.msg = self.MODE_DESCR[self.num]
+        else:
+            self.msg = u'{} {}'.format(
+                self.MODE_DESCR[self.num],
+                self.MODE_STATUS[self.num][self.status]
+            )
+
+    @property
+    def state(self):
+        return self.num, self.status
+
+    def __str__(self):
+        return self.msg.encode(LOCALE)
+
+    def __unicode__(self):
+        return self.msg
+
+    __repr__ = __str__
+
+
+class FRSubMode(object):
+    SUBMODE_DESCR = {
+        0: u'Бумага есть.',
+        1: u'Нет бумаги.',
+        2: u'ФР ждет бумагу для продолжения печати.',
+        3: u'ФР ждет команду продолжения печати.',
+        4: u'Печать фискальных отчетов.',
+        5: u'Печать операции.'
+    }
+
+    def __init__(self, code):
+        self.num = code
+        self.msg = self.SUBMODE_DESCR[self.num]
+
+    @property
+    def state(self):
+        return self.num
+
+    def __str__(self):
+        return self.msg.encode(LOCALE)
+
+    def __unicode__(self):
+        return self.msg
+
+    __repr__ = __str__
 
 
 def handle_fp_flags(arg):
