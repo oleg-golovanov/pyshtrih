@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-from misc import default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
+from misc import mslice, default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
     handle_fr_flags, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
 COMMANDS = {
-    # 0x10: u'Короткий запрос состояния ФР',
+    0x10: u'Короткий запрос состояния ФР',
     0x11: u'Запрос состояния ФР',
     0x13: u'Гудок',
     # 0x15: u'Чтение параметров обмена',
@@ -47,6 +47,19 @@ ERROR_CODE_STRUCT = (slice(0, 1), default, ERROR_CODE_STR)
 OPERATOR_INDEX_NUMBER_STRUCT = (slice(1, 2), default, u'Порядковый номер оператора')
 
 HANDLERS = {
+    0x10: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT,
+        (slice(2, 4), FuncChain(handle_fr_flags, UNCAST_SIZE['2']), u'Флаги ФР'),
+        (slice(4, 5), FuncChain(FRMode, UNCAST_SIZE['1']), u'Режим ФР'),
+        (slice(5, 6), FuncChain(FRSubMode, UNCAST_SIZE['1']), u'Подрежим ФР'),
+        (mslice(slice(11, 12), slice(6, 7)), UNCAST_SIZE['2'], u'Количество операций в чеке'),
+        (slice(7, 8), default, u'Напряжение резервной батареи'),
+        (slice(8, 9), default, u'Напряжение источника питания'),
+        (slice(9, 10), default, u'Код ошибки ФП'),
+        (slice(10, 11), default, u'Код ошибки ЭКЛЗ'),
+        (slice(12, 15), None, u'Зарезервировано')
+    ),
     0x11: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
