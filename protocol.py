@@ -474,6 +474,13 @@ class Driver(object):
             0x17, self.password, CAST_SIZE['1'](control + cash), encode(string[:self.DEFAULT_MAX_LENGTH])
         )
 
+    def print_line(self, symbol='-', control_tape=True, cash_tape=True):
+        """
+        Печать строки-разделителя.
+        """
+
+        return self.print_string(symbol * self.DEFAULT_MAX_LENGTH, control_tape, cash_tape)
+
     def test_start(self, minute):
         """
         Тестовый прогон.
