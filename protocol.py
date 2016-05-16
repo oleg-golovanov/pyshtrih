@@ -493,9 +493,37 @@ class Driver(object):
         Программирование времени.
         """
 
+        # TODO: разобраться с округлением секунд до 00
         return self.protocol.command(
             0x21, self.admin_password, CAST_SIZE['111'](time.hour, time.minute, time.second)
         )
+
+    def set_date(self, date):
+        """
+        Программирование даты.
+        """
+
+        return self.protocol.command(
+            0x22, self.admin_password, CAST_SIZE['111'](date.day, date.month, date.year - 2000)
+        )
+
+    def confirm_date(self, date):
+        """
+        Подтверждение программирование даты.
+        """
+
+        return self.protocol.command(
+            0x23, self.admin_password, CAST_SIZE['111'](date.day, date.month, date.year - 2000)
+        )
+
+    def set_datetime(self, datetime):
+        """
+        Установка даты и времени.
+        """
+
+        self.set_time(datetime.time())
+        self.set_date(datetime.date())
+        self.confirm_date(datetime.date())
 
     def cut(self, partial = False):
         """
