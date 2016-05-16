@@ -3,7 +3,7 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE, LOCALE
 from handlers import HANDLERS, ERROR_CODE_STR
 
 
@@ -187,8 +187,7 @@ class Error(ProtocolError):
         self.msg = self.codes.get(code, u'Неизвестная ошибка')
 
     def __str__(self):
-        # TODO: переделать на определение системной локали
-        return self.msg.encode('utf-8')
+        return self.msg.encode(LOCALE)
 
     def __unicode__(self):
         return self.msg
