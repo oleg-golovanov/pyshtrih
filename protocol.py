@@ -511,6 +511,13 @@ class Driver(object):
 
         return self.protocol.command(0x51, self.password, CAST_SIZE['41'](round(sum * 100), 0))
 
+    def open_shift(self):
+        """
+        Открыть смену.
+        """
+
+        return self.protocol.command(0xE0, self.password)
+
     def model(self):
         return self.protocol.command_nopass(0xFC)
 
