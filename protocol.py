@@ -226,10 +226,10 @@ class Protocol(object):
             self.serial = serial.Serial(
                 self.port,
                 self.baudrate,
-                parity=serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE,
-                timeout=self.timeout,
-                writeTimeout=self.timeout
+                parity = serial.PARITY_NONE,
+                stopbits = serial.STOPBITS_ONE,
+                timeout = self.timeout,
+                writeTimeout = self.timeout
             )
         if not self.serial.isOpen():
             try:
@@ -338,7 +338,7 @@ class Protocol(object):
 
         return response
 
-    def command_nopass(self, cmd, params=bytearray()):
+    def command_nopass(self, cmd, params = bytearray()):
         """
         Метод отправки команды без пароля оператора.
 
@@ -403,7 +403,7 @@ class Driver(object):
     TABLES_COUNT = 15
 
     # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
-    def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
+    def __init__(self, port = '/dev/ttyS0', baudrate = 9600, timeout = None, password = None, admin_password = None):
         """
         :type port: str
         :param port: порт взаимодействия с устройством
@@ -464,12 +464,12 @@ class Driver(object):
 
     def test_start(self, minute):
         """
-        Тестовый прогон
+        Тестовый прогон.
         """
 
         return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
 
-    def cut(self, partial=False):
+    def cut(self, partial = False):
         """
         Обрезка чека.
         """
@@ -478,10 +478,38 @@ class Driver(object):
 
     def test_stop(self):
         """
-        Прерывание тестового прогона
+        Прерывание тестового прогона.
         """
 
         return self.protocol.command(0x2B, self.password)
+
+    def x_report(self):
+        """
+        Суточный отчет без гашения.
+        """
+
+        return self.protocol.command(0x40, self.admin_password)
+
+    def z_report(self):
+        """
+        Суточный отчет с гашением.
+        """
+
+        return self.protocol.command(0x41, self.admin_password)
+
+    def income (self, sum):
+        """
+        Внесение.
+        """
+
+        return self.protocol.command(0x50, self.password, CAST_SIZE['41'](round(sum * 100), 0))
+
+    def outcome (self, sum):
+        """
+        Выплата.
+        """
+
+        return self.protocol.command(0x51, self.password, CAST_SIZE['41'](round(sum * 100), 0))
 
     def model(self):
         return self.protocol.command_nopass(0xFC)
@@ -503,20 +531,6 @@ class Driver(object):
     # def shift_is_open (self):
     #     raise NotImplementedError ('shift_is_open() is not implemented')
     #
-    # def z_report (self):
-    #     '''
-    #     Z-отчет
-    #     '''
-    #     if not self.shift_is_open ():
-    #         raise RuntimeError (u'Смена закрыта')
-    #     self._do_z_report ()
-    #
-    # def x_report (self):
-    #     '''
-    #     X-отчет
-    #     '''
-    #     raise NotImplementedError ('x_report() is not implemented')
-    #
     # def open_drawer (self):
     #     '''
     #     Открыть денежный ящик
@@ -528,26 +542,6 @@ class Driver(object):
     #     Звуковой сигнал
     #     '''
     #     raise NotImplementedError ('beep() is not implemented')
-    #
-    # def income (self, sum):
-    #     '''
-    #     Инкассация
-    #     '''
-    #     if sum <= 0:
-    #         raise RuntimeError (u'Сумма должна быть больше нуля')
-    #     if not self.shift_is_open ():
-    #         raise RuntimeError (u'Смена закрыта')
-    #     self._do_income (sum)
-    #
-    # def outcome (self, sum):
-    #     '''
-    #     Пополнение
-    #     '''
-    #     if sum <= 0:
-    #         raise RuntimeError (u'Сумма должна быть больше нуля')
-    #     if not self.shift_is_open ():
-    #         raise RuntimeError (u'Смена закрыта')
-    #     self._do_outcome (sum)
     #
     # def continue_print (self):
     #     '''
@@ -566,9 +560,12 @@ class Driver(object):
 
 
 if __name__ == '__main__':
+    import time
     p = Driver()
     p.connect()
     # print(repr(p.command(0x13, p.DEFAULT_CASHIER_PASSWORD)).decode('unicode-escape'))
 #    print(repr(p.test_start(1)).decode('unicode-escape'))
-    print(repr(p.model()).decode('unicode-escape'))
+    print(repr(p.income(50.236)).decode('unicode-escape'))
+    time.sleep (1)
+    print(repr(p.cut(True)).decode('unicode-escape'))
     # print(repr(p.command_nopass(0xFC)).decode('unicode-escape'))

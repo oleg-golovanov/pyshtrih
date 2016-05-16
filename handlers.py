@@ -24,10 +24,10 @@ COMMANDS = {
     0x2B: u'Прерывание тестового прогона',
     # 0x2D: u'Запрос структуры таблицы',
     # 0x2E: u'Запрос структуры поля',
-    # 0x40: u'Суточный отчет без гашения',
-    # 0x41: u'Суточный отчет с гашением',
-    # 0x50: u'Внесение',
-    # 0x51: u'Выплата',
+    0x40: u'Суточный отчет без гашения',
+    0x41: u'Суточный отчет с гашением',
+    0x50: u'Внесение',
+    0x51: u'Выплата',
     # 0x80: u'Продажа',
     # 0x82: u'Возврат продажи',
     # 0x85: u'Закрытие чека',
@@ -99,6 +99,10 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # TODO: дописать
+    0x1F: (
+        (slice(0, None), repr, u'Значение'),
+    ),
     0x25: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
@@ -107,9 +111,23 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
-    # TODO: дописать
-    0x1F: (
-        (slice(0, None), repr, u'Значение'),
+    0x40: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    0x41: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    0x50: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT,
+        (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
+    ),
+    0x51: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT,
+        (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
     ),
     0xFC: (
         ERROR_CODE_STRUCT,
