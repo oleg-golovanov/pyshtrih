@@ -532,7 +532,7 @@ class Driver(object):
 
         return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
 
-    def open_drawer(self, box):
+    def open_drawer(self, box=0):
         """
         Открыть денежный ящик.
         """
