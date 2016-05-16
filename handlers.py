@@ -10,7 +10,7 @@ COMMANDS = {
     0x11: u'Запрос состояния ФР',
     0x13: u'Гудок',
     # 0x15: u'Чтение параметров обмена',
-    # 0x17: u'Печать строки',
+    0x17: u'Печать строки',
     0x19: u'Тестовый прогон',
     # 0x1B: u'Запрос операционного регистра',
     # 0x1E: u'Запись таблицы',
@@ -94,6 +94,10 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         (slice(1, 2), default, u'Код скорости обмена'),
         (slice(2, 3), default, u'Тайм аут приема байта')
+    ),
+    0x17: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
     ),
     0x19: (
         ERROR_CODE_STRUCT,
