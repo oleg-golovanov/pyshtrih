@@ -523,28 +523,28 @@ class Driver(object):
 
         return self.protocol.command(0x41, self.admin_password)
 
-    def income (self, sum):
+    def income(self, cash):
         """
         Внесение.
         """
 
-        return self.protocol.command(0x50, self.password, CAST_SIZE['41'](round(sum * 100), 0))
+        return self.protocol.command(0x50, self.password, CAST_SIZE['41'](round(cash * 100), 0))
 
-    def outcome (self, sum):
+    def outcome(self, cash):
         """
         Выплата.
         """
 
-        return self.protocol.command(0x51, self.password, CAST_SIZE['41'](round(sum * 100), 0))
+        return self.protocol.command(0x51, self.password, CAST_SIZE['41'](round(cash * 100), 0))
 
-    def repeat (self):
+    def repeat(self):
         """
         Повтор документа.
         """
 
         return self.protocol.command(0x8C, self.password)
 
-    def continue_print (self, password):
+    def continue_print(self, password):
         """
         Продолжение печати.
         """
