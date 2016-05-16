@@ -476,6 +476,13 @@ class Driver(object):
 
         return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
 
+    def open_drawer(self, box):
+        """
+        Открыть денежный ящик.
+        """
+
+        return self.protocol.command(0x28, self.password, CAST_SIZE['1'](box))
+
     def test_stop(self):
         """
         Прерывание тестового прогона.
@@ -511,6 +518,20 @@ class Driver(object):
 
         return self.protocol.command(0x51, self.password, CAST_SIZE['41'](round(sum * 100), 0))
 
+    def repeat (self):
+        """
+        Повтор документа.
+        """
+
+        return self.protocol.command(0x8C, self.password)
+
+    def continue_print (self, password):
+        """
+        Продолжение печати.
+        """
+
+        return self.protocol.command(0xB0, password)
+
     def open_shift(self):
         """
         Открыть смену.
@@ -527,34 +548,8 @@ class Driver(object):
     #     '''
     #     raise NotImplementedError ('checkout() is not implemented')
     #
-    # def open_shift (self):
-    #     '''
-    #     Открыть смену
-    #     '''
-    #     if self.shift_is_open ():
-    #         raise RuntimeError (u'Смена уже открыта')
-    #     self._do_open_shift ()
-    #
     # def shift_is_open (self):
     #     raise NotImplementedError ('shift_is_open() is not implemented')
-    #
-    # def open_drawer (self):
-    #     '''
-    #     Открыть денежный ящик
-    #     '''
-    #     raise NotImplementedError ('open_drawer() is not implemented')
-    #
-    # def beep (self):
-    #     '''
-    #     Звуковой сигнал
-    #     '''
-    #     raise NotImplementedError ('beep() is not implemented')
-    #
-    # def continue_print (self):
-    #     '''
-    #     Продолжить печать после получения PrintError
-    #     '''
-    #     raise NotImplementedError ('continue_print() is not implemented')
     #
     # def cancel_check (self):
     #     raise NotImplementedError ('cancel_check() is not implemented')
@@ -572,7 +567,7 @@ if __name__ == '__main__':
     p.connect()
     # print(repr(p.command(0x13, p.DEFAULT_CASHIER_PASSWORD)).decode('unicode-escape'))
 #    print(repr(p.test_start(1)).decode('unicode-escape'))
-    print(repr(p.income(50.236)).decode('unicode-escape'))
-    time.sleep (1)
-    print(repr(p.cut(True)).decode('unicode-escape'))
+#    print(repr(p.income(50.236)).decode('unicode-escape'))
+#    time.sleep (1)
+    print(repr(p.repeat ()).decode('unicode-escape'))
     # print(repr(p.command_nopass(0xFC)).decode('unicode-escape'))

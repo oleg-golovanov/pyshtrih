@@ -19,7 +19,7 @@ COMMANDS = {
     # 0x22: u'Программирование даты',
     # 0x23: u'Подтверждение программирования даты',
     0x25: u'Отрезка чека',
-    # 0x28: u'Открыть денежный ящик',
+    0x28: u'Открыть денежный ящик',
     0x29: u'Протяжка',
     0x2B: u'Прерывание тестового прогона',
     # 0x2D: u'Запрос структуры таблицы',
@@ -34,9 +34,9 @@ COMMANDS = {
     # 0x86: u'Скидка',
     # 0x87: u'Надбавка',
     # 0x88: u'Аннулирование чека',
-    # 0x8C: u'Повтор документа',
+    0x8C: u'Повтор документа',
     # 0x8D: u'Открыть чек',
-    # 0xB0: u'Продолжение печати',
+    0xB0: u'Продолжение печати',
     # 0xC2: u'Печать штрих-кода',
     0xE0: u'Открыть смену',
     0xFC: u'Получить тип устройства'
@@ -107,6 +107,10 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    0x28: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
     0x2B: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
@@ -128,6 +132,14 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
+    ),
+    0x8C: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    0xB0: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
     ),
     0xE0: (
         OPERATOR_INDEX_NUMBER_STRUCT,
