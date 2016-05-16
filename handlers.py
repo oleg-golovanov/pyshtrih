@@ -20,7 +20,7 @@ COMMANDS = {
     # 0x23: u'Подтверждение программирования даты',
     0x25: u'Отрезка чека',
     0x28: u'Открыть денежный ящик',
-    0x29: u'Протяжка',
+    # 0x29: u'Протяжка',
     0x2B: u'Прерывание тестового прогона',
     # 0x2D: u'Запрос структуры таблицы',
     # 0x2E: u'Запрос структуры поля',
@@ -47,6 +47,7 @@ ERROR_CODE_STRUCT = (slice(0, 1), default, ERROR_CODE_STR)
 OPERATOR_INDEX_NUMBER_STRUCT = (slice(1, 2), default, u'Порядковый номер оператора')
 
 HANDLERS = {
+    # Короткий запрос состояния ФР
     0x10: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
@@ -60,6 +61,7 @@ HANDLERS = {
         (slice(10, 11), default, u'Код ошибки ЭКЛЗ'),
         (slice(12, 15), None, u'Зарезервировано')
     ),
+    # Запрос состояния ФР
     0x11: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
@@ -85,72 +87,89 @@ HANDLERS = {
         (slice(40, 41), default, u'Количество оставшихся перерегистраций (фискализаций)'),
         (slice(41, 47), handle_inn, u'ИНН')
     ),
+    # Гудок
     0x13: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
     ),
     # TODO: написать обработчики
+    # Чтение параметров обмена
     0x15: (
         ERROR_CODE_STRUCT,
         (slice(1, 2), default, u'Код скорости обмена'),
         (slice(2, 3), default, u'Тайм аут приема байта')
     ),
+    # Печать строки
     0x17: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Тестовый прогон
     0x19: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Программирование времени
     0x21: (
         ERROR_CODE_STRUCT,
     ),
     # TODO: дописать
+    # Чтение таблицы
     0x1F: (
         (slice(0, None), repr, u'Значение'),
     ),
+    # Отрезка чека
     0x25: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Открыть денежный ящик
     0x28: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Прерывание тестового прогона
     0x2B: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Суточный отчет без гашения
     0x40: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Суточный отчет с гашением
     0x41: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Внесение
     0x50: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
     ),
+    # Выплата
     0x51: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
     ),
+    # Повтор документа
     0x8C: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Продолжение печати
     0xB0: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Открыть смену
     0xE0: (
         OPERATOR_INDEX_NUMBER_STRUCT,
     ),
+    # Получить тип устройства
     0xFC: (
         ERROR_CODE_STRUCT,
         (slice(1, 2), default, u'Тип устройства'),
