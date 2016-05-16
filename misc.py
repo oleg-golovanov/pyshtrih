@@ -270,7 +270,6 @@ class FuncChain(object):
     def __init__(self, *funcs):
         self.funcs = funcs
 
-    # TODO: доделать возврат None при пустых входных параметрах
     def __call__(self, *args, **kwargs):
         if not self.funcs:
             return

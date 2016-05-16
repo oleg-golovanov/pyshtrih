@@ -325,7 +325,10 @@ class Protocol(object):
             result = {}
             for _slice, func, name in handler:
                 chunk = _slice(response) if isinstance(_slice, mslice) else response[_slice]
-                result[name] = func(chunk) if func else chunk
+                if chunk:
+                    result[name] = func(chunk) if func else chunk
+                else:
+                    result[name] = None
 
             error = result.get(ERROR_CODE_STR, 0)
             if error != 0:
