@@ -3,7 +3,7 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE, LOCALE
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, encode, CAST_SIZE, UNCAST_SIZE, LOCALE
 from handlers import HANDLERS, ERROR_CODE_STR
 
 
@@ -461,6 +461,18 @@ class Driver(object):
         """
 
         return self.protocol.command(0x11, self.password)
+
+    def print_string(self, string, control_tape=True, cash_tape=True):
+        """
+        Печать строки.
+        """
+
+        control = 0b01 if control_tape else 0b00
+        cash = 0b10 if cash_tape else 0b00
+
+        return self.protocol.command(
+            0x17, self.password, CAST_SIZE['1'](control + cash), encode(string[:self.DEFAULT_MAX_LENGTH])
+        )
 
     def test_start(self, minute):
         """
