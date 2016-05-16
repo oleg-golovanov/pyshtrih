@@ -488,6 +488,15 @@ class Driver(object):
 
         return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
 
+    def set_time(self, time):
+        """
+        Программирование времени.
+        """
+
+        return self.protocol.command(
+            0x21, self.admin_password, CAST_SIZE['111'](time.hour, time.minute, time.second)
+        )
+
     def cut(self, partial = False):
         """
         Обрезка чека.
@@ -578,15 +587,3 @@ class Driver(object):
     #     Сторнирование документа
     #     '''
     #     raise NotImplementedError ('storno() is not implemented')
-
-
-if __name__ == '__main__':
-    import time
-    p = Driver()
-    p.connect()
-    # print(repr(p.command(0x13, p.DEFAULT_CASHIER_PASSWORD)).decode('unicode-escape'))
-#    print(repr(p.test_start(1)).decode('unicode-escape'))
-#    print(repr(p.income(50.236)).decode('unicode-escape'))
-#    time.sleep (1)
-    print(repr(p.repeat ()).decode('unicode-escape'))
-    # print(repr(p.command_nopass(0xFC)).decode('unicode-escape'))
