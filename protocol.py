@@ -539,6 +539,22 @@ class Driver(object):
 
         return self.protocol.command(0x28, self.password, CAST_SIZE['1'](box))
 
+    def feed(self, count, control_tape=False, cash_tape=False, skid_document=False):
+        """
+        Протяжка чековой ленты на заданное количество строк.
+        """
+
+        if count > 255:
+            raise ValueError (u'Количество строк должно быть меньше 255')
+
+        control = 0b001 if control_tape else 0b000
+        cash = 0b010 if cash_tape else 0b000
+        skid = 0b100 if skid_document else 0b000
+
+        return self.protocol.command(
+            0x29, self.password, CAST_SIZE['1'](control + cash + skid), CAST_SIZE['1'](count)
+        )
+
     def test_stop(self):
         """
         Прерывание тестового прогона.
