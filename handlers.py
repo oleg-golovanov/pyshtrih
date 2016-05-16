@@ -38,7 +38,7 @@ COMMANDS = {
     # 0x8D: u'Открыть чек',
     # 0xB0: u'Продолжение печати',
     # 0xC2: u'Печать штрих-кода',
-    # 0xE0: u'Открыть смену',
+    0xE0: u'Открыть смену',
     0xFC: u'Получить тип устройства'
 }
 
@@ -128,6 +128,9 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
+    ),
+    0xE0: (
+        OPERATOR_INDEX_NUMBER_STRUCT,
     ),
     0xFC: (
         ERROR_CODE_STRUCT,
