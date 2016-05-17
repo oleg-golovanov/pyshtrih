@@ -94,8 +94,36 @@ def decode(text):
     return text.decode('cp1251')
 
 
-def int_to_bitmask(num, length = 8):
+def int_to_bitmask(num, length=8):
     return map(int, ('{:0%sb}' % length).format(num))
+
+
+def int_to_bytes(num, count=None):
+    """
+    Функция преобрабования целочисленного числа в набор байт.
+
+    :type num: int or long
+    :param num: число
+    :type count: int
+    :param count: количество байт, если указано, то число будет усечено до
+                  указанного количества байт
+
+    :rtype: list
+    :return: набор байт
+    """
+
+    if count:
+        bytes_count = count
+    else:
+        q, r = divmod(num.bit_length(), 8)
+        bytes_count = q + 1 if r else q
+
+    result = []
+    for i in xrange(bytes_count):
+        offset = 8 * i
+        result.append((num >> offset) & 0xff)
+
+    return result
 
 
 def handle_version(arg):
@@ -263,7 +291,7 @@ def handle_inn(arg):
 
     if inn == 'ffffffffffff':
         return -1
-    return int(inn, base = 16)
+    return int(inn, base=16)
 
 
 class FuncChain(object):
@@ -287,9 +315,9 @@ CHAR_SIZE = {
     '1': '<B',
     '2': '<H',
     '4': '<I',
-    '41': '<IB',
     '11': '<2B',
-    '111': '<3B'
+    '111': '<3B',
+    '11111': '<5B'
 }
 
 CAST_SIZE = {
