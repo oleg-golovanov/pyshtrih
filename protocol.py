@@ -3,7 +3,8 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, encode, CAST_SIZE, UNCAST_SIZE, LOCALE
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, encode, int_to_bytes, \
+    CAST_SIZE, UNCAST_SIZE, LOCALE
 from handlers import HANDLERS, ERROR_CODE_STR
 
 
@@ -581,14 +582,30 @@ class Driver(object):
         Внесение.
         """
 
-        return self.protocol.command(0x50, self.password, CAST_SIZE['41'](round(cash * 100), 0))
+        return self.protocol.command(
+            0x50,
+            self.password,
+            CAST_SIZE['11111'](
+                *int_to_bytes(
+                    int(round(cash * 100)), 5
+                )
+            )
+        )
 
     def outcome(self, cash):
         """
         Выплата.
         """
 
-        return self.protocol.command(0x51, self.password, CAST_SIZE['41'](round(cash * 100), 0))
+        return self.protocol.command(
+            0x51,
+            self.password,
+            CAST_SIZE['11111'](
+                *int_to_bytes(
+                    int(round(cash * 100)), 5
+                )
+            )
+        )
 
     def repeat(self):
         """
