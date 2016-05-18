@@ -2,7 +2,7 @@
 
 
 from misc import mslice, default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
-    handle_fr_flags, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
+    handle_fr_flags, bytes_to_int, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
 COMMANDS = {
@@ -30,12 +30,12 @@ COMMANDS = {
     0x51: u'Выплата',
     # 0x80: u'Продажа',
     # 0x82: u'Возврат продажи',
-    # 0x85: u'Закрытие чека',
+    0x85: u'Закрытие чека',
     # 0x86: u'Скидка',
     # 0x87: u'Надбавка',
     # 0x88: u'Аннулирование чека',
     0x8C: u'Повтор документа',
-    # 0x8D: u'Открыть чек',
+    0x8D: u'Открыть чек',
     0xB0: u'Продолжение печати',
     0xC2: u'Печать штрих-кода',
     0xE0: u'Открыть смену',
@@ -168,8 +168,19 @@ HANDLERS = {
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
     ),
+    # Закрытие чека
+    0x85: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT,
+        (slice(2, 7), bytes_to_int, u'Сдача')
+    ),
     # Повтор документа
     0x8C: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Открыть чек
+    0x8D: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
