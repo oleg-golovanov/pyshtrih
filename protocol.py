@@ -607,6 +607,54 @@ class Driver(object):
             )
         )
 
+    def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
+        """
+        Продажа.
+        """
+
+        text, quantity, price = item
+
+        if text:
+            text = bytearray(encode(text)[:40])
+            text.extend((0, ) * (40 - len(text)))
+
+        return self.protocol.command(
+            0x80,
+            self.password,
+            CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
+            CAST_SIZE['11111'](*int_to_bytes(price, 5)),
+            CAST_SIZE['1'](department_num),
+            CAST_SIZE['1'](tax1),
+            CAST_SIZE['1'](tax2),
+            CAST_SIZE['1'](tax3),
+            CAST_SIZE['1'](tax4),
+            text or bytearray((0, ) * 40)
+        )
+
+    def return_sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
+        """
+        Возврат продажи.
+        """
+
+        text, quantity, price = item
+
+        if text:
+            text = bytearray(encode(text)[:40])
+            text.extend((0, ) * (40 - len(text)))
+
+        return self.protocol.command(
+            0x82,
+            self.password,
+            CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
+            CAST_SIZE['11111'](*int_to_bytes(price, 5)),
+            CAST_SIZE['1'](department_num),
+            CAST_SIZE['1'](tax1),
+            CAST_SIZE['1'](tax2),
+            CAST_SIZE['1'](tax3),
+            CAST_SIZE['1'](tax4),
+            text or bytearray((0, ) * 40)
+        )
+
     def close_check(self,
                     cash=0,
                     payment_type2=0,
@@ -633,6 +681,7 @@ class Driver(object):
             CAST_SIZE['11111'](*int_to_bytes(payment_type2, 5)),
             CAST_SIZE['11111'](*int_to_bytes(payment_type3, 5)),
             CAST_SIZE['11111'](*int_to_bytes(payment_type4, 5)),
+            # TODO: проверить скидку/надбавку
             CAST_SIZE['s2'](discount_allowance),
             CAST_SIZE['1'](tax1),
             CAST_SIZE['1'](tax2),
@@ -640,6 +689,14 @@ class Driver(object):
             CAST_SIZE['1'](tax4),
             text or bytearray((0, ) * 40)
         )
+
+    def cancel_check(self):
+        """
+        Аннулирование чека.
+        """
+
+        # TODO: аннулирование чека с паролем администратора?
+        return self.protocol.command(0x88, self.password)
 
     def repeat(self):
         """
