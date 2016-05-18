@@ -585,11 +585,7 @@ class Driver(object):
         return self.protocol.command(
             0x50,
             self.password,
-            CAST_SIZE['11111'](
-                *int_to_bytes(
-                    int(round(cash * 100)), 5
-                )
-            )
+            CAST_SIZE['11111'](*int_to_bytes(cash, 5))
         )
 
     def outcome(self, cash):
@@ -600,11 +596,7 @@ class Driver(object):
         return self.protocol.command(
             0x51,
             self.password,
-            CAST_SIZE['11111'](
-                *int_to_bytes(
-                    int(round(cash * 100)), 5
-                )
-            )
+            CAST_SIZE['11111'](*int_to_bytes(cash, 5))
         )
 
     def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
@@ -746,12 +738,3 @@ class Driver(object):
     #
     # def shift_is_open (self):
     #     raise NotImplementedError ('shift_is_open() is not implemented')
-    #
-    # def cancel_check (self):
-    #     raise NotImplementedError ('cancel_check() is not implemented')
-    #
-    # def storno (self):
-    #     '''
-    #     Сторнирование документа
-    #     '''
-    #     raise NotImplementedError ('storno() is not implemented')
