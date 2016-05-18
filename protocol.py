@@ -227,10 +227,10 @@ class Protocol(object):
             self.serial = serial.Serial(
                 self.port,
                 self.baudrate,
-                parity = serial.PARITY_NONE,
-                stopbits = serial.STOPBITS_ONE,
-                timeout = self.timeout,
-                writeTimeout = self.timeout
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                timeout=self.timeout,
+                writeTimeout=self.timeout
             )
         if not self.serial.isOpen():
             try:
@@ -339,7 +339,7 @@ class Protocol(object):
 
         return response
 
-    def command_nopass(self, cmd, params = bytearray()):
+    def command_nopass(self, cmd, params=bytearray()):
         """
         Метод отправки команды без пароля оператора.
 
@@ -404,7 +404,7 @@ class Driver(object):
     TABLES_COUNT = 15
 
     # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
-    def __init__(self, port = '/dev/ttyS0', baudrate = 9600, timeout = None, password = None, admin_password = None):
+    def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
         :type port: str
         :param port: порт взаимодействия с устройством
@@ -526,7 +526,7 @@ class Driver(object):
         self.set_date(datetime.date())
         self.confirm_date(datetime.date())
 
-    def cut(self, partial = False):
+    def cut(self, partial=False):
         """
         Обрезка чека.
         """
@@ -546,7 +546,7 @@ class Driver(object):
         """
 
         if count > 255:
-            raise ValueError (u'Количество строк должно быть меньше 255')
+            raise ValueError(u'Количество строк должно быть меньше 255')
 
         control = 0b001 if control_tape else 0b000
         cash = 0b010 if cash_tape else 0b000
@@ -620,6 +620,15 @@ class Driver(object):
         """
 
         return self.protocol.command(0xB0, password)
+
+    def print_barcode(self, num):
+        """
+        Печать штрих-кода
+        """
+
+        return self.protocol.command(
+            0xC2, self.password, CAST_SIZE['11111'](*int_to_bytes(num, 5))
+        )
 
     def open_shift(self):
         """
