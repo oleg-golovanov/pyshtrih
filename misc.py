@@ -100,7 +100,7 @@ def int_to_bitmask(num, length=8):
 
 def int_to_bytes(num, count=None):
     """
-    Функция преобрабования целочисленного числа в набор байт.
+    Функция преобрабования целого числа в набор байт.
 
     :type num: int or long
     :param num: число
@@ -108,7 +108,7 @@ def int_to_bytes(num, count=None):
     :param count: количество байт, если указано, то число будет усечено до
                   указанного количества байт
 
-    :rtype: list
+    :rtype: tuple
     :return: набор байт
     """
 
@@ -118,12 +118,21 @@ def int_to_bytes(num, count=None):
         q, r = divmod(num.bit_length(), 8)
         bytes_count = q + 1 if r else q
 
-    result = []
-    for i in xrange(bytes_count):
-        offset = 8 * i
-        result.append((num >> offset) & 0xff)
+    return tuple((num >> (8 * i)) & 0xff for i in xrange(bytes_count))
 
-    return result
+
+def bytes_to_int(arg):
+    """
+    Функция преобразования набора байт в целое число.
+
+    :type arg: list or tuple ot bytearray
+    :param arg: набор байт
+
+    :rtype: int
+    :return: целое число
+    """
+
+    return sum(b << (8 * i) for i, b in enumerate(arg))
 
 
 def handle_version(arg):
