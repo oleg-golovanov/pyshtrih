@@ -607,12 +607,53 @@ class Driver(object):
             )
         )
 
+    def close_check(self,
+                    cash=0,
+                    payment_type2=0,
+                    payment_type3=0,
+                    payment_type4=0,
+                    discount_allowance=0,
+                    tax1=0,
+                    tax2=0,
+                    tax3=0,
+                    tax4=0,
+                    text=None):
+        """
+        Закрытие чека.
+        """
+
+        if text:
+            text = bytearray(encode(text)[:40])
+            text.extend((0, ) * (40 - len(text)))
+
+        return self.protocol.command(
+            0x85,
+            self.password,
+            CAST_SIZE['11111'](*int_to_bytes(cash, 5)),
+            CAST_SIZE['11111'](*int_to_bytes(payment_type2, 5)),
+            CAST_SIZE['11111'](*int_to_bytes(payment_type3, 5)),
+            CAST_SIZE['11111'](*int_to_bytes(payment_type4, 5)),
+            CAST_SIZE['s2'](discount_allowance),
+            CAST_SIZE['1'](tax1),
+            CAST_SIZE['1'](tax2),
+            CAST_SIZE['1'](tax3),
+            CAST_SIZE['1'](tax4),
+            text or bytearray((0, ) * 40)
+        )
+
     def repeat(self):
         """
         Повтор документа.
         """
 
         return self.protocol.command(0x8C, self.password)
+
+    def open_check(self, check_type):
+        """
+        Открыть чек.
+        """
+
+        return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
 
     def continue_print(self, password):
         """
