@@ -28,12 +28,12 @@ COMMANDS = {
     0x41: u'Суточный отчет с гашением',
     0x50: u'Внесение',
     0x51: u'Выплата',
-    # 0x80: u'Продажа',
-    # 0x82: u'Возврат продажи',
+    0x80: u'Продажа',
+    0x82: u'Возврат продажи',
     0x85: u'Закрытие чека',
     # 0x86: u'Скидка',
     # 0x87: u'Надбавка',
-    # 0x88: u'Аннулирование чека',
+    0x88: u'Аннулирование чека',
     0x8C: u'Повтор документа',
     0x8D: u'Открыть чек',
     0xB0: u'Продолжение печати',
@@ -168,11 +168,26 @@ HANDLERS = {
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, None), UNCAST_SIZE['2'], u'Сквозной номер документа')
     ),
+    # Продажа
+    0x80: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Возврат продажи
+    0x82: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
     # Закрытие чека
     0x85: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, 7), bytes_to_int, u'Сдача')
+    ),
+    # Аннулирование чека
+    0x88: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
     ),
     # Повтор документа
     0x8C: (
