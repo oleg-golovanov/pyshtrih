@@ -94,8 +94,26 @@ def decode(text):
     return text.decode('cp1251')
 
 
-def int_to_bitmask(num, length=8):
-    return map(int, ('{:0%sb}' % length).format(num))
+def int_to_bits(num, length=None):
+    """
+    Функция, возвращающая битовое представление заданного числа.
+
+    :type num: int
+    :param num: целое число
+    :type length: int
+    :param length: количество бит, если указано, то число будет урезано до указанной длины
+
+    :rtype: tuple
+    :return: битовое представление числа
+    """
+
+    if not length:
+        length = num.bit_length()
+
+    result = [(num >> (1 * i) & 0x01) for i in xrange(length)]
+    result.reverse()
+
+    return tuple(result)
 
 
 def int_to_bytes(num, count=None):
@@ -170,7 +188,7 @@ def handle_fr_flags(arg):
             u'Рулон операционного журнала'
         )
 
-    bitmask = int_to_bitmask(arg, 16)
+    bits = int_to_bits(arg, 16)
 
     a, b = 0, 1
     flags_actual = {
@@ -186,7 +204,7 @@ def handle_fr_flags(arg):
     return dict(
         zip(
             compress(get_keys(rev), flags),
-            compress(bitmask, flags)
+            compress(bits, flags)
         )
     )
 handle_fr_flags.model = -1
@@ -290,9 +308,9 @@ class FRSubMode(object):
 def handle_fp_flags(arg):
     keys = (u'ФП 1', u'ФП 2', u'Лицензия', u'Переполнение ФП',
             u'Батарея ФП', u'Последняя запись ФП', u'Смена в ФП', u'24 часа в ФП')
-    bitmask = int_to_bitmask(arg, 8)
+    bits = int_to_bits(arg, 8)
 
-    return dict(zip(keys, bitmask))
+    return dict(zip(keys, bits))
 
 
 def handle_inn(arg):
