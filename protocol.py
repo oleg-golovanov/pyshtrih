@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from time import sleep
+
 import serial
 
 from misc import mslice, lrc, bytearray_cast, bytearray_concat, encode, int_to_bytes, \
@@ -395,6 +397,7 @@ class Protocol(object):
 
 class Driver(object):
     SERIAL_TIMEOUT = 1
+    WAIT_TIME = 0.01
 
     DEFAULT_CASHIER_PASSWORD = 1
     DEFAULT_ADMIN_PASSWORD = 30
@@ -471,9 +474,12 @@ class Driver(object):
         control = 0b01 if control_tape else 0b00
         cash = 0b10 if cash_tape else 0b00
 
-        return self.protocol.command(
+        result = self.protocol.command(
             0x17, self.password, CAST_SIZE['1'](control + cash), encode(string[:self.DEFAULT_MAX_LENGTH])
         )
+        self.wait_printing()
+
+        return result
 
     def print_line(self, symbol='-', control_tape=True, cash_tape=True):
         """
@@ -568,36 +574,48 @@ class Driver(object):
         Суточный отчет без гашения.
         """
 
-        return self.protocol.command(0x40, self.admin_password)
+        result = self.protocol.command(0x40, self.admin_password)
+        self.wait_printing()
+
+        return result
 
     def z_report(self):
         """
         Суточный отчет с гашением.
         """
 
-        return self.protocol.command(0x41, self.admin_password)
+        result = self.protocol.command(0x41, self.admin_password)
+        self.wait_printing()
+
+        return result
 
     def income(self, cash):
         """
         Внесение.
         """
 
-        return self.protocol.command(
+        result = self.protocol.command(
             0x50,
             self.password,
             CAST_SIZE['11111'](*int_to_bytes(cash, 5))
         )
+        self.wait_printing()
+
+        return result
 
     def outcome(self, cash):
         """
         Выплата.
         """
 
-        return self.protocol.command(
+        result = self.protocol.command(
             0x51,
             self.password,
             CAST_SIZE['11111'](*int_to_bytes(cash, 5))
         )
+        self.wait_printing()
+
+        return result
 
     def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
         """
@@ -666,7 +684,7 @@ class Driver(object):
             text = bytearray(encode(text)[:40])
             text.extend((0, ) * (40 - len(text)))
 
-        return self.protocol.command(
+        result = self.protocol.command(
             0x85,
             self.password,
             CAST_SIZE['11111'](*int_to_bytes(cash, 5)),
@@ -681,6 +699,9 @@ class Driver(object):
             CAST_SIZE['1'](tax4),
             text or bytearray((0, ) * 40)
         )
+        self.wait_printing()
+
+        return result
 
     def discount(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
         """
@@ -735,7 +756,10 @@ class Driver(object):
         Повтор документа.
         """
 
-        return self.protocol.command(0x8C, self.password)
+        result = self.protocol.command(0x8C, self.password)
+        self.wait_printing()
+
+        return result
 
     def open_check(self, check_type):
         """
@@ -744,21 +768,27 @@ class Driver(object):
 
         return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
 
-    def continue_print(self, password):
+    def continue_print(self):
         """
         Продолжение печати.
         """
 
-        return self.protocol.command(0xB0, password)
+        result = self.protocol.command(0xB0, self.admin_password)
+        self.wait_printing()
+
+        return result
 
     def print_barcode(self, num):
         """
         Печать штрих-кода
         """
 
-        return self.protocol.command(
+        result = self.protocol.command(
             0xC2, self.password, CAST_SIZE['11111'](*int_to_bytes(num, 5))
         )
+        self.wait_printing()
+
+        return result
 
     def open_shift(self):
         """
@@ -769,6 +799,20 @@ class Driver(object):
 
     def model(self):
         return self.protocol.command_nopass(0xFC)
+
+    def wait_printing(self):
+        """
+        Метод ожидания окончания печати документа.
+        """
+
+        while True:
+            sleep(self.WAIT_TIME)
+            submode = self.state()[u'Подрежим ФР']
+
+            if submode.state == 0:
+                return
+            if submode.state == 3:
+                self.continue_print()
 
     # def checkout (self):
     #     '''
