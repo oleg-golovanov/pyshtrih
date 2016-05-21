@@ -31,8 +31,8 @@ COMMANDS = {
     0x80: u'Продажа',
     0x82: u'Возврат продажи',
     0x85: u'Закрытие чека',
-    # 0x86: u'Скидка',
-    # 0x87: u'Надбавка',
+    0x86: u'Скидка',
+    0x87: u'Надбавка',
     0x88: u'Аннулирование чека',
     0x8C: u'Повтор документа',
     0x8D: u'Открыть чек',
@@ -183,6 +183,16 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
         (slice(2, 7), bytes_to_int, u'Сдача')
+    ),
+    # Скидка
+    0x86: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Надбавка
+    0x87: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
     ),
     # Аннулирование чека
     0x88: (
