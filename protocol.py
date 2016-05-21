@@ -682,6 +682,46 @@ class Driver(object):
             text or bytearray((0, ) * 40)
         )
 
+    def discount(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
+        """
+        Скидка.
+        """
+
+        if text:
+            text = bytearray(encode(text)[:40])
+            text.extend((0, ) * (40 - len(text)))
+
+        return self.protocol.command(
+            0x86,
+            self.password,
+            CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
+            CAST_SIZE['1'](tax1),
+            CAST_SIZE['1'](tax2),
+            CAST_SIZE['1'](tax3),
+            CAST_SIZE['1'](tax4),
+            text or bytearray((0, ) * 40)
+        )
+
+    def allowance(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
+        """
+        Надбавка.
+        """
+
+        if text:
+            text = bytearray(encode(text)[:40])
+            text.extend((0, ) * (40 - len(text)))
+
+        return self.protocol.command(
+            0x87,
+            self.password,
+            CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
+            CAST_SIZE['1'](tax1),
+            CAST_SIZE['1'](tax2),
+            CAST_SIZE['1'](tax3),
+            CAST_SIZE['1'](tax4),
+            text or bytearray((0, ) * 40)
+        )
+
     def cancel_check(self):
         """
         Аннулирование чека.
