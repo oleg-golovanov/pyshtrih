@@ -2,7 +2,7 @@
 
 
 from misc import mslice, default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
-    handle_fr_flags, bytes_to_int, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
+    handle_fr_flags, bytearray_strip, bytes_to_int, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
 COMMANDS = {
@@ -13,8 +13,8 @@ COMMANDS = {
     0x17: u'Печать строки',
     0x19: u'Тестовый прогон',
     # 0x1B: u'Запрос операционного регистра',
-    # 0x1E: u'Запись таблицы',
-    # 0x1F: u'Чтение таблицы',
+    0x1E: u'Запись таблицы',
+    0x1F: u'Чтение таблицы',
     0x21: u'Программирование времени',
     0x22: u'Программирование даты',
     0x23: u'Подтверждение программирования даты',
@@ -22,7 +22,7 @@ COMMANDS = {
     0x28: u'Открыть денежный ящик',
     0x29: u'Протяжка',
     0x2B: u'Прерывание тестового прогона',
-    # 0x2D: u'Запрос структуры таблицы',
+    0x2D: u'Запрос структуры таблицы',
     # 0x2E: u'Запрос структуры поля',
     0x40: u'Суточный отчет без гашения',
     0x41: u'Суточный отчет с гашением',
@@ -109,6 +109,15 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
+    # Запись таблицы
+    0x1E: (
+        ERROR_CODE_STRUCT,
+    ),
+    # Чтение таблицы
+    0x1F: (
+        ERROR_CODE_STRUCT,
+        (slice(1, None), None, u'Значение'),
+    ),
     # Программирование времени
     0x21: (
         ERROR_CODE_STRUCT,
@@ -120,11 +129,6 @@ HANDLERS = {
     # Подтверждение программирования даты
     0x23: (
         ERROR_CODE_STRUCT,
-    ),
-    # TODO: дописать
-    # Чтение таблицы
-    0x1F: (
-        (slice(0, None), repr, u'Значение'),
     ),
     # Отрезка чека
     0x25: (
@@ -145,6 +149,13 @@ HANDLERS = {
     0x2B: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Запрос структуры таблицы
+    0x2D: (
+        ERROR_CODE_STRUCT,
+        (slice(1, 41), FuncChain(decode, bytearray_strip), u'Название таблицы'),
+        (slice(41, 43), UNCAST_SIZE['2'], u'Количество рядов'),
+        (slice(43, 44), UNCAST_SIZE['1'], u'Количество полей')
     ),
     # Суточный отчет без гашения
     0x40: (
