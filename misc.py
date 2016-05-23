@@ -14,22 +14,6 @@ LOCALE = locale.getpreferredencoding()
 NULL = bytearray((0, ))
 
 
-def default(arg):
-    """
-    Обработчик по-умолчанию одного байта ответа.
-
-    :type arg: bytearray
-    :param arg: bytearray из одного байта
-
-    :rtype: int or None
-    :return: целочисленное значение байта или None, если входной bytearray пуст
-    """
-
-    if arg:
-        return UNCAST_SIZE['1'](arg)
-    return
-
-
 def bytearray_cast(arg):
     if not isinstance(arg, bytearray):
         return bytearray(arg)
@@ -347,6 +331,18 @@ class FuncChain(object):
 
 fetchone = itemgetter(0)
 
+
+def unpack(fmt, string):
+    """
+    Функция, аналогичная функции struct.unpack, но возвращающая None в случае ошибки.
+    """
+
+    try:
+        return struct.unpack(fmt, string)
+    except struct.error:
+        return
+
+
 CHAR_SIZE = {
     '1': '<B',
     '2': '<H',
@@ -364,6 +360,6 @@ CAST_SIZE = {
 }
 
 UNCAST_SIZE = {
-    size: FuncChain(fetchone, partial(struct.unpack, fmt)) if len(size) == 1 else partial(struct.unpack, fmt)
+    size: FuncChain(fetchone, partial(unpack, fmt)) if len(size) == 1 else partial(struct.unpack, fmt)
     for size, fmt in CHAR_SIZE.items()
 }

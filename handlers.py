@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from misc import mslice, default, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
+from misc import mslice, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
     handle_fr_flags, bytearray_strip, bytes_to_int, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
@@ -43,8 +43,8 @@ COMMANDS = {
 }
 
 ERROR_CODE_STR = u'Код ошибки'
-ERROR_CODE_STRUCT = (slice(0, 1), default, ERROR_CODE_STR)
-OPERATOR_INDEX_NUMBER_STRUCT = (slice(1, 2), default, u'Порядковый номер оператора')
+ERROR_CODE_STRUCT = (slice(0, 1), UNCAST_SIZE['1'], ERROR_CODE_STR)
+OPERATOR_INDEX_NUMBER_STRUCT = (slice(1, 2), UNCAST_SIZE['1'], u'Порядковый номер оператора')
 
 HANDLERS = {
     # Короткий запрос состояния ФР
@@ -55,10 +55,10 @@ HANDLERS = {
         (slice(4, 5), FuncChain(FRMode, UNCAST_SIZE['1']), u'Режим ФР'),
         (slice(5, 6), FuncChain(FRSubMode, UNCAST_SIZE['1']), u'Подрежим ФР'),
         (mslice(slice(11, 12), slice(6, 7)), UNCAST_SIZE['2'], u'Количество операций в чеке'),
-        (slice(7, 8), default, u'Напряжение резервной батареи'),
-        (slice(8, 9), default, u'Напряжение источника питания'),
-        (slice(9, 10), default, u'Код ошибки ФП'),
-        (slice(10, 11), default, u'Код ошибки ЭКЛЗ'),
+        (slice(7, 8), UNCAST_SIZE['1'], u'Напряжение резервной батареи'),
+        (slice(8, 9), UNCAST_SIZE['1'], u'Напряжение источника питания'),
+        (slice(9, 10), UNCAST_SIZE['1'], u'Код ошибки ФП'),
+        (slice(10, 11), UNCAST_SIZE['1'], u'Код ошибки ЭКЛЗ'),
         (slice(12, 15), None, u'Зарезервировано')
     ),
     # Запрос состояния ФР
@@ -68,12 +68,12 @@ HANDLERS = {
         (slice(2, 4), FuncChain(handle_version, UNCAST_SIZE['11']), u'Версия ПО ФР'),
         (slice(4, 6), UNCAST_SIZE['2'], u'Сборка ПО ФР'),
         (slice(6, 9), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата ПО ФР'),
-        (slice(9, 10), default, u'Номер в зале'),
+        (slice(9, 10), UNCAST_SIZE['1'], u'Номер в зале'),
         (slice(10, 12), UNCAST_SIZE['2'], u'Сквозной номер текущего документа'),
         (slice(12, 14), FuncChain(handle_fr_flags, UNCAST_SIZE['2']), u'Флаги ФР'),
         (slice(14, 15), FuncChain(FRMode, UNCAST_SIZE['1']), u'Режим ФР'),
         (slice(15, 16), FuncChain(FRSubMode, UNCAST_SIZE['1']), u'Подрежим ФР'),
-        (slice(16, 17), default, u'Порт ФР'),
+        (slice(16, 17), UNCAST_SIZE['1'], u'Порт ФР'),
         (slice(17, 19), FuncChain(handle_version, UNCAST_SIZE['11']), u'Версия ПО ФП'),
         (slice(19, 21), UNCAST_SIZE['2'], u'Сборка ПО ФП'),
         (slice(21, 24), FuncChain(handle_date, UNCAST_SIZE['111']), u'Дата ПО ФП'),
@@ -83,8 +83,8 @@ HANDLERS = {
         (slice(31, 35), UNCAST_SIZE['4'], u'Заводской номер'),
         (slice(35, 37), UNCAST_SIZE['2'], u'Номер последней закрытой смены'),
         (slice(37, 39), UNCAST_SIZE['2'], u'Количество свободных записей в ФП'),
-        (slice(39, 40), default, u'Количество перерегистраций (фискализаций)'),
-        (slice(40, 41), default, u'Количество оставшихся перерегистраций (фискализаций)'),
+        (slice(39, 40), UNCAST_SIZE['1'], u'Количество перерегистраций (фискализаций)'),
+        (slice(40, 41), UNCAST_SIZE['1'], u'Количество оставшихся перерегистраций (фискализаций)'),
         (slice(41, 47), handle_inn, u'ИНН')
     ),
     # Гудок
@@ -96,8 +96,8 @@ HANDLERS = {
     # Чтение параметров обмена
     0x15: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), default, u'Код скорости обмена'),
-        (slice(2, 3), default, u'Тайм аут приема байта')
+        (slice(1, 2), UNCAST_SIZE['1'], u'Код скорости обмена'),
+        (slice(2, 3), UNCAST_SIZE['1'], u'Тайм аут приема байта')
     ),
     # Печать строки
     0x17: (
@@ -237,12 +237,12 @@ HANDLERS = {
     # Получить тип устройства
     0xFC: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), default, u'Тип устройства'),
-        (slice(2, 3), default, u'Подтип устройства'),
-        (slice(3, 4), default, u'Версия протокола для данного устройства'),
-        (slice(4, 5), default, u'Подверсия протокола для данного устройства'),
-        (slice(5, 6), default, u'Модель устройства'),
-        (slice(6, 7), default, u'Язык устройства'),
+        (slice(1, 2), UNCAST_SIZE['1'], u'Тип устройства'),
+        (slice(2, 3), UNCAST_SIZE['1'], u'Подтип устройства'),
+        (slice(3, 4), UNCAST_SIZE['1'], u'Версия протокола для данного устройства'),
+        (slice(4, 5), UNCAST_SIZE['1'], u'Подверсия протокола для данного устройства'),
+        (slice(5, 6), UNCAST_SIZE['1'], u'Модель устройства'),
+        (slice(6, 7), UNCAST_SIZE['1'], u'Язык устройства'),
         (slice(7, None), decode, u'Название устройства')
     )
 }
