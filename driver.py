@@ -4,7 +4,7 @@
 from time import sleep
 
 from protocol import Protocol
-from misc import encode, int_to_bytes, CAST_SIZE
+from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, FuncChain, CAST_SIZE
 
 
 class Driver(object):
@@ -107,6 +107,34 @@ class Driver(object):
 
         return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
 
+    def write_table(self, table, row, field, value, _type):
+        # TODO: реализовать после реализации команды 2E "Запрос структуры поля"
+        pass
+
+    def read_table(self, table, row, field, _type):
+        """
+        Чтение таблицы.
+        """
+
+        cast_funcs_map = {
+            int: bytes_to_int,
+            str: FuncChain(decode, bytearray_strip)
+        }
+
+        if _type not in (cast_funcs_map.keys()):
+            raise ValueError(
+                u'ожидаемые типы {}'.format(', '.join(cast_funcs_map.keys()))
+            )
+
+        result = self.protocol.command(
+            0x1F,
+            self.admin_password,
+            CAST_SIZE['121'](table, row, field)
+        )
+        result[u'Значение'] = cast_funcs_map[_type](result[u'Значение'])
+
+        return result
+
     def set_time(self, time):
         """
         Программирование времени.
@@ -180,6 +208,13 @@ class Driver(object):
         """
 
         return self.protocol.command(0x2B, self.password)
+
+    def request_table_structure(self, table):
+        """
+        Запрос структуры таблицы.
+        """
+
+        return self.protocol.command(0x2D, self.admin_password, CAST_SIZE['1'](table))
 
     def x_report(self):
         """
