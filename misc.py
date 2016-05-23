@@ -11,6 +11,7 @@ from itertools import compress
 
 
 LOCALE = locale.getpreferredencoding()
+NULL = bytearray((0, ))
 
 
 def default(arg):
@@ -41,6 +42,14 @@ def bytearray_concat(*args):
     """
 
     return bytearray_cast(reduce(concat, args))
+
+
+def bytearray_strip(arg):
+    """
+    Функция отрезания нулевых байт от набора байт.
+    """
+
+    return arg.strip(NULL)
 
 
 class mslice(object):
@@ -345,7 +354,9 @@ CHAR_SIZE = {
     '4': '<I',
     '11': '<2B',
     '111': '<3B',
-    '11111': '<5B'
+    '1111': '<4B',
+    '11111': '<5B',
+    '121': '<BHB'
 }
 
 CAST_SIZE = {
