@@ -5,7 +5,7 @@ import serial
 
 from misc import mslice, lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE
 from handlers import HANDLERS, ERROR_CODE_STR
-from exceptions import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
+from excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
 
 
 STX = bytearray.fromhex('02')
