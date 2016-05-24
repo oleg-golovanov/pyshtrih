@@ -2,7 +2,8 @@
 
 
 from misc import mslice, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
-    handle_fr_flags, bytearray_strip, bytes_to_int, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
+    handle_fr_flags, handle_type_field, handle_min_max_field_value, bytearray_strip, bytes_to_int, \
+    FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
 COMMANDS = {
@@ -23,7 +24,7 @@ COMMANDS = {
     0x29: u'Протяжка',
     0x2B: u'Прерывание тестового прогона',
     0x2D: u'Запрос структуры таблицы',
-    # 0x2E: u'Запрос структуры поля',
+    0x2E: u'Запрос структуры поля',
     0x40: u'Суточный отчет без гашения',
     0x41: u'Суточный отчет с гашением',
     0x50: u'Внесение',
@@ -156,6 +157,13 @@ HANDLERS = {
         (slice(1, 41), FuncChain(decode, bytearray_strip), u'Название таблицы'),
         (slice(41, 43), UNCAST_SIZE['2'], u'Количество рядов'),
         (slice(43, 44), UNCAST_SIZE['1'], u'Количество полей')
+    ),
+    # Запрос структуры поля
+    0x2E: (
+        ERROR_CODE_STRUCT,
+        (slice(1, 41), FuncChain(decode, bytearray_strip), u'Название поля'),
+        (slice(41, 42), FuncChain(handle_type_field, UNCAST_SIZE['1']), u'Тип поля'),
+        (slice(42, None), handle_min_max_field_value, None)
     ),
     # Суточный отчет без гашения
     0x40: (
