@@ -108,8 +108,21 @@ class Driver(object):
         return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
 
     def write_table(self, table, row, field, value, _type):
-        # TODO: реализовать после реализации команды 2E "Запрос структуры поля"
-        pass
+        """
+        Запись таблицы.
+        """
+
+        cast_funcs_map = {
+            int: FuncChain(bytearray, int_to_bytes),
+            str: encode
+        }
+
+        return self.protocol.command(
+            0x1E,
+            self.admin_password,
+            CAST_SIZE['121'](table, row, field),
+            cast_funcs_map[_type](value)
+        )
 
     def read_table(self, table, row, field, _type):
         """
