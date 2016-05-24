@@ -288,10 +288,7 @@ class Driver(object):
             CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
             CAST_SIZE['11111'](*int_to_bytes(price, 5)),
             CAST_SIZE['1'](department_num),
-            CAST_SIZE['1'](tax1),
-            CAST_SIZE['1'](tax2),
-            CAST_SIZE['1'](tax3),
-            CAST_SIZE['1'](tax4),
+            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             text or bytearray((0, ) * 40)
         )
 
@@ -312,10 +309,7 @@ class Driver(object):
             CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
             CAST_SIZE['11111'](*int_to_bytes(price, 5)),
             CAST_SIZE['1'](department_num),
-            CAST_SIZE['1'](tax1),
-            CAST_SIZE['1'](tax2),
-            CAST_SIZE['1'](tax3),
-            CAST_SIZE['1'](tax4),
+            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             text or bytearray((0, ) * 40)
         )
 
@@ -347,10 +341,7 @@ class Driver(object):
             CAST_SIZE['11111'](*int_to_bytes(payment_type4, 5)),
             # TODO: проверить скидку/надбавку
             CAST_SIZE['s2'](discount_allowance),
-            CAST_SIZE['1'](tax1),
-            CAST_SIZE['1'](tax2),
-            CAST_SIZE['1'](tax3),
-            CAST_SIZE['1'](tax4),
+            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             text or bytearray((0, ) * 40)
         )
         self.wait_printing()
@@ -370,10 +361,7 @@ class Driver(object):
             0x86,
             self.password,
             CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
-            CAST_SIZE['1'](tax1),
-            CAST_SIZE['1'](tax2),
-            CAST_SIZE['1'](tax3),
-            CAST_SIZE['1'](tax4),
+            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             text or bytearray((0, ) * 40)
         )
 
@@ -390,10 +378,7 @@ class Driver(object):
             0x87,
             self.password,
             CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
-            CAST_SIZE['1'](tax1),
-            CAST_SIZE['1'](tax2),
-            CAST_SIZE['1'](tax3),
-            CAST_SIZE['1'](tax4),
+            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             text or bytearray((0, ) * 40)
         )
 
