@@ -136,14 +136,15 @@ class Protocol(object):
             raise UnexpectedResponseError(u'Не удалось получить байт команды из ответа')
 
         response = payload[slice(1, None)]
-
         handler = HANDLERS.get(cmd)
 
         if handler:
             result = {}
             for _slice, func, name in handler:
                 chunk = _slice(response) if isinstance(_slice, mslice) else response[_slice]
-                if chunk:
+                if chunk and name is None:
+                    result.update(func(chunk))
+                elif chunk:
                     result[name] = func(chunk) if func else chunk
                 else:
                     result[name] = None
