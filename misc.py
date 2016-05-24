@@ -203,6 +203,37 @@ def handle_fr_flags(arg):
 handle_fr_flags.model = -1
 
 
+def handle_type_field(arg):
+    """
+    Функция обработки типа поля таблицы.
+    """
+
+    return {
+        0: int,
+        1: str
+    }[arg]
+
+
+def handle_min_max_field_value(arg):
+    """
+    Функция обработки минимального и максимального значения для команды
+    0x2E "Запрос структуры поля".
+    """
+
+    result = {}
+
+    bytes_count = UNCAST_SIZE['1'](arg[slice(0, 1)])
+    result[u'Количество байт'] = bytes_count
+    result[u'Минимальное значение поля'] = bytes_to_int(
+        arg[slice(1, bytes_count + 1)]
+    )
+    result[u'Максимальное значение поля'] = bytes_to_int(
+        arg[slice(bytes_count + 1, bytes_count * 2 + 1)]
+    )
+
+    return result
+
+
 class FRMode(object):
     MODE_DESCR = {
         0: u'Принтер в рабочем режиме.',
