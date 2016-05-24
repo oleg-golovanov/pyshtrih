@@ -216,6 +216,13 @@ class Driver(object):
 
         return self.protocol.command(0x2D, self.admin_password, CAST_SIZE['1'](table))
 
+    def request_field_structure(self, table, field):
+        """
+        Запрос структуры поля.
+        """
+
+        return self.protocol.command(0x2E, self.admin_password, CAST_SIZE['11'](table, field))
+
     def x_report(self):
         """
         Суточный отчет без гашения.
