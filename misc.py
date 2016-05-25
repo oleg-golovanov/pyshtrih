@@ -243,6 +243,37 @@ def handle_fr_flags(arg):
 handle_fr_flags.model = -1
 
 
+def handle_baudrate(arg):
+    """
+    Функция обработки значения скорости обмена.
+    """
+
+    return {
+        0: 2400,
+        1: 4800,
+        2: 9600,
+        3: 19200,
+        4: 38400,
+        5: 57600,
+        6: 115200
+    }.get(arg, 0)
+
+
+def handle_byte_timeout(arg):
+    """
+    Функция обработки тайм аута приема байта.
+    """
+
+    if 0 <= arg <= 150:
+        return arg
+    elif 151 <= arg <= 249:
+        return (arg - 149) * 150
+    elif 250 <= arg <= 255:
+        return (arg - 248) * 15000
+    else:
+        return -1
+
+
 def handle_type_field(arg):
     """
     Функция обработки типа поля таблицы.
