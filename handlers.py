@@ -2,18 +2,19 @@
 
 
 from misc import mslice, decode, handle_date, handle_time, handle_version, handle_fp_flags, handle_inn, \
-    handle_fr_flags, handle_type_field, handle_min_max_field_value, bytearray_strip, bytes_to_int, \
-    FuncChain, UNCAST_SIZE, FRMode, FRSubMode
+    handle_fr_flags, handle_baudrate, handle_byte_timeout, handle_type_field, handle_min_max_field_value, \
+    bytearray_strip, bytes_to_int, FuncChain, UNCAST_SIZE, FRMode, FRSubMode
 
 
 COMMANDS = {
     0x10: u'Короткий запрос состояния ФР',
     0x11: u'Запрос состояния ФР',
     0x13: u'Гудок',
-    # 0x15: u'Чтение параметров обмена',
+    0x15: u'Чтение параметров обмена',
     0x17: u'Печать строки',
     0x19: u'Тестовый прогон',
-    # 0x1B: u'Запрос операционного регистра',
+    0x1A: u'Запрос денежного регистра',
+    0x1B: u'Запрос операционного регистра',
     0x1E: u'Запись таблицы',
     0x1F: u'Чтение таблицы',
     0x21: u'Программирование времени',
@@ -97,8 +98,8 @@ HANDLERS = {
     # Чтение параметров обмена
     0x15: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), UNCAST_SIZE['1'], u'Код скорости обмена'),
-        (slice(2, 3), UNCAST_SIZE['1'], u'Тайм аут приема байта')
+        (slice(1, 2), FuncChain(handle_baudrate, UNCAST_SIZE['1']), u'Код скорости обмена'),
+        (slice(2, 3), FuncChain(handle_byte_timeout, UNCAST_SIZE['1']), u'Тайм аут приема байта')
     ),
     # Печать строки
     0x17: (
@@ -109,6 +110,18 @@ HANDLERS = {
     0x19: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Запрос денежного регистра
+    0x1A: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT,
+        (slice(2, 8), bytes_to_int, u'Содержимое регистра')
+    ),
+    # Запрос операционного регистра
+    0x1B: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT,
+        (slice(2, 4), UNCAST_SIZE['2'], u'Содержимое регистра')
     ),
     # Запись таблицы
     0x1E: (
