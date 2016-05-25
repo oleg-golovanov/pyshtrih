@@ -159,10 +159,12 @@ def int_to_bytes(num, count=None):
     if count:
         bytes_count = count
     else:
-        q, r = divmod(num.bit_length(), 8)
-        bytes_count = q + 1 if r else q
+        if num == 0:
+            bytes_count = 1
+        else:
+            q, r = divmod(num.bit_length(), 8)
+            bytes_count = q + 1 if r else q
 
-    # TODO: реализоваться возврат (0, ) при входном 0
     return tuple((num >> (8 * i)) & 0xff for i in xrange(bytes_count))
 
 
