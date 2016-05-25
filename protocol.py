@@ -3,8 +3,8 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, CAST_SIZE, UNCAST_SIZE
-from handlers import HANDLERS, ERROR_CODE_STR
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, dict_pprint, CAST_SIZE, UNCAST_SIZE, LOCALE
+from handlers import COMMANDS, HANDLERS, ERROR_CODE_STR
 from excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
 
 
@@ -153,7 +153,7 @@ class Protocol(object):
             if error != 0:
                 raise Error(error)
 
-            return result
+            return Response(cmd, result)
 
         return response
 
@@ -209,3 +209,37 @@ class Protocol(object):
         )
 
         return self.command_nopass(cmd, params)
+
+
+class Response(object):
+    __slots__ = (
+        'cmd',
+        'cmd_name',
+        'params'
+    )
+
+    def __init__(self, cmd, params):
+        """
+        Класс ответа ККМ.
+
+        :type cmd: int
+        :param cmd: номер команды
+        :type params: dict
+        :param params: словарь параметров ответа ККМ
+        """
+
+        self.cmd = cmd
+        self.cmd_name = COMMANDS[cmd]
+        self.params = params
+
+    def __getitem__(self, item):
+        return self.params[item]
+
+    def __str__(self):
+        return '0x{:02X} ({}) {}'.format(
+            self.cmd,
+            self.cmd_name.encode(LOCALE),
+            dict_pprint(self.params)
+        )
+
+    __repr__ = __str__

@@ -14,6 +14,39 @@ LOCALE = locale.getpreferredencoding()
 NULL = bytearray((0, ))
 
 
+def dict_pprint(arg):
+    """
+    Функция преобразования словаря в строку.
+
+    :type arg: dict
+    :param arg: словарь
+
+    :rtype: str
+    :return: строка
+    """
+
+    if not isinstance(arg, dict):
+        raise TypeError('ожидается тип dict, {} получен'.format(type(arg).__name__))
+
+    format_map = {
+        dict: dict_pprint,
+        unicode: lambda x: "'{}'".format(x.encode(LOCALE)),
+        str: lambda x: "'{}'".format(x)
+    }
+
+    result = []
+
+    for k, v in arg.items():
+        k = format_map.get(type(k), lambda x: x)(k)
+
+        result.append('{}: {}'.format(
+            k,
+            format_map.get(type(v), lambda x: x)(v))
+        )
+
+    return '{{{}}}'.format(', '.join(result))
+
+
 def bytearray_cast(arg):
     if not isinstance(arg, bytearray):
         return bytearray(arg)
