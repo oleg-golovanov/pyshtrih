@@ -78,6 +78,20 @@ class Driver(object):
 
         return self.protocol.command(0x11, self.password)
 
+    def beep(self):
+        """
+        Гудок.
+        """
+
+        return self.protocol.command(0x13, self.password)
+
+    def read_exchange_params(self, port):
+        """
+        Чтение параметров обмена.
+        """
+
+        return self.protocol.command(0x15, self.admin_password, CAST_SIZE['1'](port))
+
     def print_string(self, string, control_tape=True, cash_tape=True):
         """
         Печать строки.
@@ -106,6 +120,20 @@ class Driver(object):
         """
 
         return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
+
+    def request_monetary_register(self, num):
+        """
+        Запрос денежного регистра.
+        """
+
+        return self.protocol.command(0x1A, self.password, CAST_SIZE['1'](num))
+
+    def request_operational_register(self, num):
+        """
+        Запрос операционного регистра.
+        """
+
+        return self.protocol.command(0x1B, self.password, CAST_SIZE['1'](num))
 
     def write_table(self, table, row, field, value, _type):
         """
