@@ -428,7 +428,6 @@ class Driver(object):
         Аннулирование чека.
         """
 
-        # TODO: аннулирование чека с паролем администратора?
         return self.protocol.command(0x88, self.password)
 
     def repeat(self):

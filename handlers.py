@@ -94,7 +94,6 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
     ),
-    # TODO: написать обработчики
     # Чтение параметров обмена
     0x15: (
         ERROR_CODE_STRUCT,
