@@ -235,6 +235,9 @@ class Response(object):
     def __getitem__(self, item):
         return self.params[item]
 
+    def __setitem__(self, key, value):
+        self.params[key] = value
+
     def __str__(self):
         return '0x{:02X} ({}) {}'.format(
             self.cmd,
