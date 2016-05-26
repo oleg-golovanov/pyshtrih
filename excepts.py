@@ -185,3 +185,22 @@ class Error(ProtocolError):
 
     def __repr__(self):
         return '{}({}, {})'.format(self.__class__.__name__, self.code, self)
+
+
+class CheckError(ProtocolError):
+    def __init__(self, exc):
+        self.msg = exc.msg
+
+    def __str__(self):
+        return self.msg.encode(LOCALE)
+
+    def __unicode__(self):
+        return self.msg
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self)
+
+
+OpenCheckError = CheckError
+ItemSaleError = CheckError
+CloseCheckError = CheckError

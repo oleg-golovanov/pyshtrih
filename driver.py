@@ -5,18 +5,17 @@ from time import sleep
 
 from protocol import Protocol
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, FuncChain, CAST_SIZE
+from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
 
 
 class Driver(object):
-    SERIAL_TIMEOUT = 1
+    SERIAL_TIMEOUT = 3
     WAIT_TIME = 0.01
 
     DEFAULT_CASHIER_PASSWORD = 1
     DEFAULT_ADMIN_PASSWORD = 30
 
-    DEFAULT_MAX_LENGTH = 48
-
-    TABLES_COUNT = 15
+    DEFAULT_MAX_LENGTH = 40
 
     # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
@@ -323,15 +322,18 @@ class Driver(object):
             text = bytearray(encode(text)[:40])
             text.extend((0, ) * (40 - len(text)))
 
-        return self.protocol.command(
-            0x80,
-            self.password,
-            CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(price, 5)),
-            CAST_SIZE['1'](department_num),
-            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            text or bytearray((0, ) * 40)
-        )
+        try:
+            return self.protocol.command(
+                0x80,
+                self.password,
+                CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
+                CAST_SIZE['11111'](*int_to_bytes(price, 5)),
+                CAST_SIZE['1'](department_num),
+                CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+                text or bytearray((0, ) * 40)
+            )
+        except Error as exc:
+            raise ItemSaleError(exc)
 
     def return_sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
         """
@@ -373,21 +375,25 @@ class Driver(object):
             text = bytearray(encode(text)[:40])
             text.extend((0, ) * (40 - len(text)))
 
-        result = self.protocol.command(
-            0x85,
-            self.password,
-            CAST_SIZE['11111'](*int_to_bytes(cash, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(payment_type2, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(payment_type3, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(payment_type4, 5)),
-            # TODO: проверить скидку/надбавку
-            CAST_SIZE['s2'](discount_allowance),
-            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            text or bytearray((0, ) * 40)
-        )
-        self.wait_printing()
+        try:
+            result = self.protocol.command(
+                0x85,
+                self.password,
+                CAST_SIZE['11111'](*int_to_bytes(cash, 5)),
+                CAST_SIZE['11111'](*int_to_bytes(payment_type2, 5)),
+                CAST_SIZE['11111'](*int_to_bytes(payment_type3, 5)),
+                CAST_SIZE['11111'](*int_to_bytes(payment_type4, 5)),
+                # TODO: проверить скидку/надбавку
+                CAST_SIZE['s2'](discount_allowance),
+                CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+                text or bytearray((0, ) * 40)
+            )
+        except Error as exc:
+            raise CloseCheckError(exc)
+        else:
+            self.wait_printing()
 
-        return result
+            return result
 
     def discount(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
         """
@@ -445,7 +451,10 @@ class Driver(object):
         Открыть чек.
         """
 
-        return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
+        try:
+            return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
+        except Error as exc:
+            raise OpenCheckError(exc)
 
     def continue_print(self):
         """
