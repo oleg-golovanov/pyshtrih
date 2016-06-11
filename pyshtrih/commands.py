@@ -4,6 +4,7 @@
 import sys
 import inspect
 from time import sleep
+from abc import ABCMeta
 
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, FuncChain, CAST_SIZE
 from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
@@ -68,6 +69,7 @@ def print_line(self, symbol='-', control_tape=True, cash_tape=True):
     """
 
     return self.print_string(symbol * self.DEFAULT_MAX_LENGTH, control_tape, cash_tape)
+print_string.related = (print_line, )
 
 
 def test_start(self, minute):
@@ -184,6 +186,10 @@ def set_datetime(self, datetime):
     self.set_time(datetime.time())
     self.set_date(datetime.date())
     self.confirm_date(datetime.date())
+set_time.related = (set_datetime, )
+set_date.related = (set_datetime, )
+confirm_date.related = (set_datetime, )
+set_datetime.required = (set_time, set_date, confirm_date)
 
 
 def cut(self, partial=False):
@@ -522,8 +528,27 @@ def wait_printing(self):
 
 
 module = sys.modules[__name__]
-COMMANDS = {
+FUNCTIONS = {
     function.cmd if hasattr(function, 'cmd') else name: function
     for name, function in inspect.getmembers(module, inspect.isfunction)
     if function.__module__ == module.__name__
 }
+
+
+class SupportedCommands(ABCMeta):
+    def __new__(mcls, classname, supers, attributedict):
+        command_nums = attributedict.get('SUPPORTED_COMMANDS', ())
+
+        for cn in command_nums:
+            command = FUNCTIONS[cn]
+            attributedict[command.__name__] = command
+
+            if hasattr(command, 'related'):
+                for rlc in command.related:
+                    if hasattr(rlc, 'required'):
+                        if all(rqc in attributedict.values() for rqc in rlc.required):
+                            attributedict[rlc.__name__] = rlc
+                    else:
+                        attributedict[rlc.__name__] = rlc
+
+        return super(SupportedCommands, mcls).__new__(mcls, classname, supers, attributedict)
