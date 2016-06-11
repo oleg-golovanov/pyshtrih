@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
 
+from abc import abstractmethod
+
 from protocol import Protocol
+from handlers import COMMANDS
+from commands import SupportedCommands
+
 
 
 class Device(object):
+    __metaclass__ = SupportedCommands
+
     SERIAL_TIMEOUT = 3
     WAIT_TIME = 0.01
 
@@ -17,6 +24,7 @@ class Device(object):
     CASH_TAPE = False
 
     # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
+    @abstractmethod
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
         :type port: str
@@ -63,13 +71,27 @@ class Device(object):
         self.connected = False
 
 
+class ShtrihAllCommands(Device):
+    SUPPORTED_COMMANDS = COMMANDS.keys()
+
+
 class ShtrihFRK(Device):
+    SUPPORTED_COMMANDS = (
+        0x10, 0x11, 0x13, 0x15, 0x17, 0x19, 0x1A, 0x1B, 0x1E, 0x1F, 0x21, 0x22, 0x23, 0x25, 0x28, 0x29, 0x2B, 0x2D,
+        0x2E, 0x40, 0x41, 0x50, 0x51, 0x80, 0x82, 0x85, 0x86, 0x87, 0x88, 0x8C, 0x8D, 0xB0, 0xC2, 0xFC
+    )
+
     CONTROL_TAPE = True
     CASH_TAPE = True
     DEFAULT_MAX_LENGTH = 36
 
 
 class ShtrihComboFRK(Device):
+    SUPPORTED_COMMANDS = (
+        0x10, 0x11, 0x13, 0x15, 0x17, 0x19, 0x1A, 0x1B, 0x1E, 0x1F, 0x21, 0x22, 0x23, 0x25, 0x28, 0x29, 0x2B, 0x2D,
+        0x2E, 0x40, 0x41, 0x50, 0x51, 0x80, 0x82, 0x85, 0x86, 0x87, 0x88, 0x8C, 0x8D, 0xB0, 0xC2, 0xE0, 0xFC
+    )
+
     CASH_TAPE = True
     DEFAULT_MAX_LENGTH = 48
 
