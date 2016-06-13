@@ -71,10 +71,6 @@ class Device(object):
         self.connected = False
 
 
-class ShtrihAllCommands(Device):
-    SUPPORTED_COMMANDS = COMMANDS.keys()
-
-
 class ShtrihFRK(Device):
     SUPPORTED_COMMANDS = (
         0x10, 0x11, 0x13, 0x15, 0x17, 0x19, 0x1A, 0x1B, 0x1E, 0x1F, 0x21, 0x22, 0x23, 0x25, 0x28, 0x29, 0x2B, 0x2D,
@@ -97,3 +93,7 @@ class ShtrihComboFRK(Device):
 
 
 ShtrihComboPTK = ShtrihComboFRK
+
+
+class ShtrihAllCommands(Device):
+    SUPPORTED_COMMANDS = COMMANDS.keys()
