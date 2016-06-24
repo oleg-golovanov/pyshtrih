@@ -4,6 +4,7 @@
 from protocol import Protocol
 from handlers import COMMANDS
 from commands import SupportedCommands
+from misc import handle_fr_flags
 
 
 class Device(object):
@@ -45,6 +46,7 @@ class Device(object):
         self.admin_password = admin_password or self.DEFAULT_ADMIN_PASSWORD
 
         self.connected = False
+        self.dev_info = None
 
     def connect(self):
         """
@@ -55,6 +57,10 @@ class Device(object):
             self.disconnect()
         self.protocol.connect()
         self.connected = True
+
+        if hasattr(self, 'model'):
+            self.dev_info = self.model()
+            handle_fr_flags.model = self.dev_info[u'Модель устройства']
 
     def disconnect(self):
         """
