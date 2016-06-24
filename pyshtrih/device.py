@@ -4,7 +4,7 @@
 from protocol import Protocol
 from handlers import COMMANDS
 from commands import SupportedCommands
-from misc import handle_fr_flags
+from misc import handle_fr_flags, T_TAPES
 
 
 class Device(object):
@@ -18,8 +18,7 @@ class Device(object):
 
     DEFAULT_MAX_LENGTH = 40
 
-    CONTROL_TAPE = False
-    CASH_TAPE = False
+    TAPES = T_TAPES(False, False, False)
 
     # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
@@ -79,9 +78,8 @@ class ShtrihFRK(Device):
         0x2E, 0x40, 0x41, 0x50, 0x51, 0x80, 0x82, 0x85, 0x86, 0x87, 0x88, 0x8C, 0x8D, 0xB0, 0xC2, 0xFC
     )
 
-    CONTROL_TAPE = True
-    CASH_TAPE = True
     DEFAULT_MAX_LENGTH = 36
+    TAPES = T_TAPES(True, True, False)
 
 
 class ShtrihComboFRK(Device):
@@ -90,8 +88,8 @@ class ShtrihComboFRK(Device):
         0x2E, 0x40, 0x41, 0x50, 0x51, 0x80, 0x82, 0x85, 0x86, 0x87, 0x88, 0x8C, 0x8D, 0xB0, 0xC2, 0xE0, 0xFC
     )
 
-    CASH_TAPE = True
     DEFAULT_MAX_LENGTH = 48
+    TAPES = T_TAPES(False, True, True)
 
 
 ShtrihComboPTK = ShtrihComboFRK

@@ -8,10 +8,13 @@ from functools import partial
 from datetime import date, time
 from binascii import hexlify
 from itertools import compress
+from collections import namedtuple
 
 
 LOCALE = locale.getpreferredencoding()
 NULL = bytearray((0, ))
+
+T_TAPES = namedtuple('Tapes', ['control', 'cash', 'skid'])
 
 
 def dict_pprint(arg):
