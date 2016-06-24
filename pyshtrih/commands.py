@@ -525,6 +525,15 @@ def wait_printing(self):
             return
         if submode.state == 3:
             self.continue_print()
+print_string.depends = (wait_printing, )
+x_report.depends = (wait_printing, )
+z_report.depends = (wait_printing, )
+income.depends = (wait_printing, )
+outcome.depends = (wait_printing, )
+close_check.depends = (wait_printing, )
+repeat.depends = (wait_printing, )
+continue_print.depends = (wait_printing, )
+print_barcode.depends = (wait_printing, )
 
 
 module = sys.modules[__name__]
@@ -536,19 +545,31 @@ FUNCTIONS = {
 
 
 class SupportedCommands(ABCMeta):
-    def __new__(mcls, classname, supers, attributedict):
+    def __new__(mcs, classname, supers, attributedict):
         command_nums = attributedict.get('SUPPORTED_COMMANDS', ())
+
+        def relative_gen(cmd):
+            if hasattr(cmd, 'depends'):
+                for dpc in cmd.depends:
+                    relative_gen(dpc)
+                    if dpc not in attributedict.values():
+                        yield dpc
+
+            if hasattr(cmd, 'required'):
+                if all(rqc in attributedict.values() for rqc in cmd.required):
+                    yield cmd
+
+            if hasattr(cmd, 'related'):
+                for rlc in cmd.related:
+                    relative_gen(rlc)
+                    if rlc not in attributedict.values():
+                        yield rlc
 
         for cn in command_nums:
             command = FUNCTIONS[cn]
             attributedict[command.__name__] = command
 
-            if hasattr(command, 'related'):
-                for rlc in command.related:
-                    if hasattr(rlc, 'required'):
-                        if all(rqc in attributedict.values() for rqc in rlc.required):
-                            attributedict[rlc.__name__] = rlc
-                    else:
-                        attributedict[rlc.__name__] = rlc
+            for c in relative_gen(command):
+                attributedict[c.__name__] = c
 
-        return super(SupportedCommands, mcls).__new__(mcls, classname, supers, attributedict)
+        return super(SupportedCommands, mcs).__new__(mcs, classname, supers, attributedict)
