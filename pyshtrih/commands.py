@@ -507,6 +507,10 @@ open_shift.cmd = 0xE0
 
 
 def model(self):
+    """
+    Получить тип устройства.
+    """
+
     return self.protocol.command_nopass(0xFC)
 model.cmd = 0xFC
 
