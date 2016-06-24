@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from abc import abstractmethod
-
 from protocol import Protocol
 from handlers import COMMANDS
 from commands import SupportedCommands
-
 
 
 class Device(object):
@@ -24,7 +21,6 @@ class Device(object):
     CASH_TAPE = False
 
     # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
-    @abstractmethod
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
         :type port: str

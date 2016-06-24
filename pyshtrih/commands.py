@@ -4,7 +4,6 @@
 import sys
 import inspect
 from time import sleep
-from abc import ABCMeta
 
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, FuncChain, CAST_SIZE
 from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
@@ -544,7 +543,7 @@ FUNCTIONS = {
 }
 
 
-class SupportedCommands(ABCMeta):
+class SupportedCommands(type):
     def __new__(mcs, classname, supers, attributedict):
         command_nums = attributedict.get('SUPPORTED_COMMANDS', ())
 
