@@ -10,6 +10,7 @@ setup(
     name='pyshtrih',
     version=__version__,
     packages=['pyshtrih'],
+    license='MIT',
     author='Oleg Golovanov',
     author_email='golovanov.ov@gmail.com',
     description='Реализация драйвера семейства ККМ "Штрих" на Python.',
