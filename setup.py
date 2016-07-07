@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 
 
+from re import search
 from os.path import join, dirname
 
 from setuptools import setup
 
-from pyshtrih import __version__
+
+with open(join(dirname(__file__), 'pyshtrih', '__init__.py')) as f:
+    version = search(r'__version__\s+=\s+[\'\"]+(.*)[\'\"]+', f.read()).group(1)
 
 
 setup(
     name='pyshtrih',
-    version=__version__,
+    version=version,
     packages=['pyshtrih'],
     url='https://github.com/oleg-golovanov/pyshtrih',
     license='MIT',
