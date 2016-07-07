@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from os.path import join, dirname
+
 from setuptools import setup
 
 from pyshtrih import __version__
@@ -17,6 +19,7 @@ setup(
     description='Реализация драйвера семейства ККМ "Штрих" на Python.',
     zip_safe=False,
     platforms='any',
+    long_description=open(join(dirname(__file__), 'README.rst')).read(),
     install_requires=['pyserial'],
     classifiers=[
         'Development Status :: 4 - Beta',
