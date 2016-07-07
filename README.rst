@@ -1,5 +1,8 @@
 PyShtrih
 --------
+
+|Version| |PyVersions| |Downloads| |License|
+
 Реализация драйвера семейства ККМ "Штрих" на Python.
 
 Установка
@@ -57,3 +60,16 @@ PyShtrih
 0xE0 Открыть смену
 0xFC Получить тип устройства
 ==== ========
+
+Лицензия
+--------
+MIT лицензия. Подробнее в файле `LICENSE <https://github.com/oleg-golovanov/pyshtrih/blob/master/LICENSE>`_.
+
+.. |Version| image:: https://img.shields.io/pypi/v/pyshtrih.svg
+    :target: https://pypi.python.org/pypi/pyshtrih
+.. |PyVersions| image:: https://img.shields.io/pypi/pyversions/pyshtrih.svg
+    :target: https://pypi.python.org/pypi/pyshtrih
+.. |Downloads| image:: https://img.shields.io/pypi/dm/pyshtrih.svg
+    :target: https://pypi.python.org/pypi/pyshtrih
+.. |License| image:: https://img.shields.io/github/license/oleg-golovanov/pyshtrih.svg
+    :target: https://github.com/oleg-golovanov/pyshtrih/blob/master/LICENSE
