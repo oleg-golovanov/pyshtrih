@@ -30,7 +30,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Office/Business :: Financial :: Accounting',
         'Topic :: Office/Business :: Financial :: Point-Of-Sale',
-        'Topic :: System :: Hardware :: Hardware Drivers'
+        'Topic :: System :: Hardware :: Hardware Drivers',
         'Natural Language :: Russian',
     ]
 )
