@@ -483,6 +483,29 @@ def continue_print(self):
 continue_print.cmd = 0xB0
 
 
+def load_graphics(self, line_num, *args):
+    """
+    Загрузка графики.
+    """
+
+    return self.protocol.command(0xC0, self.password, CAST_SIZE['1'](line_num), *args)
+load_graphics.cmd = 0xC0
+
+
+def print_graphics(self, start_line, end_line):
+    """
+    Печать графики.
+    """
+
+    return self.protocol.command(
+        0xC1,
+        self.password,
+        CAST_SIZE['1'](start_line),
+        CAST_SIZE['1'](end_line)
+    )
+print_graphics.cmd = 0xC1
+
+
 def print_barcode(self, num):
     """
     Печать штрих-кода
