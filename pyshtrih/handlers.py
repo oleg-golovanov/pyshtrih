@@ -39,6 +39,8 @@ COMMANDS = {
     0x8C: u'Повтор документа',
     0x8D: u'Открыть чек',
     0xB0: u'Продолжение печати',
+    0xC0: u'Загрузка графики',
+    0xC1: u'Печать графики',
     0xC2: u'Печать штрих-кода',
     0xE0: u'Открыть смену',
     0xFC: u'Получить тип устройства'
@@ -242,6 +244,16 @@ HANDLERS = {
     ),
     # Продолжение печати
     0xB0: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Загрузка графики
+    0xC0: (
+        ERROR_CODE_STRUCT,
+        OPERATOR_INDEX_NUMBER_STRUCT
+    ),
+    # Печать графики
+    0xC1: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT
     ),
