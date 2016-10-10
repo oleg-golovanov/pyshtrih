@@ -1,7 +1,7 @@
 PyShtrih
 --------
 
-|Version| |PyVersions| |Downloads| |License|
+|Version| |PyVersions| |License|
 
 Реализация драйвера семейства ККМ "Штрих" на Python.
 
@@ -56,6 +56,8 @@ PyShtrih
 0x8C Повтор документа
 0x8D Открыть чек
 0xB0 Продолжение печати
+0xC0 Загрузка графики
+0xC1 Печать графики
 0xC2 Печать штрих-кода
 0xE0 Открыть смену
 0xFC Получить тип устройства
@@ -68,8 +70,6 @@ MIT лицензия. Подробнее в файле `LICENSE <https://github.
 .. |Version| image:: https://img.shields.io/pypi/v/pyshtrih.svg
     :target: https://pypi.python.org/pypi/pyshtrih
 .. |PyVersions| image:: https://img.shields.io/pypi/pyversions/pyshtrih.svg
-    :target: https://pypi.python.org/pypi/pyshtrih
-.. |Downloads| image:: https://img.shields.io/pypi/dm/pyshtrih.svg
     :target: https://pypi.python.org/pypi/pyshtrih
 .. |License| image:: https://img.shields.io/github/license/oleg-golovanov/pyshtrih.svg
     :target: https://github.com/oleg-golovanov/pyshtrih/blob/master/LICENSE
