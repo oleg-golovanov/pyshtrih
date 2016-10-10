@@ -7,7 +7,7 @@ from .excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, 
     OpenCheckError, ItemSaleError, CloseCheckError, NoItemsError
 
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 __all__ = (
     'Protocol',
     'ShtrihFRK', 'ShtrihComboFRK', 'ShtrihComboPTK', 'ShtrihAllCommands',
