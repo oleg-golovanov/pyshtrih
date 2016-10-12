@@ -17,6 +17,7 @@ class UnexpectedResponseError(ProtocolError):
 
 
 class Error(ProtocolError):
+
     codes = {
         0x00: u'Ошибок нет',
         0x01: u'Неисправен накопитель ФП 1, ФП 2 или часы',
@@ -192,29 +193,22 @@ class Error(ProtocolError):
         return self.msg
 
     def __repr__(self):
-        return '{}({}, {})'.format(self.__class__.__name__, self.code, self)
+        return '{}({}, {})'.format(type(self).__name__, self.code, self)
 
 
-class CheckError(ProtocolError):
-    pass
+class CheckError(Error):
 
-
-class OpenCheckError(CheckError):
     def __init__(self, exc):
-        self.msg = exc.msg
-
-    def __str__(self):
-        return self.msg.encode(LOCALE)
-
-    def __unicode__(self):
-        return self.msg
-
-    def __repr__(self):
-        return '{}({})'.format(self.__class__.__name__, self)
+        if not isinstance(exc, Error):
+            raise ValueError(
+                u'Ожидался экземпляр {}, получен {}'.format(Error.__name__, type(exc).__name__)
+            )
+        super(CheckError, self).__init__(exc.code)
 
 
-ItemSaleError = OpenCheckError
-CloseCheckError = OpenCheckError
+OpenCheckError = CheckError
+ItemSaleError = CheckError
+CloseCheckError = CheckError
 
 
 class NoItemsError(CheckError):
