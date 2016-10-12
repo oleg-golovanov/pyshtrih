@@ -209,7 +209,3 @@ class CheckError(Error):
 OpenCheckError = CheckError
 ItemSaleError = CheckError
 CloseCheckError = CheckError
-
-
-class NoItemsError(CheckError):
-    pass
