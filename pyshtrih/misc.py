@@ -145,6 +145,41 @@ def int_to_bits(num, length=None):
     return tuple(result)
 
 
+def bits_to_int(bits, reverse=False):
+    """
+    Функция, возвращающая целое число из набора бит.
+
+    >>> bits_to_int((0, 0, 0, 1, 1, 0, 1, 1))
+    27
+    >>> bits_to_int((0, 0, 0, 1, 1, 0, 1, 1), True)
+    216
+    >>> bits_to_int((0, 0, 0, 0, 0, 0, 0, 1))
+    1
+    >>> bits_to_int((0, 0, 0, 0, 0, 0, 0, 1), True)
+    128
+    >>> bits_to_int((1, 0, 0, 0, 0, 0, 0, 1))
+    129
+    >>> bits_to_int((1, 0, 0, 0, 0, 0, 0, 1), True)
+    129
+
+    :type bits: collections.Iterable
+    :param bits: набор бит
+
+    :type: int
+    :return: целое число
+    """
+
+    result = 0
+
+    if reverse:
+        bits = reversed(bits)
+
+    for bit in bits:
+        result = (result << 1) | bit
+
+    return result
+
+
 def int_to_bytes(num, count=None):
     """
     Функция преобрабования целого числа в набор байт.
@@ -183,6 +218,25 @@ def bytes_to_int(arg):
     """
 
     return sum(b << (8 * i) for i, b in enumerate(arg))
+
+
+def chunks(source, num):
+    """
+    Функция нарезания списка на множество списков по заданному количеству элементов.
+
+    >>> list(chunks([1, 0, 1, 1], 2)) == [[1, 0], [1, 1]]
+    True
+
+    :type source: collection.Iterable
+    :param: source: исходный список
+    :type num: int
+    :param num: количество элементов
+
+    :rtype: types.GeneratorType
+    """
+
+    for i in xrange(0, len(source), num):
+        yield source[i:i + num]
 
 
 def handle_version(arg):
