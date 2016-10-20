@@ -175,6 +175,8 @@ def bits_to_int(bits, reverse=False):
 
     :type bits: collections.Iterable
     :param bits: набор бит
+    :type reverse: bool
+    :param reverse: интерпретировать биты в обратном порядке
 
     :type: int
     :return: целое число
