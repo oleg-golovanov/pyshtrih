@@ -388,14 +388,20 @@ def handle_baudrate(arg):
 def handle_byte_timeout(arg):
     """
     Функция обработки тайм аута приема байта.
+
+    :type arg: int
+    :param arg: код таймаута
+
+    :rtype: float
+    :return: время в секундах
     """
 
     if 0 <= arg <= 150:
-        return arg
+        return arg * 0.001
     elif 151 <= arg <= 249:
-        return (arg - 149) * 150
+        return (arg - 149) * 0.15
     elif 250 <= arg <= 255:
-        return (arg - 248) * 15000
+        return (arg - 248) * 15.0
     else:
         return -1
 
