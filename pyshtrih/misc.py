@@ -250,6 +250,71 @@ def chunks(source, num):
         yield source[i:i + num]
 
 
+def cast_byte_timeout(arg):
+    """
+    Приведение времени в секундах к коду таймаута.
+
+    >>> cast_byte_timeout(0.0)
+    0
+    >>> cast_byte_timeout(0.15)
+    150
+    >>> cast_byte_timeout(0.30)
+    151
+    >>> cast_byte_timeout(15.0)
+    249
+    >>> cast_byte_timeout(30.0)
+    250
+    >>> cast_byte_timeout(105.0)
+    255
+    >>> cast_byte_timeout(0.16) # doctest: +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    ValueError: Неверное значение таймаута - 0.16 с.
+    Значение должно соответсвовать одному из диапазонов: 0-0.15 с., 0.30-15 с., 30-105 с.
+    >>> cast_byte_timeout(0.31) # doctest: +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    ValueError: Неверное значение таймаута - 0.31 с.
+    Значение в диапазоне 0.30-15 с. должно быть кратно 0.15 с.
+    >>> cast_byte_timeout(31.0) # doctest: +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    ValueError: Неверное значение таймаута - 31.0 с.
+    Значение в диапазоне 30-105 с. должно быть кратно 15 с.
+
+    :type arg: float
+    :param arg: время в секундах
+
+    :rtype: int
+    :return: код таймаута
+    """
+
+    if 0.0 <= arg <= 0.15:
+        return int(arg * 1000)
+    elif 0.30 <= arg <= 15:
+        div = arg / 0.15
+        if not div.is_integer():
+            raise ValueError(
+                'Неверное значение таймаута - {} с. '
+                'Значение в диапазоне 0.30-15 с. должно быть кратно 0.15 с.'.format(arg)
+            )
+        return int(div) + 149
+    elif 30 <= arg <= 105:
+        div = arg / 15
+        if not div.is_integer():
+            raise ValueError(
+                'Неверное значение таймаута - {} с. '
+                'Значение в диапазоне 30-105 с. должно быть кратно 15 с.'.format(arg)
+            )
+        return int (div) + 248
+    else:
+        raise ValueError (
+            'Неверное значение таймаута - {} с. '
+            'Значение должно соответсвовать одному из диапазонов: '
+            '0-0.15 с., 0.30-15 с., 30-105 с.'.format (arg)
+        )
+
+
 def handle_version(arg):
     return '.'.join(map(chr, arg))
 
