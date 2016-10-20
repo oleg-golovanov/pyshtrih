@@ -5,7 +5,8 @@ import sys
 import inspect
 from time import sleep
 
-from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, FuncChain, CAST_SIZE
+from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
+    FuncChain, BAUDRATE_DIRECT, CAST_SIZE
 from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
 
 
@@ -34,6 +35,21 @@ def beep(self):
 
     return self.protocol.command(0x13, self.password)
 beep.cmd = 0x13
+
+
+def set_exchange_params(self, port, baudrate, timeout):
+    """
+    Установка параметров обмена.
+    """
+
+    return self.protocol.command(
+        0x14,
+        self.admin_password,
+        CAST_SIZE['1'](port),
+        CAST_SIZE['1'](BAUDRATE_DIRECT[baudrate]),
+        CAST_SIZE['1'](cast_byte_timeout(timeout))
+    )
+set_exchange_params.cmd = 0x14
 
 
 def read_exchange_params(self, port):
