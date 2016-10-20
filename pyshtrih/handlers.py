@@ -99,7 +99,7 @@ HANDLERS = {
     ),
     # Установка параметров обмена
     0x14: (
-        ERROR_CODE_STRUCT
+        ERROR_CODE_STRUCT,
     ),
     # Чтение параметров обмена
     0x15: (
