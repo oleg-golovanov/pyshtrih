@@ -16,6 +16,17 @@ NULL = bytearray((0, ))
 
 T_TAPES = namedtuple('Tapes', ['control', 'cash', 'skid'])
 
+BAUDRATE_DIRECT = {
+    2400: 0,
+    4800: 1,
+    9600: 2,
+    19200: 3,
+    38400: 4,
+    57600: 5,
+    115200: 6
+}
+BAUDRATE_REVERSE = {v: k for k, v in BAUDRATE_DIRECT.items()}
+
 
 def dict_pprint(arg):
     """
@@ -304,15 +315,7 @@ def handle_baudrate(arg):
     Функция обработки значения скорости обмена.
     """
 
-    return {
-        0: 2400,
-        1: 4800,
-        2: 9600,
-        3: 19200,
-        4: 38400,
-        5: 57600,
-        6: 115200
-    }.get(arg, 0)
+    return BAUDRATE_REVERSE.get(arg, 0)
 
 
 def handle_byte_timeout(arg):
