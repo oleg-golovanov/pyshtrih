@@ -5,7 +5,22 @@ from misc import LOCALE
 
 
 class ProtocolError(IOError):
-    pass
+
+    def __str__(self):
+        if self.errno is None:
+            message = self.message
+        else:
+            # метод __str__ вернет str, если strerror является str
+            # метод __str__ вернет unicode, если strerror является unicode
+            message = super(ProtocolError, self).__str__()
+
+        if isinstance(message, str):
+            return message
+        else:
+            return message.encode(LOCALE)
+
+    def __unicode__(self):
+        return str(self).decode(LOCALE)
 
 
 class NoConnectionError(ProtocolError):
