@@ -245,9 +245,12 @@ class Response(object):
         self.params[key] = value
 
     def __str__(self):
-        return '0x{:02X} ({}) - {}'.format(
+        return unicode(self).encode(LOCALE)
+
+    def __unicode__(self):
+        return u'0x{:02X} ({}) - {}'.format(
             self.cmd,
-            self.cmd_name.encode(LOCALE),
+            self.cmd_name,
             dict_pprint(self.params)
         )
 
