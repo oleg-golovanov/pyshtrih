@@ -35,8 +35,8 @@ def dict_pprint(arg):
     :type arg: dict
     :param arg: словарь
 
-    :rtype: str
-    :return: строка
+    :rtype: unicode
+    :return: исходный dict в виде unicode строки
     """
 
     if not isinstance(arg, dict):
@@ -44,8 +44,8 @@ def dict_pprint(arg):
 
     format_map = {
         dict: dict_pprint,
-        unicode: lambda x: "'{}'".format(x.encode(LOCALE)),
-        str: lambda x: "'{}'".format(x)
+        unicode: lambda x: u"u'{}'".format(x),
+        str: lambda x: u"'{}'".format(x.decode(LOCALE))
     }
 
     result = []
@@ -53,12 +53,12 @@ def dict_pprint(arg):
     for k, v in arg.items():
         k = format_map.get(type(k), lambda x: x)(k)
 
-        result.append('{}: {}'.format(
+        result.append(u'{}: {}'.format(
             k,
             format_map.get(type(v), lambda x: x)(v))
         )
 
-    return '{{{}}}'.format(', '.join(result))
+    return u'{{{}}}'.format(', '.join(result))
 
 
 def bytearray_cast(arg):
