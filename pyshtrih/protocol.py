@@ -149,7 +149,7 @@ class Protocol(object):
 
             error = result.get(ERROR_CODE_STR, 0)
             if error != 0:
-                raise Error(error)
+                raise Error(cmd, error)
 
             return Response(cmd, result)
 
@@ -245,7 +245,7 @@ class Response(object):
         self.params[key] = value
 
     def __str__(self):
-        return '0x{:02X} ({}) {}'.format(
+        return '0x{:02X} ({}) - {}'.format(
             self.cmd,
             self.cmd_name.encode(LOCALE),
             dict_pprint(self.params)

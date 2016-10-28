@@ -2,6 +2,7 @@
 
 
 from misc import LOCALE
+from handlers import COMMANDS
 
 
 class ProtocolError(IOError):
@@ -197,15 +198,17 @@ class Error(ProtocolError):
         0xC8: u'Отсутствуют импульсы от таходатчика'
     }
 
-    def __init__(self, code):
+    def __init__(self, cmd, code):
+        self.cmd = cmd
+        self.cmd_name = COMMANDS.get(cmd, u'Неизвестная команда')
         self.code = code
         self.msg = self.codes.get(code, u'Неизвестная ошибка')
 
     def __str__(self):
-        return self.msg.encode(LOCALE)
+        return unicode(self).encode(LOCALE)
 
     def __unicode__(self):
-        return self.msg
+        return u'0x{:02X} ({}) - {}'.format(self.cmd, self.cmd_name, self.msg)
 
     def __repr__(self):
         return '{}({}, {})'.format(type(self).__name__, self.code, self)
@@ -216,9 +219,9 @@ class CheckError(Error):
     def __init__(self, exc):
         if not isinstance(exc, Error):
             raise ValueError(
-                u'Ожидался экземпляр {}, получен {}'.format(Error.__name__, type(exc).__name__)
+                'Ожидался экземпляр {}, получен {}'.format(Error.__name__, type(exc).__name__)
             )
-        super(CheckError, self).__init__(exc.code)
+        super(CheckError, self).__init__(exc.cmd, exc.code)
 
 
 OpenCheckError = CheckError
