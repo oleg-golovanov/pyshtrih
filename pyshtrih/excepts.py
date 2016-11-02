@@ -224,6 +224,13 @@ class CheckError(Error):
         super(CheckError, self).__init__(exc.cmd, exc.code)
 
 
-OpenCheckError = CheckError
-ItemSaleError = CheckError
-CloseCheckError = CheckError
+class OpenCheckError(CheckError):
+    pass
+
+
+class ItemSaleError(CheckError):
+    pass
+
+
+class CloseCheckError(CheckError):
+    pass
