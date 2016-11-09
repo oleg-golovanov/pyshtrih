@@ -8,6 +8,7 @@ from handlers import COMMANDS, HANDLERS, ERROR_CODE_STR
 from excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
 
 
+NULL = bytearray((0x00, ))  # START OF TEXT - начало текста
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста
 ENQ = bytearray((0x05, ))  # ENQUIRY - запрос
 ACK = bytearray((0x06, ))  # ACKNOWLEDGE - положительное подтверждение
@@ -25,43 +26,46 @@ class Protocol(object):
         :param port: порт взаимодействия с устройством
         :type baudrate: int
         :param baudrate: скорость взаимодействия с устройством
-        :type timeout: int
+        :type timeout: float
         :param timeout: время таймаута ответа устройства
         """
 
         self.port = port
-        self.baudrate = baudrate
-        self.timeout = timeout
-
-        self.serial = None
+        self.serial = serial.Serial(
+            baudrate=baudrate,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=timeout,
+            writeTimeout=timeout
+        )
+        self.connected = False
 
     def connect(self):
         """
         Метод подключения к устройству.
         """
 
-        if not self.serial:
-            self.serial = serial.Serial(
-                self.port,
-                self.baudrate,
-                parity=serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE,
-                timeout=self.timeout,
-                writeTimeout=self.timeout
-            )
-        if not self.serial.isOpen():
-            try:
-                self.serial.open()
-            except serial.SerialException as exc:
-                raise NoConnectionError(u'Нет связи с ККМ ({})'.format(exc))
+        if not self.connected:
+            self.serial.port = self.port
+            if not self.serial.isOpen():
+                try:
+                    self.serial.open()
+                except serial.SerialException as exc:
+                    raise NoConnectionError(u'Нет связи с ККМ ({})'.format(exc))
+
+            if list(self.check())[-1]:
+                self.connected = True
+            else:
+                raise NoConnectionError(u'Нет связи с ККМ (не получен ответ на NULL байт)')
 
     def disconnect(self):
         """
         Метод отключения от устройства.
         """
 
-        if self.serial:
+        if self.connected:
             self.serial.close()
+            self.connected = False
 
     def init(self):
         """
@@ -215,6 +219,24 @@ class Protocol(object):
         )
 
         return self.command_nopass(cmd, params)
+
+    def check(self, count=2):
+        """
+        Проверка связи с ККМ.
+
+        :type count: int
+        :param count: количество отправляемых пакетов
+        """
+
+        if self.serial is None:
+            raise ProtocolError(u'Необходимо вначале выполнить метод connect()')
+
+        if count < 1:
+            raise ValueError('Параметр count должен быть >= 1')
+
+        for _ in xrange(count):
+            self.serial.write(NULL)
+            yield self.serial.read() == NAK
 
 
 class Response(object):
