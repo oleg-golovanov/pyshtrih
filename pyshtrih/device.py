@@ -27,7 +27,7 @@ class Device(object):
         :param port: порт взаимодействия с устройством
         :type baudrate: int
         :param baudrate: скорость взаимодействия с устройством
-        :type timeout: int
+        :type timeout: float
         :param timeout: время таймаута ответа устройства
         :type password: int
         :param password: пароль кассира
@@ -44,18 +44,24 @@ class Device(object):
         self.password = password or self.DEFAULT_CASHIER_PASSWORD
         self.admin_password = admin_password or self.DEFAULT_ADMIN_PASSWORD
 
-        self.connected = False
         self.dev_info = None
+
+    @property
+    def connected(self):
+        """
+        Флаг подключенности.
+
+        :rtype: bool
+        """
+
+        return self.protocol.connected
 
     def connect(self):
         """
         Подключиться к ККМ.
         """
 
-        if self.connected:
-            self.disconnect()
         self.protocol.connect()
-        self.connected = True
 
         if hasattr(self, 'model'):
             self.dev_info = self.model()
@@ -66,10 +72,7 @@ class Device(object):
         Отключиться от ККМ.
         """
 
-        if not self.connected:
-            return
         self.protocol.disconnect()
-        self.connected = False
 
 
 class ShtrihFRK(Device):
