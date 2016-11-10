@@ -16,6 +16,7 @@ NAK = bytearray((0x15, ))  # NEGATIVE ACKNOWLEDGE - отрицательное �
 
 class Protocol(object):
     MAX_ATTEMPTS = 10
+    CHECK_NUM = 3
 
     def __init__(self, port, baudrate, timeout):
         """
@@ -52,7 +53,7 @@ class Protocol(object):
                 except serial.SerialException as exc:
                     raise NoConnectionError(u'Нет связи с ККМ ({})'.format(exc))
 
-            if list(self.check())[-1]:
+            if list(self.check(self.CHECK_NUM))[-1]:
                 self.connected = True
             else:
                 raise NoConnectionError(u'Нет связи с ККМ (не получен ответ на NULL байт)')
@@ -219,7 +220,7 @@ class Protocol(object):
 
         return self.command_nopass(cmd, params)
 
-    def check(self, count=2):
+    def check(self, count=1):
         """
         Проверка связи с ККМ.
 
