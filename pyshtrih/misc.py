@@ -14,6 +14,7 @@ from collections import namedtuple
 LOCALE = locale.getpreferredencoding()
 NULL = bytearray((0x00, ))
 
+DEFAULT_MIN_LENGTH = 40
 T_TAPES = namedtuple('Tapes', ['control', 'cash', 'skid'])
 
 BAUDRATE_DIRECT = {
@@ -132,6 +133,32 @@ def decode(text):
     """
 
     return text.decode('cp1251')
+
+
+def prepare_string(string, length=DEFAULT_MIN_LENGTH):
+    """
+    Подготовка строки к отправке в ККМ.
+
+    :type string: unicode
+    :param string: строка для передачи в ККМ
+    :type length: int
+    :param length: максимальная длина строки
+
+    :rtype: bytearray
+    :return: строка, готовая к передаче в ККМ
+    """
+
+    # нужно отправить в ККМ не менее DEFAULT_MIN_LENGTH символов
+    if length < DEFAULT_MIN_LENGTH:
+        length = DEFAULT_MIN_LENGTH
+
+    if string:
+        result = bytearray(encode(string)[:length])
+        result.extend(NULL * (length - len(string)))
+    else:
+        result = NULL * length
+
+    return result
 
 
 def int_to_bits(num, length=None):
