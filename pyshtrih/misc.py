@@ -12,7 +12,7 @@ from collections import namedtuple
 
 
 LOCALE = locale.getpreferredencoding()
-NULL = bytearray((0, ))
+NULL = bytearray((0x00, ))
 
 T_TAPES = namedtuple('Tapes', ['control', 'cash', 'skid'])
 

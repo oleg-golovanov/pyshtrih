@@ -3,12 +3,11 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, dict_pprint, CAST_SIZE, UNCAST_SIZE, LOCALE
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, dict_pprint, NULL, CAST_SIZE, UNCAST_SIZE, LOCALE
 from handlers import COMMANDS, HANDLERS, ERROR_CODE_STR
 from excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
 
 
-NULL = bytearray((0x00, ))  # START OF TEXT - начало текста
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста
 ENQ = bytearray((0x05, ))  # ENQUIRY - запрос
 ACK = bytearray((0x06, ))  # ACKNOWLEDGE - положительное подтверждение

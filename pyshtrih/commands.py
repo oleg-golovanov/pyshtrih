@@ -6,7 +6,7 @@ import inspect
 from time import sleep
 
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
-    FuncChain, BAUDRATE_DIRECT, CAST_SIZE
+    FuncChain, NULL, BAUDRATE_DIRECT, CAST_SIZE
 from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
 
 
@@ -345,7 +345,7 @@ def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
             CAST_SIZE['11111'](*int_to_bytes(price, 5)),
             CAST_SIZE['1'](department_num),
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            text or bytearray((0,) * 40)
+            text or NULL * 40
         )
     except Error as exc:
         raise ItemSaleError(exc)
@@ -370,7 +370,7 @@ def return_sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
         CAST_SIZE['11111'](*int_to_bytes(price, 5)),
         CAST_SIZE['1'](department_num),
         CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        text or bytearray((0,) * 40)
+        text or NULL * 40
     )
 return_sale.cmd = 0x82
 
@@ -405,7 +405,7 @@ def close_check(self,
             # TODO: проверить скидку/надбавку
             CAST_SIZE['s2'](discount_allowance),
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            text or bytearray((0,) * 40)
+            text or NULL * 40
         )
     except Error as exc:
         raise CloseCheckError(exc)
@@ -430,7 +430,7 @@ def discount(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
         self.password,
         CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
         CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        text or bytearray((0,) * 40)
+        text or NULL * 40
     )
 discount.cmd = 0x86
 
@@ -449,7 +449,7 @@ def allowance(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
         self.password,
         CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
         CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        text or bytearray((0,) * 40)
+        text or NULL * 40
     )
 allowance.cmd = 0x87
 
