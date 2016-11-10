@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
+import collections
+
 import serial.tools.list_ports
 
+import device
 import commands
 import protocol
 import misc
@@ -14,6 +17,15 @@ class Discovery(object):
     DISCOVERY_TIMEOUT = 0.5
 
     def __init__(self, port, baudrate):
+        """
+        Псевдо-устройство, позволяющее определить тип подключенного оборудования.
+
+        :type port: str
+        :param port: порт взаимодействия с устройством
+        :type baudrate: int
+        :param baudrate: скорость взаимодействия с устройством
+        """
+
         self.protocol = protocol.Protocol(
             port, baudrate, self.DISCOVERY_TIMEOUT
         )
@@ -23,7 +35,14 @@ class Discovery(object):
 
 
 def discovery():
-    devices = {}
+    """
+    Функция автоопределения подключеннных устройств.
+
+    :rtype: collections.OrderedDict
+    :return: упорядоченый словарь пар порт - экземпляр класса оборудования
+    """
+
+    devices = collections.OrderedDict()
 
     for p in (port.device for port in serial.tools.list_ports.comports()):
         print p
@@ -34,45 +53,17 @@ def discovery():
             except IOError:
                 pass
             else:
-                devices[p] = d.dev_info
+                model_name = d.dev_info[u'Название устройства']
+                device_cls = None
+
+                if u'ПТК' in model_name:
+                    device_cls = device.ShtrihComboPTK
+                elif u'КОМБО-ФР-К' in model_name:
+                    device_cls = device.ShtrihComboFRK
+                elif u'ФР-К' in model_name:
+                    device_cls = device.ShtrihFRK
+
+                if device_cls:
+                    devices[p] = device_cls(p, b)
 
     return devices
-
-# def connect(self):
-#     """
-#     Метод подключения к устройству.
-#     """
-#
-#     if not self.serial.isOpen():
-#         connected = False
-#
-#         if self.port is None:
-#             ports = tuple(p.device for p in serial.tools.list_ports.comports())
-#         else:
-#             ports = (self.port,)
-#
-#         if self.baudrate is None:
-#             baudrates = tuple(BAUDRATE_DIRECT.keys())
-#         else:
-#             baudrates = (self.baudrate,)
-#
-#         for p in ports:
-#             self.serial.port = p
-#             if not self.serial.isOpen():
-#                 try:
-#                     self.serial.open()
-#                 except serial.SerialException as exc:
-#                     raise NoConnectionError(u'Нет связи с ККМ ({})'.format(exc))
-#             print p
-#             for b in sorted(baudrates):
-#                 print b
-#                 self.serial.baudrate = b
-#                 if list(self.check())[-1]:
-#                     self.port = p
-#                     self.baudrate = b
-#                     connected = True
-#                     break
-#             break
-#
-#         if not connected:
-#             raise NoConnectionError(u'Нет связи с ККМ')
