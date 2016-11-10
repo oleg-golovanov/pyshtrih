@@ -6,7 +6,7 @@ import inspect
 from time import sleep
 
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
-    FuncChain, NULL, BAUDRATE_DIRECT, CAST_SIZE
+   prepare_string, FuncChain, BAUDRATE_DIRECT, CAST_SIZE
 from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
 
 
@@ -70,7 +70,10 @@ def print_string(self, string, control_tape=True, cash_tape=True):
     cash = 0b10 if cash_tape else 0b00
 
     result = self.protocol.command(
-        0x17, self.password, CAST_SIZE['1'](control + cash), encode(string[:self.DEFAULT_MAX_LENGTH])
+        0x17,
+        self.password,
+        CAST_SIZE['1'](control + cash),
+        prepare_string(string, self.DEFAULT_MAX_LENGTH)
     )
     self.wait_printing()
 
@@ -333,10 +336,6 @@ def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
 
     text, quantity, price = item
 
-    if text:
-        text = bytearray(encode(text)[:40])
-        text.extend((0,) * (40 - len(text)))
-
     try:
         return self.protocol.command(
             0x80,
@@ -345,7 +344,7 @@ def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
             CAST_SIZE['11111'](*int_to_bytes(price, 5)),
             CAST_SIZE['1'](department_num),
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            text or NULL * 40
+            prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
     except Error as exc:
         raise ItemSaleError(exc)
@@ -359,10 +358,6 @@ def return_sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
 
     text, quantity, price = item
 
-    if text:
-        text = bytearray(encode(text)[:40])
-        text.extend((0,) * (40 - len(text)))
-
     return self.protocol.command(
         0x82,
         self.password,
@@ -370,7 +365,7 @@ def return_sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
         CAST_SIZE['11111'](*int_to_bytes(price, 5)),
         CAST_SIZE['1'](department_num),
         CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        text or NULL * 40
+        prepare_string(text, self.DEFAULT_MAX_LENGTH)
     )
 return_sale.cmd = 0x82
 
@@ -390,10 +385,6 @@ def close_check(self,
     Закрытие чека.
     """
 
-    if text:
-        text = bytearray(encode(text)[:40])
-        text.extend((0,) * (40 - len(text)))
-
     try:
         result = self.protocol.command(
             0x85,
@@ -405,7 +396,7 @@ def close_check(self,
             # TODO: проверить скидку/надбавку
             CAST_SIZE['s2'](discount_allowance),
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            text or NULL * 40
+            prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
     except Error as exc:
         raise CloseCheckError(exc)
@@ -421,16 +412,12 @@ def discount(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
     Скидка.
     """
 
-    if text:
-        text = bytearray(encode(text)[:40])
-        text.extend((0,) * (40 - len(text)))
-
     return self.protocol.command(
         0x86,
         self.password,
         CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
         CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        text or NULL * 40
+        prepare_string(text, self.DEFAULT_MAX_LENGTH)
     )
 discount.cmd = 0x86
 
@@ -440,16 +427,12 @@ def allowance(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
     Надбавка.
     """
 
-    if text:
-        text = bytearray(encode(text)[:40])
-        text.extend((0,) * (40 - len(text)))
-
     return self.protocol.command(
         0x87,
         self.password,
         CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
         CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        text or NULL * 40
+        prepare_string(text, self.DEFAULT_MAX_LENGTH)
     )
 allowance.cmd = 0x87
 
