@@ -45,7 +45,7 @@ def discovery():
     devices = collections.OrderedDict()
 
     for p in (port.device for port in reversed(serial.tools.list_ports.comports())):
-        for b in sorted(misc.BAUDRATE_DIRECT.keys()):
+        for b in sorted(misc.BAUDRATE_DIRECT.keys(), reverse=True):
             try:
                 d = Discovery(p, b)
             except IOError:
@@ -63,5 +63,7 @@ def discovery():
 
                 if device_cls:
                     devices[p] = device_cls(p, b)
+
+                break
 
     return devices
