@@ -34,9 +34,11 @@ class Discovery(object):
         self.protocol.disconnect()
 
 
-def discovery():
+def discovery(callback=None):
     """
     Функция автоопределения подключеннных устройств.
+
+    :param callback: callable объект, принимающий 2 параметра: порт и скорость
 
     :rtype: collections.OrderedDict
     :return: упорядоченый словарь пар порт - экземпляр класса оборудования
@@ -46,6 +48,9 @@ def discovery():
 
     for p in (port.device for port in reversed(serial.tools.list_ports.comports())):
         for b in sorted(misc.BAUDRATE_DIRECT.keys(), reverse=True):
+            if callback:
+                callback(p, b)
+
             try:
                 d = Discovery(p, b)
             except IOError:
