@@ -47,6 +47,35 @@ class Device(object):
         self.dev_info = None
 
     @property
+    def port(self):
+        return self.protocol.serial.port
+
+    @port.setter
+    def port(self, port):
+        self.protocol.serial.port = port
+        if self.connected:
+            self.connect(force=True)
+
+    @property
+    def baudrate(self):
+        return self.protocol.serial.baudrate
+
+    @baudrate.setter
+    def baudrate(self, baudrate):
+        self.protocol.serial.baudrate = baudrate
+        if self.connected:
+            self.connect(force=True)
+
+    @property
+    def timeout(self):
+        return self.protocol.serial.timeout
+
+    @timeout.setter
+    def timeout(self, timeout):
+        self.protocol.serial.timeout = timeout
+        self.protocol.serial.write_timeout = timeout
+
+    @property
     def connected(self):
         """
         Флаг подключенности.
@@ -56,10 +85,16 @@ class Device(object):
 
         return self.protocol.connected
 
-    def connect(self):
+    def connect(self, force=False):
         """
         Подключиться к ККМ.
+
+        :type force: bool
+        :param force: отключиться перед подключением
         """
+
+        if force:
+            self.protocol.disconnect()
 
         self.protocol.connect()
 
