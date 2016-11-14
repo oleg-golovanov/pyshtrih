@@ -67,7 +67,9 @@ def discovery(callback=None):
                     device_cls = device.ShtrihFRK
 
                 if device_cls:
-                    devices[p] = device_cls(p, b)
+                    discovered_device = device_cls(p, b)
+                    discovered_device.dev_info = d.dev_info
+                    devices[p] = discovered_device
 
                 break
 
