@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import collections
-
 import serial.tools.list_ports
 
 import device
@@ -34,6 +32,29 @@ class Discovery(object):
         self.protocol.disconnect()
 
 
+def device_definition(instance):
+    result = None
+
+    model_name = instance.dev_info[u'Название устройства']
+    device_cls = None
+
+    if u'ПТК' in model_name:
+        device_cls = device.ShtrihComboPTK
+    elif u'КОМБО-ФР-К' in model_name:
+        device_cls = device.ShtrihComboFRK
+    elif u'ФР-К' in model_name:
+        device_cls = device.ShtrihFRK
+
+    if device_cls:
+        result = device_cls(
+            instance.protocol.serial.port,
+            instance.protocol.serial.baudrate
+        )
+        result.dev_info = instance.dev_info
+
+    return result
+
+
 def discovery(callback=None):
     """
     Функция автоопределения подключеннных устройств.
@@ -44,7 +65,7 @@ def discovery(callback=None):
     :return: упорядоченый словарь пар порт - экземпляр класса оборудования
     """
 
-    devices = collections.OrderedDict()
+    devices = []
 
     for p in (port.device for port in reversed(serial.tools.list_ports.comports())):
         for b in sorted(misc.BAUDRATE_DIRECT.keys(), reverse=True):
@@ -56,20 +77,9 @@ def discovery(callback=None):
             except IOError:
                 pass
             else:
-                model_name = d.dev_info[u'Название устройства']
-                device_cls = None
-
-                if u'ПТК' in model_name:
-                    device_cls = device.ShtrihComboPTK
-                elif u'КОМБО-ФР-К' in model_name:
-                    device_cls = device.ShtrihComboFRK
-                elif u'ФР-К' in model_name:
-                    device_cls = device.ShtrihFRK
-
-                if device_cls:
-                    discovered_device = device_cls(p, b)
-                    discovered_device.dev_info = d.dev_info
-                    devices[p] = discovered_device
+                discovered_device = device_definition(d)
+                if discovered_device:
+                    devices.append(discovered_device)
 
                 break
 
