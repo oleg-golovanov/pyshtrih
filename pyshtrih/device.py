@@ -48,11 +48,11 @@ class Device(object):
 
     @property
     def port(self):
-        return self.protocol.serial.port
+        return self.protocol.port
 
     @port.setter
     def port(self, port):
-        self.protocol.serial.port = port
+        self.protocol.port = port
         if self.connected:
             self.connect(force=True)
 
