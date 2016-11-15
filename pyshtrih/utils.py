@@ -32,43 +32,31 @@ class Discovery(object):
         self.protocol.disconnect()
 
 
-def device_definition(instance):
-    result = None
-
-    model_name = instance.dev_info[u'Название устройства']
-    device_cls = None
-
-    if u'ПТК' in model_name:
-        device_cls = device.ShtrihComboPTK
-    elif u'КОМБО-ФР-К' in model_name:
-        device_cls = device.ShtrihComboFRK
-    elif u'ФР-К' in model_name:
-        device_cls = device.ShtrihFRK
-
-    if device_cls:
-        result = device_cls(
-            instance.protocol.serial.port,
-            instance.protocol.serial.baudrate
-        )
-        result.dev_info = instance.dev_info
-
-    return result
-
-
-def discovery(callback=None):
+def discovery(callback=None, port=None, baudrate=None):
     """
     Функция автоопределения подключеннных устройств.
 
     :param callback: callable объект, принимающий 2 параметра: порт и скорость
+    :type port: str
+    :param port: порт взаимодействия с устройством
+    :type baudrate: int
+    :param baudrate: скорость взаимодействия с устройством
 
-    :rtype: collections.OrderedDict
-    :return: упорядоченый словарь пар порт - экземпляр класса оборудования
+    :rtype: list
+    :return: список экземпляров оборудования
     """
 
     devices = []
 
-    for p in (port.device for port in reversed(serial.tools.list_ports.comports())):
-        for b in sorted(misc.BAUDRATE_DIRECT.keys(), reverse=True):
+    if port and baudrate:
+        ports = (port, )
+        baudrates = (baudrate, )
+    else:
+        ports = (port_.device for port_ in reversed(serial.tools.list_ports.comports()))
+        baudrates = sorted(misc.BAUDRATE_DIRECT.keys(), reverse=True)
+
+    for p in ports:
+        for b in baudrates:
             if callback:
                 callback(p, b)
 
@@ -77,8 +65,19 @@ def discovery(callback=None):
             except IOError:
                 pass
             else:
-                discovered_device = device_definition(d)
-                if discovered_device:
+                model_name = d.dev_info[u'Название устройства']
+                device_cls = None
+
+                if u'ПТК' in model_name:
+                    device_cls = device.ShtrihComboPTK
+                elif u'КОМБО-ФР-К' in model_name:
+                    device_cls = device.ShtrihComboFRK
+                elif u'ФР-К' in model_name:
+                    device_cls = device.ShtrihFRK
+
+                if device_cls:
+                    discovered_device = device_cls(p, b)
+                    discovered_device.dev_info = d.dev_info
                     devices.append(discovered_device)
 
                 break
