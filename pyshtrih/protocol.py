@@ -3,7 +3,7 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, dict_pprint, NULL, CAST_SIZE, UNCAST_SIZE, LOCALE
+from misc import mslice, lrc, bytearray_cast, bytearray_concat, dict_pprint, CAST_SIZE, UNCAST_SIZE, LOCALE
 from handlers import COMMANDS, HANDLERS, ERROR_CODE_STR
 from excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
 
@@ -51,12 +51,18 @@ class Protocol(object):
                 try:
                     self.serial.open()
                 except serial.SerialException as exc:
-                    raise NoConnectionError(u'Нет связи с ККМ ({})'.format(exc))
+                    raise NoConnectionError(
+                        u'Не удалось открыть порт {} ({})'.format(
+                            self.port, exc
+                        )
+                    )
 
-            if list(self.check(self.CHECK_NUM))[-1]:
-                self.connected = True
+            for r in self.check(self.CHECK_NUM):
+                if r:
+                    self.connected = True
+                    return
             else:
-                raise NoConnectionError(u'Нет связи с ККМ (не получен ответ на NULL байт)')
+                raise NoConnectionError(u'Нет связи с ККМ')
 
     def disconnect(self):
         """
@@ -75,13 +81,19 @@ class Protocol(object):
         try:
             self.serial.write(ENQ)
             byte = self.serial.read()
+            if not byte:
+                raise NoConnectionError(u'Нет связи с ККМ')
 
             if byte == NAK:
                 pass
             elif byte == ACK:
                 self.handle_response()
             else:
-                raise UnexpectedResponseError(u'Неизвестный ответ ККМ')
+                while self.serial.read():
+                    pass
+                return False
+
+            return True
 
         except serial.writeTimeoutError:
             self.serial.flushOutput()
@@ -235,8 +247,10 @@ class Protocol(object):
             raise ValueError('Параметр count должен быть >= 1')
 
         for _ in xrange(count):
-            self.serial.write(NULL)
-            yield self.serial.read() == NAK
+            try:
+                yield self.init()
+            except NoConnectionError:
+                yield False
 
 
 class Response(object):
