@@ -20,7 +20,6 @@ class Device(object):
 
     TAPES = T_TAPES(False, False, False)
 
-    # TODO: подумать можно ли избавиться от port и baudrate в пользу автоматического поиска устройства
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
         :type port: str
