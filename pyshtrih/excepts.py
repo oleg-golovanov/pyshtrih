@@ -25,7 +25,11 @@ class ProtocolError(IOError):
 
 
 class NoConnectionError(ProtocolError):
-    pass
+    
+    def __init__(self, *args):
+        if not args:
+            args = (u'Нет связи с ККМ', )
+        super(NoConnectionError, self).__init__(*args)
 
 
 class UnexpectedResponseError(ProtocolError):
