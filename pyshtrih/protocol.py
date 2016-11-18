@@ -57,12 +57,12 @@ class Protocol(object):
                         )
                     )
 
-            for r in self.check(self.CHECK_NUM):
+            for r in self.check(self.CHECK_NUM, True):
                 if r:
                     self.connected = True
                     return
             else:
-                raise NoConnectionError(u'Нет связи с ККМ')
+                raise NoConnectionError()
 
     def disconnect(self):
         """
@@ -82,7 +82,7 @@ class Protocol(object):
             self.serial.write(ENQ)
             byte = self.serial.read()
             if not byte:
-                raise NoConnectionError(u'Нет связи с ККМ')
+                raise NoConnectionError()
 
             if byte == NAK:
                 pass
@@ -113,7 +113,7 @@ class Protocol(object):
         for _ in xrange(self.MAX_ATTEMPTS):
             stx = self.serial.read()
             if stx != STX:
-                raise NoConnectionError(u'Нет связи с ККМ')
+                raise NoConnectionError()
 
             length = self.serial.read()
             payload = self.serial.read(UNCAST_SIZE['1'](length))
@@ -129,7 +129,7 @@ class Protocol(object):
                 if byte != ACK:
                     raise UnexpectedResponseError(u'Получен байт {}, ожидался ACK'.format(byte))
         else:
-            raise NoConnectionError(u'Нет связи с ККМ')
+            raise NoConnectionError()
 
     def handle_payload(self, payload):
         """
@@ -194,22 +194,27 @@ class Protocol(object):
         )
         command = bytearray_concat(STX, buff, CAST_SIZE['1'](lrc(buff)))
 
-        self.init()
-        for _ in xrange(self.MAX_ATTEMPTS):
-            try:
-                self.serial.write(command)
-                byte = self.serial.read()
-                if byte == ACK:
-                    return self.handle_response()
+        for r in self.check(self.CHECK_NUM):
+            if not r:
+                continue
 
-            except serial.writeTimeoutError:
-                self.serial.flushOutput()
-                raise ProtocolError(u'Не удалось записать байт в ККМ')
-            except serial.SerialException as exc:
-                self.serial.flushInput()
-                raise ProtocolError(unicode(exc))
+            for _ in xrange(self.MAX_ATTEMPTS):
+                try:
+                    self.serial.write(command)
+                    byte = self.serial.read()
+                    if byte == ACK:
+                        return self.handle_response()
+
+                except serial.writeTimeoutError:
+                    self.serial.flushOutput()
+                    raise ProtocolError(u'Не удалось записать байт в ККМ')
+                except serial.SerialException as exc:
+                    self.serial.flushInput()
+                    raise ProtocolError(unicode(exc))
+            else:
+                raise NoConnectionError()
         else:
-            raise NoConnectionError(u'Нет связи с ККМ')
+            raise NoConnectionError()
 
     def command(self, cmd, password, *params):
         """
@@ -232,12 +237,14 @@ class Protocol(object):
 
         return self.command_nopass(cmd, params)
 
-    def check(self, count=1):
+    def check(self, count=1, quiet=False):
         """
         Проверка связи с ККМ.
 
         :type count: int
         :param count: количество отправляемых пакетов
+        :type quiet: bool
+        :param quiet: подавление исключений
         """
 
         if self.serial is None:
@@ -250,7 +257,10 @@ class Protocol(object):
             try:
                 yield self.init()
             except NoConnectionError:
-                yield False
+                if quiet:
+                    yield False
+                else:
+                    raise
 
 
 class Response(object):
