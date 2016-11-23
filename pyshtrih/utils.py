@@ -52,7 +52,9 @@ def discovery(callback=None, port=None, baudrate=None):
         ports = (port, )
         baudrates = (baudrate, )
     else:
-        ports = (port_.device for port_ in reversed(serial.tools.list_ports.comports()))
+        # явное приведение результата функции comports к типу list
+        # необходимо для совместимости с pyserial <= 3.0.1 на платформе win32
+        ports = (port_.device for port_ in reversed(list(serial.tools.list_ports.comports())))
         baudrates = sorted(misc.BAUDRATE_DIRECT.keys(), reverse=True)
 
     for p in ports:
