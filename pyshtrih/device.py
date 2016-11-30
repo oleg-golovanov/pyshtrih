@@ -130,6 +130,7 @@ class ShtrihComboFRK(Device):
     TAPES = T_TAPES(False, True, True)
 
 
+ShtrihFRPTK = ShtrihFRK
 ShtrihComboPTK = ShtrihComboFRK
 
 

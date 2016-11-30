@@ -70,7 +70,9 @@ def discovery(callback=None, port=None, baudrate=None):
                 model_name = d.dev_info[u'Название устройства']
                 device_cls = None
 
-                if u'ПТК' in model_name:
+                if u'ФР-ПТК' in model_name:
+                    device_cls = device.ShtrihFRPTK
+                elif u'ПТК' in model_name:
                     device_cls = device.ShtrihComboPTK
                 elif u'КОМБО-ФР-К' in model_name:
                     device_cls = device.ShtrihComboFRK
