@@ -69,15 +69,13 @@ def print_string(self, string, control_tape=True, cash_tape=True):
     control = 0b01 if control_tape else 0b00
     cash = 0b10 if cash_tape else 0b00
 
-    result = self.protocol.command(
+    self.wait_printing()
+    return self.protocol.command(
         0x17,
         self.password,
         CAST_SIZE['1'](control + cash),
         prepare_string(string, self.DEFAULT_MAX_LENGTH)
     )
-    self.wait_printing()
-
-    return result
 print_string.cmd = 0x17
 
 
@@ -95,6 +93,7 @@ def test_start(self, minute):
     Тестовый прогон.
     """
 
+    self.wait_printing()
     return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
 test_start.cmd = 0x19
 
@@ -215,6 +214,7 @@ def cut(self, partial=False):
     Обрезка чека.
     """
 
+    self.wait_printing()
     return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
 cut.cmd = 0x25
 
@@ -240,6 +240,7 @@ def feed(self, count, control_tape=False, cash_tape=False, skid_document=False):
     cash = 0b010 if cash_tape else 0b000
     skid = 0b100 if skid_document else 0b000
 
+    self.wait_printing()
     return self.protocol.command(
         0x29, self.password, CAST_SIZE['1'](control + cash + skid), CAST_SIZE['1'](count)
     )
@@ -251,6 +252,7 @@ def test_stop(self):
     Прерывание тестового прогона.
     """
 
+    self.wait_printing()
     return self.protocol.command(0x2B, self.password)
 test_stop.cmd = 0x2B
 
@@ -278,10 +280,8 @@ def x_report(self):
     Суточный отчет без гашения.
     """
 
-    result = self.protocol.command(0x40, self.admin_password)
     self.wait_printing()
-
-    return result
+    return self.protocol.command(0x40, self.admin_password)
 x_report.cmd = 0x40
 
 
@@ -290,10 +290,8 @@ def z_report(self):
     Суточный отчет с гашением.
     """
 
-    result = self.protocol.command(0x41, self.admin_password)
     self.wait_printing()
-
-    return result
+    return self.protocol.command(0x41, self.admin_password)
 z_report.cmd = 0x41
 
 
@@ -302,14 +300,12 @@ def income(self, cash):
     Внесение.
     """
 
-    result = self.protocol.command(
+    self.wait_printing()
+    return self.protocol.command(
         0x50,
         self.password,
         CAST_SIZE['11111'](*int_to_bytes(cash, 5))
     )
-    self.wait_printing()
-
-    return result
 income.cmd = 0x50
 
 
@@ -318,14 +314,12 @@ def outcome(self, cash):
     Выплата.
     """
 
-    result = self.protocol.command(
+    self.wait_printing()
+    return self.protocol.command(
         0x51,
         self.password,
         CAST_SIZE['11111'](*int_to_bytes(cash, 5))
     )
-    self.wait_printing()
-
-    return result
 outcome.cmd = 0x51
 
 
@@ -386,7 +380,7 @@ def close_check(self,
     """
 
     try:
-        result = self.protocol.command(
+        return self.protocol.command(
             0x85,
             self.password,
             CAST_SIZE['11111'](*int_to_bytes(cash, 5)),
@@ -400,10 +394,6 @@ def close_check(self,
         )
     except Error as exc:
         raise CloseCheckError(exc)
-    else:
-        self.wait_printing()
-
-        return result
 close_check.cmd = 0x85
 
 
@@ -442,6 +432,7 @@ def cancel_check(self):
     Аннулирование чека.
     """
 
+    self.wait_printing()
     return self.protocol.command(0x88, self.password)
 cancel_check.cmd = 0x88
 
@@ -451,10 +442,8 @@ def repeat(self):
     Повтор документа.
     """
 
-    result = self.protocol.command(0x8C, self.password)
     self.wait_printing()
-
-    return result
+    return self.protocol.command(0x8C, self.password)
 repeat.cmd = 0x8C
 
 
@@ -463,6 +452,7 @@ def open_check(self, check_type):
     Открыть чек.
     """
 
+    self.wait_printing()
     try:
         return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
     except Error as exc:
@@ -475,10 +465,7 @@ def continue_print(self):
     Продолжение печати.
     """
 
-    result = self.protocol.command(0xB0, self.admin_password)
-    self.wait_printing()
-
-    return result
+    return self.protocol.command(0xB0, self.admin_password)
 continue_print.cmd = 0xB0
 
 
@@ -496,6 +483,7 @@ def print_graphics(self, start_line, end_line):
     Печать графики.
     """
 
+    self.wait_printing()
     return self.protocol.command(
         0xC1,
         self.password,
@@ -510,12 +498,10 @@ def print_barcode(self, num):
     Печать штрих-кода
     """
 
-    result = self.protocol.command(
+    self.wait_printing()
+    return self.protocol.command(
         0xC2, self.password, CAST_SIZE['11111'](*int_to_bytes(num, 5))
     )
-    self.wait_printing()
-
-    return result
 print_barcode.cmd = 0xC2
 
 
@@ -551,13 +537,18 @@ def wait_printing(self):
         if submode.state == 3:
             self.continue_print()
 print_string.depends = (wait_printing, )
+test_start.depends = (wait_printing, )
+cut.depends = (wait_printing, )
+feed.depends = (wait_printing, )
+test_stop.depends = (wait_printing, )
 x_report.depends = (wait_printing, )
 z_report.depends = (wait_printing, )
 income.depends = (wait_printing, )
 outcome.depends = (wait_printing, )
-close_check.depends = (wait_printing, )
+cancel_check.depends = (wait_printing, )
 repeat.depends = (wait_printing, )
-continue_print.depends = (wait_printing, )
+open_check.depends = (wait_printing, )
+print_graphics.depends = (wait_printing, )
 print_barcode.depends = (wait_printing, )
 
 
