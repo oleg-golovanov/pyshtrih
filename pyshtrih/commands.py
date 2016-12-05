@@ -2,12 +2,12 @@
 
 
 import sys
+import time
 import inspect
-from time import sleep
 
+import excepts
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
    prepare_string, FuncChain, BAUDRATE_DIRECT, CAST_SIZE
-from excepts import ProtocolError, Error, OpenCheckError, ItemSaleError, CloseCheckError
 
 
 def state(self):
@@ -161,14 +161,14 @@ def read_table(self, table, row, field, _type):
 read_table.cmd = 0x1F
 
 
-def set_time(self, time):
+def set_time(self, time_):
     """
     Программирование времени.
     """
 
     # TODO: разобраться с округлением секунд до 00
     return self.protocol.command(
-        0x21, self.admin_password, CAST_SIZE['111'](time.hour, time.minute, time.second)
+        0x21, self.admin_password, CAST_SIZE['111'](time_.hour, time_.minute, time_.second)
     )
 set_time.cmd = 0x21
 
@@ -340,8 +340,8 @@ def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
-    except Error as exc:
-        raise ItemSaleError(exc)
+    except excepts.Error as exc:
+        raise excepts.ItemSaleError(exc)
 sale.cmd = 0x80
 
 
@@ -392,8 +392,8 @@ def close_check(self,
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
-    except ProtocolError as exc:
-        raise CloseCheckError(exc)
+    except excepts.ProtocolError as exc:
+        raise excepts.CloseCheckError(exc)
 close_check.cmd = 0x85
 
 
@@ -455,8 +455,8 @@ def open_check(self, check_type):
     self.wait_printing()
     try:
         return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
-    except Error as exc:
-        raise OpenCheckError(exc)
+    except excepts.Error as exc:
+        raise excepts.OpenCheckError(exc)
 open_check.cmd = 0x8D
 
 
@@ -529,7 +529,7 @@ def wait_printing(self):
     """
 
     while True:
-        sleep(self.WAIT_TIME)
+        time.sleep(self.WAIT_TIME)
         submode = self.state()[u'Подрежим ФР']
 
         if submode.state == 0:
