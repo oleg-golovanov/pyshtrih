@@ -7,7 +7,7 @@ from time import sleep
 
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
    prepare_string, FuncChain, BAUDRATE_DIRECT, CAST_SIZE
-from excepts import Error, OpenCheckError, ItemSaleError, CloseCheckError
+from excepts import ProtocolError, Error, OpenCheckError, ItemSaleError, CloseCheckError
 
 
 def state(self):
@@ -392,7 +392,7 @@ def close_check(self,
             CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
             prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
-    except Error as exc:
+    except ProtocolError as exc:
         raise CloseCheckError(exc)
 close_check.cmd = 0x85
 
