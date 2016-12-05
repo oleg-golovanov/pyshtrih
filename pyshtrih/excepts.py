@@ -202,30 +202,42 @@ class Error(ProtocolError):
         0xC8: u'Отсутствуют импульсы от таходатчика'
     }
 
-    def __init__(self, cmd, code):
-        self.cmd = cmd
+    def __init__(self, cmd=None, code=None, message=None):
+        self.cmd = cmd or 0x00
         self.cmd_name = COMMANDS.get(cmd, u'Неизвестная команда')
-        self.code = code
-        self.msg = self.codes.get(code, u'Неизвестная ошибка')
+        self.code = code or 0xFF
+
+        if message:
+            self.template = u'{message}'
+            self.message = message if isinstance(message, unicode) else message.decode(LOCALE)
+        else:
+            self.template = u'0x{cmd:02X} ({cmd_name}) - {message} (0x{code:02X})'
+            self.message = self.codes.get(code, u'Неизвестная ошибка')
 
     def __str__(self):
         return unicode(self).encode(LOCALE)
 
     def __unicode__(self):
-        return u'0x{:02X} ({}) - {}'.format(self.cmd, self.cmd_name, self.msg)
+        return self.template.format(**self.__dict__)
 
     def __repr__(self):
-        return '{}({}, {})'.format(type(self).__name__, self.code, self)
+        return '{}({})'.format(type(self).__name__, self)
 
 
 class CheckError(Error):
 
     def __init__(self, exc):
-        if not isinstance(exc, Error):
+        if isinstance(exc, Error):
+            super(CheckError, self).__init__(cmd=exc.cmd, code=exc.code)
+        elif isinstance(exc, ProtocolError):
+            super(CheckError, self).__init__(message=unicode(exc))
+        else:
             raise ValueError(
-                'Ожидался экземпляр {}, получен {}'.format(Error.__name__, type(exc).__name__)
+                'Ожидался экземпляр класса {} или его подклассов, получен {}.'.format(
+                    ProtocolError.__name__,
+                    type(exc).__name__
+                )
             )
-        super(CheckError, self).__init__(exc.cmd, exc.code)
 
 
 class OpenCheckError(CheckError):
