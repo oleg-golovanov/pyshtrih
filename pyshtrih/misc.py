@@ -113,7 +113,7 @@ class mslice(object):
 
 def lrc(buff):
     """
-    Расчет контрольной суммы
+    Расчет контрольной суммы.
     """
 
     return reduce(xor, buff)
@@ -585,6 +585,8 @@ class FuncChain(object):
 
         res = self.funcs[-1](*args, **kwargs)
         for func in reversed(self.funcs[:-1]):
+            if res is None:
+                break
             res = func(res)
 
         return res
