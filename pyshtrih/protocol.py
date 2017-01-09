@@ -62,6 +62,7 @@ class Protocol(object):
                     self.connected = True
                     return
             else:
+                self.serial.close()
                 raise NoConnectionError()
 
     def disconnect(self):
