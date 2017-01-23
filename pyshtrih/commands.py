@@ -530,7 +530,13 @@ def wait_printing(self):
 
     while True:
         time.sleep(self.WAIT_TIME)
-        submode = self.state()[u'Подрежим ФР']
+
+        state_ = self.state()
+        mode = state_[u'Режим ФР']
+        submode = state_[u'Подрежим ФР']
+
+        if mode.num == 12:
+            continue
 
         if submode.state == 0:
             return
