@@ -72,6 +72,8 @@ def discovery(callback=None, port=None, baudrate=None):
 
                 if u'ФР-ПТК' in model_name:
                     device_cls = device.ShtrihFRPTK
+                elif u'LIGHT-ПТК' in model_name:
+                    device_cls = device.ShtrihLightPTK
                 elif u'ПТК' in model_name:
                     device_cls = device.ShtrihComboPTK
                 elif u'КОМБО-ФР-К' in model_name:
