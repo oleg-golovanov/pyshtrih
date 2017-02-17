@@ -161,6 +161,19 @@ def prepare_string(string, length=DEFAULT_MIN_LENGTH):
     return result
 
 
+def prepare_tlv_string(tlv_code, tlv_string):
+    """
+    Подготовка TLV строки.
+    """
+
+    encoded_tlv_string = encode(tlv_string)
+    return bytearray_concat(
+        CAST_SIZE['2'](tlv_code),
+        CAST_SIZE['2'](len(encoded_tlv_string)),
+        bytearray(encoded_tlv_string)
+    )
+
+
 def int_to_bits(num, length=None):
     """
     Функция, возвращающая битовое представление заданного числа.
@@ -615,7 +628,8 @@ CHAR_SIZE = {
     '111': '<3B',
     '1111': '<4B',
     '11111': '<5B',
-    '121': '<BHB'
+    '121': '<BHB',
+    '-2': '>H'
 }
 
 CAST_SIZE = {
