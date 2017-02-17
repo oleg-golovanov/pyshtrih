@@ -7,7 +7,7 @@ import inspect
 
 import excepts
 from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
-   prepare_string, FuncChain, BAUDRATE_DIRECT, CAST_SIZE
+   prepare_string, FuncChain, BAUDRATE_DIRECT, CAST_SIZE, prepare_tlv_string
 
 
 def state(self):
@@ -521,6 +521,25 @@ def model(self):
 
     return self.protocol.command_nopass(0xFC)
 model.cmd = 0xFC
+
+
+def send_tlv(self, tlv_id, tlv_data):
+    """
+    Передать tlv-структуру.
+    """
+
+    if tlv_id == 0x03F0:
+        result = self.protocol.command(
+            0xFF0C,
+            self.password,
+            prepare_tlv_string(tlv_id, tlv_data)
+        )
+    else:
+        # TODO: Остальное не поддерживается. Надо поддержать либо сказать об этом
+        result = None
+
+    return result
+send_tlv.cmd = 0xFF0C
 
 
 def wait_printing(self):

@@ -188,9 +188,11 @@ class Protocol(object):
         if not isinstance(params, bytearray):
             raise TypeError(u'{} expected, got {} instead'.format(bytearray, type(params)))
 
+        len_cmd, char_size_cmd = (1, '1') if cmd <= 255 else (2, '-2')
+
         buff = bytearray_concat(
-            CAST_SIZE['1'](1 + len(params)),
-            CAST_SIZE['1'](cmd),
+            CAST_SIZE['1'](len_cmd + len(params)),
+            CAST_SIZE[char_size_cmd](cmd),
             params
         )
         command = bytearray_concat(STX, buff, CAST_SIZE['1'](lrc(buff)))
