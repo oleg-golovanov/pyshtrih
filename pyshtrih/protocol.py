@@ -3,9 +3,9 @@
 
 import serial
 
-from misc import mslice, lrc, bytearray_cast, bytearray_concat, dict_pprint, CAST_SIZE, UNCAST_SIZE, LOCALE
-from handlers import COMMANDS, HANDLERS, ERROR_CODE_STR
-from excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error
+import misc
+import excepts
+import handlers
 
 
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста
@@ -51,7 +51,7 @@ class Protocol(object):
                 try:
                     self.serial.open()
                 except serial.SerialException as exc:
-                    raise NoConnectionError(
+                    raise excepts.NoConnectionError(
                         u'Не удалось открыть порт {} ({})'.format(
                             self.port, exc
                         )
@@ -63,7 +63,7 @@ class Protocol(object):
                     return
             else:
                 self.serial.close()
-                raise NoConnectionError()
+                raise excepts.NoConnectionError()
 
     def disconnect(self):
         """
@@ -83,7 +83,7 @@ class Protocol(object):
             self.serial.write(ENQ)
             byte = self.serial.read()
             if not byte:
-                raise NoConnectionError()
+                raise excepts.NoConnectionError()
 
             if byte == NAK:
                 pass
@@ -98,10 +98,10 @@ class Protocol(object):
 
         except serial.writeTimeoutError:
             self.serial.flushOutput()
-            raise ProtocolError(u'Не удалось записать байт в ККМ')
+            raise excepts.ProtocolError(u'Не удалось записать байт в ККМ')
         except serial.SerialException as exc:
             self.serial.flushInput()
-            raise ProtocolError(unicode(exc))
+            raise excepts.ProtocolError(unicode(exc))
 
     def handle_response(self):
         """
@@ -114,13 +114,13 @@ class Protocol(object):
         for _ in xrange(self.MAX_ATTEMPTS):
             stx = self.serial.read()
             if stx != STX:
-                raise NoConnectionError()
+                raise excepts.NoConnectionError()
 
             length = self.serial.read()
-            payload = self.serial.read(UNCAST_SIZE['1'](length))
-            _lrc = UNCAST_SIZE['1'](self.serial.read())
+            payload = self.serial.read(misc.UNCAST_SIZE['1'](length))
+            _lrc = misc.UNCAST_SIZE['1'](self.serial.read())
 
-            if lrc(bytearray_concat(length, payload)) == _lrc:
+            if misc.lrc(misc.bytearray_concat(length, payload)) == _lrc:
                 self.serial.write(ACK)
                 return self.handle_payload(payload)
             else:
@@ -128,9 +128,9 @@ class Protocol(object):
                 self.serial.write(ENQ)
                 byte = self.serial.read()
                 if byte != ACK:
-                    raise UnexpectedResponseError(u'Получен байт {}, ожидался ACK'.format(byte))
+                    raise excepts.UnexpectedResponseError(u'Получен байт {}, ожидался ACK'.format(byte))
         else:
-            raise NoConnectionError()
+            raise excepts.NoConnectionError()
 
     def handle_payload(self, payload):
         """
@@ -143,20 +143,20 @@ class Protocol(object):
         :return: набор параметров в виде словаря
         """
 
-        payload = bytearray_cast(payload)
+        payload = misc.bytearray_cast(payload)
 
         try:
             cmd = payload[0]
         except IndexError:
-            raise UnexpectedResponseError(u'Не удалось получить байт команды из ответа')
+            raise excepts.UnexpectedResponseError(u'Не удалось получить байт команды из ответа')
 
         response = payload[slice(1, None)]
-        handler = HANDLERS.get(cmd)
+        handler = handlers.HANDLERS.get(cmd)
 
         if handler:
             result = {}
             for _slice, func, name in handler:
-                chunk = _slice(response) if isinstance(_slice, mslice) else response[_slice]
+                chunk = _slice(response) if isinstance(_slice, misc.mslice) else response[_slice]
                 if chunk and name is None:
                     result.update(func(chunk))
                 elif chunk:
@@ -164,9 +164,9 @@ class Protocol(object):
                 else:
                     result[name] = None
 
-            error = result.get(ERROR_CODE_STR, 0)
+            error = result.get(handlers.ERROR_CODE_STR, 0)
             if error != 0:
-                raise Error(cmd, error)
+                raise excepts.Error(cmd, error)
 
             return Response(cmd, result)
 
@@ -188,12 +188,12 @@ class Protocol(object):
         if not isinstance(params, bytearray):
             raise TypeError(u'{} expected, got {} instead'.format(bytearray, type(params)))
 
-        buff = bytearray_concat(
-            CAST_SIZE['1'](1 + len(params)),
-            CAST_SIZE['1'](cmd),
+        buff = misc.bytearray_concat(
+            misc.CAST_SIZE['1'](1 + len(params)),
+            misc.CAST_SIZE['1'](cmd),
             params
         )
-        command = bytearray_concat(STX, buff, CAST_SIZE['1'](lrc(buff)))
+        command = misc.bytearray_concat(STX, buff, misc.CAST_SIZE['1'](misc.lrc(buff)))
 
         for r in self.check(self.CHECK_NUM):
             if not r:
@@ -208,14 +208,14 @@ class Protocol(object):
 
                 except serial.writeTimeoutError:
                     self.serial.flushOutput()
-                    raise ProtocolError(u'Не удалось записать байт в ККМ')
+                    raise excepts.ProtocolError(u'Не удалось записать байт в ККМ')
                 except serial.SerialException as exc:
                     self.serial.flushInput()
-                    raise ProtocolError(unicode(exc))
+                    raise excepts.ProtocolError(unicode(exc))
             else:
-                raise NoConnectionError()
+                raise excepts.NoConnectionError()
         else:
-            raise NoConnectionError()
+            raise excepts.NoConnectionError()
 
     def command(self, cmd, password, *params):
         """
@@ -232,8 +232,8 @@ class Protocol(object):
         :return: набор параметров ответа в виде словаря
         """
 
-        params = bytearray_concat(
-            CAST_SIZE['4'](password), *params
+        params = misc.bytearray_concat(
+            misc.CAST_SIZE['4'](password), *params
         )
 
         return self.command_nopass(cmd, params)
@@ -249,7 +249,7 @@ class Protocol(object):
         """
 
         if self.serial is None:
-            raise ProtocolError(u'Необходимо вначале выполнить метод connect()')
+            raise excepts.ProtocolError(u'Необходимо вначале выполнить метод connect()')
 
         if count < 1:
             raise ValueError('Параметр count должен быть >= 1')
@@ -257,7 +257,7 @@ class Protocol(object):
         for _ in xrange(count):
             try:
                 yield self.init()
-            except NoConnectionError:
+            except excepts.NoConnectionError:
                 if quiet:
                     yield False
                 else:
@@ -282,7 +282,7 @@ class Response(object):
         """
 
         self.cmd = cmd
-        self.cmd_name = COMMANDS[cmd]
+        self.cmd_name = handlers.COMMANDS[cmd]
         self.params = params
 
     def __getitem__(self, item):
@@ -292,13 +292,13 @@ class Response(object):
         self.params[key] = value
 
     def __str__(self):
-        return unicode(self).encode(LOCALE)
+        return unicode(self).encode(misc.LOCALE)
 
     def __unicode__(self):
         return u'0x{:02X} ({}) - {}'.format(
             self.cmd,
             self.cmd_name,
-            dict_pprint(self.params)
+            misc.dict_pprint(self.params)
         )
 
     __repr__ = __str__

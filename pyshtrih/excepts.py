@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from misc import LOCALE
-from handlers import COMMANDS
+import misc
+import handlers
 
 
 class ProtocolError(IOError):
@@ -18,10 +18,10 @@ class ProtocolError(IOError):
         if isinstance(message, str):
             return message
         else:
-            return message.encode(LOCALE)
+            return message.encode(misc.LOCALE)
 
     def __unicode__(self):
-        return str(self).decode(LOCALE)
+        return str(self).decode(misc.LOCALE)
 
 
 class NoConnectionError(ProtocolError):
@@ -204,18 +204,18 @@ class Error(ProtocolError):
 
     def __init__(self, cmd=None, code=None, message=None):
         self.cmd = cmd or 0x00
-        self.cmd_name = COMMANDS.get(cmd, u'Неизвестная команда')
+        self.cmd_name = handlers.COMMANDS.get(cmd, u'Неизвестная команда')
         self.code = code or 0xFF
 
         if message:
             self.template = u'{message}'
-            self.message = message if isinstance(message, unicode) else message.decode(LOCALE)
+            self.message = message if isinstance(message, unicode) else message.decode(misc.LOCALE)
         else:
             self.template = u'0x{cmd:02X} ({cmd_name}) - {message} (0x{code:02X})'
             self.message = self.codes.get(code, u'Неизвестная ошибка')
 
     def __str__(self):
-        return unicode(self).encode(LOCALE)
+        return unicode(self).encode(misc.LOCALE)
 
     def __unicode__(self):
         return self.template.format(**self.__dict__)

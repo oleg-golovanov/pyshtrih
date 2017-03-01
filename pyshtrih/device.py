@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-from protocol import Protocol
-from handlers import COMMANDS
-from commands import SupportedCommands
-from misc import handle_fr_flags, T_TAPES
+import protocol
+import handlers
+import commands
+import misc
 
 
 class Device(object):
-    __metaclass__ = SupportedCommands
+    __metaclass__ = commands.SupportedCommands
 
     SERIAL_TIMEOUT = 3
     WAIT_TIME = 0.01
@@ -18,7 +18,7 @@ class Device(object):
 
     DEFAULT_MAX_LENGTH = 40
 
-    TAPES = T_TAPES(False, False, False)
+    TAPES = misc.T_TAPES(False, False, False)
 
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
@@ -34,7 +34,7 @@ class Device(object):
         :param admin_password: пароль администратора
         """
 
-        self.protocol = Protocol(
+        self.protocol = protocol.Protocol(
             port,
             baudrate,
             timeout or self.SERIAL_TIMEOUT
@@ -99,7 +99,7 @@ class Device(object):
 
         if hasattr(self, 'model'):
             self.dev_info = self.model()
-            handle_fr_flags.model = self.dev_info[u'Модель устройства']
+            misc.handle_fr_flags.model = self.dev_info[u'Модель устройства']
 
     def disconnect(self):
         """
@@ -116,7 +116,7 @@ class ShtrihFRK(Device):
     )
 
     DEFAULT_MAX_LENGTH = 36
-    TAPES = T_TAPES(True, True, False)
+    TAPES = misc.T_TAPES(True, True, False)
 
 
 class ShtrihComboFRK(Device):
@@ -127,7 +127,7 @@ class ShtrihComboFRK(Device):
     )
 
     DEFAULT_MAX_LENGTH = 48
-    TAPES = T_TAPES(False, True, True)
+    TAPES = misc.T_TAPES(False, True, True)
 
 
 class ShtrihLightPTK(Device):
@@ -138,7 +138,7 @@ class ShtrihLightPTK(Device):
     )
 
     DEFAULT_MAX_LENGTH = 36
-    TAPES = T_TAPES(False, True, False)
+    TAPES = misc.T_TAPES(False, True, False)
 
 
 ShtrihFRPTK = ShtrihFRK
@@ -146,4 +146,4 @@ ShtrihComboPTK = ShtrihComboFRK
 
 
 class ShtrihAllCommands(Device):
-    SUPPORTED_COMMANDS = COMMANDS.keys()
+    SUPPORTED_COMMANDS = handlers.COMMANDS.keys()
