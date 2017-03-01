@@ -23,7 +23,7 @@ setup(
     zip_safe=False,
     platforms='any',
     long_description=open(join(dirname(__file__), 'README.rst')).read(),
-    install_requires=['pyserial'],
+    install_requires=['pyserial', 'unilog'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

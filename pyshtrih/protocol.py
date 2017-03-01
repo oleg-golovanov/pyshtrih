@@ -2,6 +2,7 @@
 
 
 import serial
+import unilog
 
 import misc
 import excepts
@@ -298,7 +299,7 @@ class Response(object):
         return u'0x{:02X} ({}) - {}'.format(
             self.cmd,
             self.cmd_name,
-            misc.dict_pprint(self.params)
+            unilog.as_unicode(self.params)
         )
 
     __repr__ = __str__

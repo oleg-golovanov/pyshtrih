@@ -29,39 +29,6 @@ BAUDRATE_DIRECT = {
 BAUDRATE_REVERSE = {v: k for k, v in BAUDRATE_DIRECT.items()}
 
 
-def dict_pprint(arg):
-    """
-    Функция преобразования словаря в строку.
-
-    :type arg: dict
-    :param arg: словарь
-
-    :rtype: unicode
-    :return: исходный dict в виде unicode строки
-    """
-
-    if not isinstance(arg, dict):
-        raise TypeError('ожидается тип dict, {} получен'.format(type(arg).__name__))
-
-    format_map = {
-        dict: dict_pprint,
-        unicode: lambda x: u"u'{}'".format(x),
-        str: lambda x: u"'{}'".format(x.decode(LOCALE))
-    }
-
-    result = []
-
-    for k, v in arg.items():
-        k = format_map.get(type(k), lambda x: x)(k)
-
-        result.append(u'{}: {}'.format(
-            k,
-            format_map.get(type(v), lambda x: x)(v))
-        )
-
-    return u'{{{}}}'.format(', '.join(result))
-
-
 def bytearray_cast(arg):
     if not isinstance(arg, bytearray):
         return bytearray(arg)
