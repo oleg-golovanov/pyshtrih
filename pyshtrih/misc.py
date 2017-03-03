@@ -573,6 +573,16 @@ def unpack(fmt, string):
         return
 
 
+CMD_SIZE = {
+    1: '>B',
+    2: '>H'
+}
+
+CAST_CMD = {
+    size: FuncChain(bytearray, functools.partial(struct.pack, fmt)) for size, fmt in CMD_SIZE.items()
+}
+
+
 CHAR_SIZE = {
     '1': '<B',
     '2': '<H',
