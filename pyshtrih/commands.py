@@ -657,7 +657,7 @@ fs_find_document_by_num.cmd = 0xFF0A
 
 def fs_open_shift(self):
     """
-    Открыть смену в ФН
+    Открыть смену в ФН.
     """
 
     return self.protocol.command(
@@ -685,7 +685,7 @@ send_tlv_struct.cmd = 0xFF0C
 
 def fs_begin_correction_receipt(self):
     """
-    Начать формирование чека коррекции
+    Начать формирование чека коррекции.
     """
 
     return self.protocol.command(
@@ -697,7 +697,7 @@ fs_begin_correction_receipt.cmd = 0xFF35
 
 def fs_correction_receipt(self, sum_, check_type):
     """
-    Сформировать чек коррекции
+    Сформировать чек коррекции.
     """
 
     return self.protocol.command(
@@ -723,7 +723,7 @@ fs_info_exchange.cmd = 0xFF39
 
 def fs_shift_params(self):
     """
-    Запрос параметров текущей смены
+    Запрос параметров текущей смены.
     """
 
     return self.protocol.command(
@@ -735,7 +735,7 @@ fs_shift_params.cmd = 0xFF40
 
 def fs_begin_open_shift(self):
     """
-    Начать открытие смены
+    Начать открытие смены.
     """
 
     return self.protocol.command(
@@ -747,7 +747,7 @@ fs_begin_open_shift.cmd = 0xFF41
 
 def fs_begin_close_shift(self):
     """
-    Начать закрытие смены
+    Начать закрытие смены.
     """
 
     return self.protocol.command(
@@ -759,14 +759,14 @@ fs_begin_close_shift.cmd = 0xFF42
 
 def fs_close_shift(self):
     """
-    Закрыть смену в ФН
+    Закрыть смену в ФН.
     """
 
     return self.protocol.command(
         0xFF43,
         self.admin_password
     )
-fs_begin_close_shift.cmd = 0xFF43
+fs_close_shift.cmd = 0xFF43
 
 
 def wait_printing(self):
