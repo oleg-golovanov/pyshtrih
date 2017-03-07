@@ -642,6 +642,19 @@ def fs_cancel_document(self):
 fs_cancel_document.cmd = 0xFF08
 
 
+def fs_find_document_by_num(self, num):
+    """
+    Найти фискальный документ по номеру.
+    """
+
+    return self.protocol.command(
+        0xFF0A,
+        self.admin_password,
+        misc.CAST_SIZE['4'](num)
+    )
+fs_find_document_by_num.cmd = 0xFF0A
+
+
 def wait_printing(self):
     """
     Метод ожидания окончания печати документа.
