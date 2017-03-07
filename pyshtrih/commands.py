@@ -655,6 +655,22 @@ def fs_find_document_by_num(self, num):
 fs_find_document_by_num.cmd = 0xFF0A
 
 
+def send_tlv_struct(self, tlv_struct):
+    """
+    Передать произвольную TLV структуру.
+    """
+
+    if len(tlv_struct) > 250:
+        raise ValueError(u'Максимальный размер tlv структуры - 250 байт')
+
+    return self.protocol.command(
+        0xFF0C,
+        self.admin_password,
+        tlv_struct
+    )
+send_tlv_struct.cmd = 0xFF0C
+
+
 def fs_info_exchange(self):
     """
     Получить статус информационного обмена.
