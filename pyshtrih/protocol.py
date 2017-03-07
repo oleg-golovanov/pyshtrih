@@ -6,7 +6,7 @@ import unilog
 
 import misc
 import excepts
-import handlers
+from handlers import commands as hc
 
 
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста
@@ -159,7 +159,7 @@ class Protocol(object):
             raise excepts.UnexpectedResponseError(u'Не удалось получить байт(ы) команды из ответа')
 
         response = payload[slice(cmd_len, None)]
-        handler = handlers.HANDLERS.get(cmd)
+        handler = hc.HANDLERS.get(cmd)
 
         if handler:
             result = {}
@@ -172,7 +172,7 @@ class Protocol(object):
                 else:
                     result[name] = None
 
-            error = result.get(handlers.ERROR_CODE_STR, 0)
+            error = result.get(hc.ERROR_CODE_STR, 0)
             if error != 0:
                 raise excepts.Error(cmd, error)
 
@@ -291,7 +291,7 @@ class Response(object):
         """
 
         self.cmd = cmd
-        self.cmd_name = handlers.COMMANDS[cmd]
+        self.cmd_name = hc.COMMANDS[cmd]
         self.params = params
 
     def __getitem__(self, item):

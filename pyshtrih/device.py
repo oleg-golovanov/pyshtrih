@@ -2,9 +2,10 @@
 
 
 import protocol
-import handlers
 import commands
 import misc
+from handlers import commands as hc
+from handlers import functions as hf
 
 
 class Device(object):
@@ -99,7 +100,7 @@ class Device(object):
 
         if hasattr(self, 'model'):
             self.dev_info = self.model()
-            misc.handle_fr_flags.model = self.dev_info[u'Модель устройства']
+            hf.handle_fr_flags.model = self.dev_info[u'Модель устройства']
 
     def disconnect(self):
         """
@@ -156,4 +157,4 @@ class ShtrihFR01F(Device):
 
 
 class ShtrihAllCommands(Device):
-    SUPPORTED_COMMANDS = handlers.COMMANDS.keys()
+    SUPPORTED_COMMANDS = hc.COMMANDS.keys()
