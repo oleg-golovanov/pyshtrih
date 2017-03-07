@@ -642,6 +642,54 @@ def fs_cancel_document(self):
 fs_cancel_document.cmd = 0xFF08
 
 
+def fs_open_shift(self):
+    """
+    Открыть смену в ФН
+    """
+
+    return self.protocol.command(
+        0xFF0B,
+        self.admin_password
+    )
+fs_open_shift.cmd = 0xFF0B
+
+
+def fs_begin_open_shift(self):
+    """
+    Начать открытие смены
+    """
+
+    return self.protocol.command(
+        0xFF41,
+        self.admin_password
+    )
+fs_begin_open_shift.cmd = 0xFF41
+
+
+def fs_begin_close_shift(self):
+    """
+    Начать закрытие смены
+    """
+
+    return self.protocol.command(
+        0xFF42,
+        self.admin_password
+    )
+fs_begin_close_shift.cmd = 0xFF42
+
+
+def fs_close_shift(self):
+    """
+    Закрыть смену в ФН
+    """
+
+    return self.protocol.command(
+        0xFF43,
+        self.admin_password
+    )
+fs_begin_close_shift.cmd = 0xFF43
+
+
 def wait_printing(self):
     """
     Метод ожидания окончания печати документа.

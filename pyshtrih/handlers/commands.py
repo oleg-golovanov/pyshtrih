@@ -306,5 +306,28 @@ HANDLERS = {
     # Отменить документ в ФН
     0xFF08: (
         ERROR_CODE_STRUCT
-    )
+    ),
+    # Открыть смену в ФН
+    0xFF0B: (
+        ERROR_CODE_STRUCT,
+        (slice (1, 2), misc.UNCAST_SIZE ['2'], u'Номер новой открытой смены'),
+        (slice (2, 6), misc.UNCAST_SIZE ['4'], u'Номер ФД'),
+        (slice (6, 10), misc.UNCAST_SIZE ['4'], u'Фискальный признак')
+    ),
+    # Начать открытие смены
+    0xFF41: (
+        ERROR_CODE_STRUCT
+    ),
+    # Начать закрытие смены
+    0xFF42: (
+        ERROR_CODE_STRUCT
+    ),
+    # Закрыть смену в ФН
+    0xFF43: (
+        ERROR_CODE_STRUCT,
+        (slice (1, 2), misc.UNCAST_SIZE ['2'], u'Номер только что закрытой смены'),
+        (slice (2, 6), misc.UNCAST_SIZE ['4'], u'Номер ФД'),
+        (slice (6, 10), misc.UNCAST_SIZE ['4'], u'Фискальный признак')
+    ),
+
 }
