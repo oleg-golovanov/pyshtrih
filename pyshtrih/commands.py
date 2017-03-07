@@ -655,6 +655,18 @@ def fs_find_document_by_num(self, num):
 fs_find_document_by_num.cmd = 0xFF0A
 
 
+def fs_open_shift(self):
+    """
+    Открыть смену в ФН
+    """
+
+    return self.protocol.command(
+        0xFF0B,
+        self.admin_password
+    )
+fs_open_shift.cmd = 0xFF0B
+
+
 def send_tlv_struct(self, tlv_struct):
     """
     Передать произвольную TLV структуру.
@@ -671,6 +683,32 @@ def send_tlv_struct(self, tlv_struct):
 send_tlv_struct.cmd = 0xFF0C
 
 
+def fs_begin_correction_receipt(self):
+    """
+    Начать формирование чека коррекции
+    """
+
+    return self.protocol.command(
+        0xFF35,
+        self.admin_password
+    )
+fs_begin_correction_receipt.cmd = 0xFF35
+
+
+def fs_correction_receipt(self, sum_, check_type):
+    """
+    Сформировать чек коррекции
+    """
+
+    return self.protocol.command(
+        0xFF36,
+        self.admin_password,
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes (sum_, 5)),
+        misc.CAST_SIZE['1'](check_type)
+    )
+fs_correction_receipt.cmd = 0xFF36
+
+
 def fs_info_exchange(self):
     """
     Получить статус информационного обмена.
@@ -681,6 +719,54 @@ def fs_info_exchange(self):
         self.admin_password
     )
 fs_info_exchange.cmd = 0xFF39
+
+
+def fs_shift_params(self):
+    """
+    Запрос параметров текущей смены
+    """
+
+    return self.protocol.command(
+        0xFF40,
+        self.admin_password
+    )
+fs_shift_params.cmd = 0xFF40
+
+
+def fs_begin_open_shift(self):
+    """
+    Начать открытие смены
+    """
+
+    return self.protocol.command(
+        0xFF41,
+        self.admin_password
+    )
+fs_begin_open_shift.cmd = 0xFF41
+
+
+def fs_begin_close_shift(self):
+    """
+    Начать закрытие смены
+    """
+
+    return self.protocol.command(
+        0xFF42,
+        self.admin_password
+    )
+fs_begin_close_shift.cmd = 0xFF42
+
+
+def fs_close_shift(self):
+    """
+    Закрыть смену в ФН
+    """
+
+    return self.protocol.command(
+        0xFF43,
+        self.admin_password
+    )
+fs_begin_close_shift.cmd = 0xFF43
 
 
 def wait_printing(self):
