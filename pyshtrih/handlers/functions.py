@@ -25,7 +25,12 @@ def handle_time(arg):
 
 
 def handle_datetime(arg):
-    return datetime.datetime(arg[0] + 2000, *arg[1:])
+    try:
+        res = datetime.datetime(arg[0] + 2000, *arg[1:])
+    except ValueError:
+        res = datetime.datetime.fromtimestamp(0)
+
+    return res
 
 
 def handle_fr_flags(arg):
@@ -305,3 +310,16 @@ def handle_fn_warning_flags(arg):
     )
 
     return dict(zip(values, misc.int_to_bits(arg, 4)))
+
+
+def handle_info_exchange_state(arg):
+    values = (
+        u'Ожидание ответа на команду от ОФД',
+        u'Изменились настройки соединения с ОФД',
+        u'Есть команда от ОФД',
+        u'Ожидание ответного сообщения (квитанции) от ОФД',
+        u'Есть сообщение для передачи в ОФД',
+        u'Транспортное соединение установлено'
+    )
+
+    return dict(zip(values, misc.int_to_bits(arg, 5)))

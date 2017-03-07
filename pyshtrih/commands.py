@@ -655,6 +655,18 @@ def fs_find_document_by_num(self, num):
 fs_find_document_by_num.cmd = 0xFF0A
 
 
+def fs_info_exchange(self):
+    """
+    Получить статус информационного обмена.
+    """
+
+    return self.protocol.command(
+        0xFF39,
+        self.admin_password
+    )
+fs_info_exchange.cmd = 0xFF39
+
+
 def wait_printing(self):
     """
     Метод ожидания окончания печати документа.
