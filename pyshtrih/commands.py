@@ -606,6 +606,18 @@ def model(self):
 model.cmd = 0xFC
 
 
+def state_fs(self):
+    """
+    Запрос статуса ФН.
+    """
+
+    return self.protocol.command(
+        0xFF01,
+        self.admin_password
+    )
+state_fs.cmd = 0xFF01
+
+
 def wait_printing(self):
     """
     Метод ожидания окончания печати документа.
