@@ -3,7 +3,8 @@
 
 import operator
 
-import misc
+import functions as hf
+from pyshtrih import misc
 
 
 COMMANDS = {
@@ -57,9 +58,9 @@ HANDLERS = {
     0x10: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
-        (slice(2, 4), misc.FuncChain(misc.handle_fr_flags, misc.UNCAST_SIZE['2']), u'Флаги ФР'),
-        (slice(4, 5), misc.FuncChain(misc.FRMode, misc.UNCAST_SIZE['1']), u'Режим ФР'),
-        (slice(5, 6), misc.FuncChain(misc.FRSubMode, misc.UNCAST_SIZE['1']), u'Подрежим ФР'),
+        (slice(2, 4), misc.FuncChain(hf.handle_fr_flags, misc.UNCAST_SIZE['2']), u'Флаги ФР'),
+        (slice(4, 5), misc.FuncChain(hf.FRMode, misc.UNCAST_SIZE['1']), u'Режим ФР'),
+        (slice(5, 6), misc.FuncChain(hf.FRSubMode, misc.UNCAST_SIZE['1']), u'Подрежим ФР'),
         (misc.mslice(slice(11, 12), slice(6, 7)), misc.UNCAST_SIZE['2'], u'Количество операций в чеке'),
         (slice(7, 8), misc.UNCAST_SIZE['1'], u'Напряжение резервной батареи'),
         (slice(8, 9), misc.UNCAST_SIZE['1'], u'Напряжение источника питания'),
@@ -71,27 +72,27 @@ HANDLERS = {
     0x11: (
         ERROR_CODE_STRUCT,
         OPERATOR_INDEX_NUMBER_STRUCT,
-        (slice(2, 4), misc.FuncChain(misc.handle_version, misc.UNCAST_SIZE['11']), u'Версия ПО ФР'),
+        (slice(2, 4), misc.FuncChain(hf.handle_version, misc.UNCAST_SIZE['11']), u'Версия ПО ФР'),
         (slice(4, 6), misc.UNCAST_SIZE['2'], u'Сборка ПО ФР'),
-        (slice(6, 9), misc.FuncChain(misc.handle_date, misc.UNCAST_SIZE['111']), u'Дата ПО ФР'),
+        (slice(6, 9), misc.FuncChain(hf.handle_date, misc.UNCAST_SIZE['111']), u'Дата ПО ФР'),
         (slice(9, 10), misc.UNCAST_SIZE['1'], u'Номер в зале'),
         (slice(10, 12), misc.UNCAST_SIZE['2'], u'Сквозной номер текущего документа'),
-        (slice(12, 14), misc.FuncChain(misc.handle_fr_flags, misc.UNCAST_SIZE['2']), u'Флаги ФР'),
-        (slice(14, 15), misc.FuncChain(misc.FRMode, misc.UNCAST_SIZE['1']), u'Режим ФР'),
-        (slice(15, 16), misc.FuncChain(misc.FRSubMode, misc.UNCAST_SIZE['1']), u'Подрежим ФР'),
+        (slice(12, 14), misc.FuncChain(hf.handle_fr_flags, misc.UNCAST_SIZE['2']), u'Флаги ФР'),
+        (slice(14, 15), misc.FuncChain(hf.FRMode, misc.UNCAST_SIZE['1']), u'Режим ФР'),
+        (slice(15, 16), misc.FuncChain(hf.FRSubMode, misc.UNCAST_SIZE['1']), u'Подрежим ФР'),
         (slice(16, 17), misc.UNCAST_SIZE['1'], u'Порт ФР'),
-        (slice(17, 19), misc.FuncChain(misc.handle_version, misc.UNCAST_SIZE['11']), u'Версия ПО ФП'),
+        (slice(17, 19), misc.FuncChain(hf.handle_version, misc.UNCAST_SIZE['11']), u'Версия ПО ФП'),
         (slice(19, 21), misc.UNCAST_SIZE['2'], u'Сборка ПО ФП'),
-        (slice(21, 24), misc.FuncChain(misc.handle_date, misc.UNCAST_SIZE['111']), u'Дата ПО ФП'),
-        (slice(24, 27), misc.FuncChain(misc.handle_date, misc.UNCAST_SIZE['111']), u'Дата'),
-        (slice(27, 30), misc.FuncChain(misc.handle_time, misc.UNCAST_SIZE['111']), u'Время'),
-        (slice(30, 31), misc.FuncChain(misc.handle_fp_flags, misc.UNCAST_SIZE['1']), u'Флаги ФП'),
+        (slice(21, 24), misc.FuncChain(hf.handle_date, misc.UNCAST_SIZE['111']), u'Дата ПО ФП'),
+        (slice(24, 27), misc.FuncChain(hf.handle_date, misc.UNCAST_SIZE['111']), u'Дата'),
+        (slice(27, 30), misc.FuncChain(hf.handle_time, misc.UNCAST_SIZE['111']), u'Время'),
+        (slice(30, 31), misc.FuncChain(hf.handle_fp_flags, misc.UNCAST_SIZE['1']), u'Флаги ФП'),
         (slice(31, 35), misc.UNCAST_SIZE['4'], u'Заводской номер'),
         (slice(35, 37), misc.UNCAST_SIZE['2'], u'Номер последней закрытой смены'),
         (slice(37, 39), misc.UNCAST_SIZE['2'], u'Количество свободных записей в ФП'),
         (slice(39, 40), misc.UNCAST_SIZE['1'], u'Количество перерегистраций (фискализаций)'),
         (slice(40, 41), misc.UNCAST_SIZE['1'], u'Количество оставшихся перерегистраций (фискализаций)'),
-        (slice(41, 47), misc.handle_inn, u'ИНН')
+        (slice(41, 47), hf.handle_inn, u'ИНН')
     ),
     # Гудок
     0x13: (
@@ -105,8 +106,8 @@ HANDLERS = {
     # Чтение параметров обмена
     0x15: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), misc.FuncChain(misc.handle_baudrate, misc.UNCAST_SIZE['1']), u'Код скорости обмена'),
-        (slice(2, 3), misc.FuncChain(misc.handle_byte_timeout, misc.UNCAST_SIZE['1']), u'Тайм аут приема байта')
+        (slice(1, 2), misc.FuncChain(hf.handle_baudrate, misc.UNCAST_SIZE['1']), u'Код скорости обмена'),
+        (slice(2, 3), misc.FuncChain(hf.handle_byte_timeout, misc.UNCAST_SIZE['1']), u'Тайм аут приема байта')
     ),
     # Печать строки
     0x17: (
@@ -182,8 +183,8 @@ HANDLERS = {
     0x2E: (
         ERROR_CODE_STRUCT,
         (slice(1, 41), misc.FuncChain(misc.decode, misc.bytearray_strip), u'Название поля'),
-        (slice(41, 42), misc.FuncChain(misc.handle_type_field, misc.UNCAST_SIZE['1']), u'Тип поля'),
-        (slice(42, None), misc.handle_min_max_field_value, None)
+        (slice(41, 42), misc.FuncChain(hf.handle_type_field, misc.UNCAST_SIZE['1']), u'Тип поля'),
+        (slice(42, None), hf.handle_min_max_field_value, None)
     ),
     # Суточный отчет без гашения
     0x40: (
@@ -303,7 +304,7 @@ HANDLERS = {
             u'Состояние смены'
         ),
         (slice(5, 6), misc.UNCAST_SIZE['1'], u'Флаги предупреждения'),
-        (slice(6, 11), misc.FuncChain(misc.handle_datetime, misc.UNCAST_SIZE['11111']), u'Дата и время'),
+        (slice(6, 11), misc.FuncChain(hf.handle_datetime, misc.UNCAST_SIZE['11111']), u'Дата и время'),
         (slice(11, 27), None, u'Номер ФН'),
         (slice(27, 32), misc.UNCAST_SIZE['4'], u'Номер последнего ФД'),
     )
