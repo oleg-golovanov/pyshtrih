@@ -658,11 +658,26 @@ def fs_begin_correction_receipt(self):
     """
     Начать формирование чека коррекции
     """
-    return self.protocol.command (
+
+    return self.protocol.command(
         0xFF35,
         self.admin_password
     )
 fs_begin_correction_receipt.cmd = 0xFF35
+
+
+def fs_correction_receipt(self, sum_, check_type):
+    """
+    Сформировать чек коррекции
+    """
+
+    return self.protocol.command(
+        0xFF36,
+        self.admin_password,
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes (sum_, 5)),
+        misc.CAST_SIZE['1'](check_type)
+    )
+fs_correction_receipt.cmd = 0xFF36
 
 
 def fs_shift_params(self):

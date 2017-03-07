@@ -46,7 +46,14 @@ COMMANDS = {
     0xFC: u'Получить тип устройства',
     0xFF01: u'Запрос статуса ФН',
     0xFF03: u'Запрос срока действия ФН',
-    0xFF08: u'Отменить документ в ФН'
+    0xFF08: u'Отменить документ в ФН',
+    0xFF0B: u'Открыть смену в ФН',
+    0xFF35: u'Начать формирование чека коррекции',
+    0xFF36: u'Сформировать чек коррекции',
+    0xFF40: u'Запрос параметров текущей смены',
+    0xFF41: u'Начать открытие смены',
+    0xFF42: u'Начать закрытие смены',
+    0xFF43: u'Закрыть смену в ФН'
 }
 
 ERROR_CODE_STR = u'Код ошибки'
@@ -310,20 +317,27 @@ HANDLERS = {
     # Открыть смену в ФН
     0xFF0B: (
         ERROR_CODE_STRUCT,
-        (slice (1, 2), misc.UNCAST_SIZE ['2'], u'Номер новой открытой смены'),
-        (slice (2, 6), misc.UNCAST_SIZE ['4'], u'Номер ФД'),
-        (slice (6, 10), misc.UNCAST_SIZE ['4'], u'Фискальный признак')
+        (slice(1, 2), misc.UNCAST_SIZE['2'], u'Номер новой открытой смены'),
+        (slice(2, 6), misc.UNCAST_SIZE['4'], u'Номер ФД'),
+        (slice(6, 10), misc.UNCAST_SIZE['4'], u'Фискальный признак')
     ),
     # Начать формирование чека коррекции
     0xFF35: (
         ERROR_CODE_STRUCT,
     ),
+    # Сформировать чек коррекции
+    0xFF36: (
+        ERROR_CODE_STRUCT,
+        (slice(1, 3), misc.UNCAST_SIZE['2'], u'Номер чека'),
+        (slice(3, 7), misc.UNCAST_SIZE['4'], u'Номер ФД'),
+        (slice(7, 11), misc.UNCAST_SIZE['4'], u'Фискальный признак')
+    ),
     # Запрос параметров текущей смены
     0xFF40: (
         ERROR_CODE_STRUCT,
         (slice(1, 2), misc.UNCAST_SIZE['1'], u'Состояние смены'),
-        (slice (2, 4), misc.UNCAST_SIZE ['2'], u'Номер смены'),
-        (slice (4, 6), misc.UNCAST_SIZE ['2'], u'Номер чека')
+        (slice(2, 4), misc.UNCAST_SIZE['2'], u'Номер смены'),
+        (slice(4, 6), misc.UNCAST_SIZE['2'], u'Номер чека')
     ),
     # Начать открытие смены
     0xFF41: (
@@ -336,8 +350,8 @@ HANDLERS = {
     # Закрыть смену в ФН
     0xFF43: (
         ERROR_CODE_STRUCT,
-        (slice (1, 2), misc.UNCAST_SIZE ['2'], u'Номер только что закрытой смены'),
-        (slice (2, 6), misc.UNCAST_SIZE ['4'], u'Номер ФД'),
-        (slice (6, 10), misc.UNCAST_SIZE ['4'], u'Фискальный признак')
+        (slice(1, 2), misc.UNCAST_SIZE['2'], u'Номер только что закрытой смены'),
+        (slice(2, 6), misc.UNCAST_SIZE['4'], u'Номер ФД'),
+        (slice(6, 10), misc.UNCAST_SIZE['4'], u'Фискальный признак')
     )
 }
