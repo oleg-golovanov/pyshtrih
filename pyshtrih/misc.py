@@ -324,6 +324,10 @@ def handle_time(arg):
     return datetime.time(*arg)
 
 
+def handle_datetime(arg):
+    return datetime.datetime(arg[0] + 2000, *arg[1:])
+
+
 def handle_fr_flags(arg):
     def get_keys(revision):
         return (
