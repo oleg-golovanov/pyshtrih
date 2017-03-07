@@ -606,7 +606,7 @@ def model(self):
 model.cmd = 0xFC
 
 
-def state_fs(self):
+def fs_state(self):
     """
     Запрос статуса ФН.
     """
@@ -615,7 +615,19 @@ def state_fs(self):
         0xFF01,
         self.admin_password
     )
-state_fs.cmd = 0xFF01
+fs_state.cmd = 0xFF01
+
+
+def fs_expiration_time(self):
+    """
+    Запрос срока действия ФН.
+    """
+
+    return self.protocol.command(
+        0xFF03,
+        self.admin_password
+    )
+fs_expiration_time.cmd = 0xFF03
 
 
 def wait_printing(self):

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import operator
-
 import functions as hf
 from pyshtrih import misc
 
@@ -46,7 +44,8 @@ COMMANDS = {
     0xC2: u'Печать штрих-кода',
     0xE0: u'Открыть смену',
     0xFC: u'Получить тип устройства',
-    0xFF01: u'Запрос статуса ФН'
+    0xFF01: u'Запрос статуса ФН',
+    0xFF03: u'Запрос срока действия ФН'
 }
 
 ERROR_CODE_STR = u'Код ошибки'
@@ -295,5 +294,12 @@ HANDLERS = {
         (slice(6, 11), misc.FuncChain(hf.handle_datetime, misc.UNCAST_SIZE['11111']), u'Дата и время'),
         (slice(11, 27), None, u'Номер ФН'),
         (slice(27, 32), misc.UNCAST_SIZE['4'], u'Номер последнего ФД'),
+    ),
+    # Запрос срока действия ФН
+    0xFF03: (
+        ERROR_CODE_STRUCT,
+        (slice(1, 4), misc.FuncChain(hf.handle_revdate, misc.UNCAST_SIZE['111']), u'Срок действия'),
+        (slice(4, 5), misc.UNCAST_SIZE['1'], u'Кол-во оставшихся отчетов о перерегистрации'),
+        (slice(5, 6), misc.UNCAST_SIZE['1'], u'Выполнено отчетов о перерегистрации')
     )
 }

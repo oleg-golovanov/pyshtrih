@@ -16,6 +16,10 @@ def handle_date(arg):
     return datetime.date(2000 + y, m, d)
 
 
+def handle_revdate(arg):
+    return datetime.date(arg[0] + 2000, *arg[1:])
+
+
 def handle_time(arg):
     return datetime.time(*arg)
 
