@@ -2,7 +2,7 @@
 
 
 import misc
-import handlers
+from handlers import commands as hc
 
 
 class ProtocolError(IOError):
@@ -204,7 +204,7 @@ class Error(ProtocolError):
 
     def __init__(self, cmd=None, code=None, message=None):
         self.cmd = cmd or 0x00
-        self.cmd_name = handlers.COMMANDS.get(cmd, u'Неизвестная команда')
+        self.cmd_name = hc.COMMANDS.get(cmd, u'Неизвестная команда')
         self.code = code or 0xFF
 
         if message:
