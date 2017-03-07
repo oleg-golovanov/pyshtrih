@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+import operator
+
 import misc
 
 
@@ -42,7 +44,8 @@ COMMANDS = {
     0xC1: u'Печать графики',
     0xC2: u'Печать штрих-кода',
     0xE0: u'Открыть смену',
-    0xFC: u'Получить тип устройства'
+    0xFC: u'Получить тип устройства',
+    0xFF01: u'Запрос статуса ФН'
 }
 
 ERROR_CODE_STR = u'Код ошибки'
@@ -279,5 +282,29 @@ HANDLERS = {
         (slice(5, 6), misc.UNCAST_SIZE['1'], u'Модель устройства'),
         (slice(6, 7), misc.UNCAST_SIZE['1'], u'Язык устройства'),
         (slice(7, None), misc.decode, u'Название устройства')
+    ),
+    # Запрос статуса ФН
+    0xFF01: (
+        ERROR_CODE_STRUCT,
+        (slice(1, 2), misc.UNCAST_SIZE['1'], u'Состояние фазы жизни'),
+        (slice(2, 3), misc.UNCAST_SIZE['1'], u'Текущий документ'),
+        (
+            slice(3, 4),
+            lambda x: operator.getitem(
+                (u'нет данных документа', u'получены данные документа'), misc.UNCAST_SIZE['1'](x)
+            ),
+            u'Данные документа'
+        ),
+        (
+            slice(4, 5),
+            lambda x: operator.getitem(
+                (u'смена закрыта', u'смена открыта'), misc.UNCAST_SIZE['1'](x)
+            ),
+            u'Состояние смены'
+        ),
+        (slice(5, 6), misc.UNCAST_SIZE['1'], u'Флаги предупреждения'),
+        (slice(6, 11), misc.FuncChain(misc.handle_datetime, misc.UNCAST_SIZE['11111']), u'Дата и время'),
+        (slice(11, 27), None, u'Номер ФН'),
+        (slice(27, 32), misc.UNCAST_SIZE['4'], u'Номер последнего ФД'),
     )
 }
