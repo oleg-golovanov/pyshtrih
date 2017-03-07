@@ -146,12 +146,19 @@ class Protocol(object):
 
         payload = misc.bytearray_cast(payload)
 
+        # предполагаем, что команда однобайтная
+        cmd_len = 1
         try:
             cmd = payload[0]
+            # если байт полный, то скорее всего команда двубайтная,
+            # т.к. в спецификации Штриха не предусмотрено команды с кодом 0xFF
+            if cmd == 0xFF:
+                cmd_len = 2
+                cmd = misc.bytes_to_int((payload[1], cmd))
         except IndexError:
-            raise excepts.UnexpectedResponseError(u'Не удалось получить байт команды из ответа')
+            raise excepts.UnexpectedResponseError(u'Не удалось получить байт(ы) команды из ответа')
 
-        response = payload[slice(1, None)]
+        response = payload[slice(cmd_len, None)]
         handler = handlers.HANDLERS.get(cmd)
 
         if handler:
