@@ -630,6 +630,18 @@ def fs_expiration_time(self):
 fs_expiration_time.cmd = 0xFF03
 
 
+def fs_cancel_document(self):
+    """
+    Отменить документ в ФН.
+    """
+
+    return self.protocol.command(
+        0xFF08,
+        self.admin_password
+    )
+fs_cancel_document.cmd = 0xFF08
+
+
 def wait_printing(self):
     """
     Метод ожидания окончания печати документа.
