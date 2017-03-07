@@ -654,6 +654,29 @@ def fs_open_shift(self):
 fs_open_shift.cmd = 0xFF0B
 
 
+def fs_begin_correction_receipt(self):
+    """
+    Начать формирование чека коррекции
+    """
+    return self.protocol.command (
+        0xFF35,
+        self.admin_password
+    )
+fs_begin_correction_receipt.cmd = 0xFF35
+
+
+def fs_shift_params(self):
+    """
+    Запрос параметров текущей смены
+    """
+
+    return self.protocol.command(
+        0xFF40,
+        self.admin_password
+    )
+fs_shift_params.cmd = 0xFF40
+
+
 def fs_begin_open_shift(self):
     """
     Начать открытие смены

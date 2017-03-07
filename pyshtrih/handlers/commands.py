@@ -305,7 +305,7 @@ HANDLERS = {
     ),
     # Отменить документ в ФН
     0xFF08: (
-        ERROR_CODE_STRUCT
+        ERROR_CODE_STRUCT,
     ),
     # Открыть смену в ФН
     0xFF0B: (
@@ -314,13 +314,24 @@ HANDLERS = {
         (slice (2, 6), misc.UNCAST_SIZE ['4'], u'Номер ФД'),
         (slice (6, 10), misc.UNCAST_SIZE ['4'], u'Фискальный признак')
     ),
+    # Начать формирование чека коррекции
+    0xFF35: (
+        ERROR_CODE_STRUCT,
+    ),
+    # Запрос параметров текущей смены
+    0xFF40: (
+        ERROR_CODE_STRUCT,
+        (slice(1, 2), misc.UNCAST_SIZE['1'], u'Состояние смены'),
+        (slice (2, 4), misc.UNCAST_SIZE ['2'], u'Номер смены'),
+        (slice (4, 6), misc.UNCAST_SIZE ['2'], u'Номер чека')
+    ),
     # Начать открытие смены
     0xFF41: (
-        ERROR_CODE_STRUCT
+        ERROR_CODE_STRUCT,
     ),
     # Начать закрытие смены
     0xFF42: (
-        ERROR_CODE_STRUCT
+        ERROR_CODE_STRUCT,
     ),
     # Закрыть смену в ФН
     0xFF43: (
@@ -328,6 +339,5 @@ HANDLERS = {
         (slice (1, 2), misc.UNCAST_SIZE ['2'], u'Номер только что закрытой смены'),
         (slice (2, 6), misc.UNCAST_SIZE ['4'], u'Номер ФД'),
         (slice (6, 10), misc.UNCAST_SIZE ['4'], u'Фискальный признак')
-    ),
-
+    )
 }
