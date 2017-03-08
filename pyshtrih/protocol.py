@@ -128,7 +128,7 @@ class Protocol(object):
                 self.serial.write(ENQ)
                 byte = self.serial.read()
                 if byte != ACK:
-                    raise UnexpectedResponseError(u'Получен байт {}, ожидался ACK'.format(byte))
+                    raise UnexpectedResponseError(u'Получен байт {}, ожидался ACK'.format(hex(ord(byte))))
         else:
             raise NoConnectionError()
 
