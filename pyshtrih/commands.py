@@ -5,9 +5,8 @@ import sys
 import time
 import inspect
 
+import misc
 import excepts
-from misc import encode, decode, bytearray_strip, int_to_bytes, bytes_to_int, cast_byte_timeout, \
-   prepare_string, FuncChain, BAUDRATE_DIRECT, CAST_SIZE
 
 
 def state(self):
@@ -15,7 +14,10 @@ def state(self):
     Состояние ККМ в коротком виде.
     """
 
-    return self.protocol.command(0x10, self.password)
+    return self.protocol.command(
+        0x10,
+        self.password
+    )
 state.cmd = 0x10
 
 
@@ -24,7 +26,10 @@ def full_state(self):
     Состояние ККМ.
     """
 
-    return self.protocol.command(0x11, self.password)
+    return self.protocol.command(
+        0x11,
+        self.password
+    )
 full_state.cmd = 0x11
 
 
@@ -33,7 +38,10 @@ def beep(self):
     Гудок.
     """
 
-    return self.protocol.command(0x13, self.password)
+    return self.protocol.command(
+        0x13,
+        self.password
+    )
 beep.cmd = 0x13
 
 
@@ -45,9 +53,9 @@ def set_exchange_params(self, port, baudrate, timeout):
     return self.protocol.command(
         0x14,
         self.admin_password,
-        CAST_SIZE['1'](port),
-        CAST_SIZE['1'](BAUDRATE_DIRECT[baudrate]),
-        CAST_SIZE['1'](cast_byte_timeout(timeout))
+        misc.CAST_SIZE['1'](port),
+        misc.CAST_SIZE['1'](misc.BAUDRATE_DIRECT[baudrate]),
+        misc.CAST_SIZE['1'](misc.cast_byte_timeout(timeout))
     )
 set_exchange_params.cmd = 0x14
 
@@ -57,7 +65,11 @@ def read_exchange_params(self, port):
     Чтение параметров обмена.
     """
 
-    return self.protocol.command(0x15, self.admin_password, CAST_SIZE['1'](port))
+    return self.protocol.command(
+        0x15,
+        self.admin_password,
+        misc.CAST_SIZE['1'](port)
+    )
 read_exchange_params.cmd = 0x15
 
 
@@ -73,8 +85,8 @@ def print_string(self, string, control_tape=True, cash_tape=True):
     return self.protocol.command(
         0x17,
         self.password,
-        CAST_SIZE['1'](control + cash),
-        prepare_string(string, self.DEFAULT_MAX_LENGTH)
+        misc.CAST_SIZE['1'](control + cash),
+        misc.prepare_string(string, self.DEFAULT_MAX_LENGTH)
     )
 print_string.cmd = 0x17
 
@@ -94,7 +106,11 @@ def test_start(self, minute):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x19, self.password, CAST_SIZE['1'](minute))
+    return self.protocol.command(
+        0x19,
+        self.password,
+        misc.CAST_SIZE['1'](minute)
+    )
 test_start.cmd = 0x19
 
 
@@ -103,7 +119,11 @@ def request_monetary_register(self, num):
     Запрос денежного регистра.
     """
 
-    return self.protocol.command(0x1A, self.password, CAST_SIZE['1'](num))
+    return self.protocol.command(
+        0x1A,
+        self.password,
+        misc.CAST_SIZE['1'](num)
+    )
 request_monetary_register.cmd = 0x1A
 
 
@@ -112,7 +132,11 @@ def request_operational_register(self, num):
     Запрос операционного регистра.
     """
 
-    return self.protocol.command(0x1B, self.password, CAST_SIZE['1'](num))
+    return self.protocol.command(
+        0x1B,
+        self.password,
+        misc.CAST_SIZE['1'](num)
+    )
 request_operational_register.cmd = 0x1B
 
 
@@ -122,14 +146,14 @@ def write_table(self, table, row, field, value, _type):
     """
 
     cast_funcs_map = {
-        int: FuncChain(bytearray, int_to_bytes),
-        str: encode
+        int: misc.FuncChain(bytearray, misc.int_to_bytes),
+        str: misc.encode
     }
 
     return self.protocol.command(
         0x1E,
         self.admin_password,
-        CAST_SIZE['121'](table, row, field),
+        misc.CAST_SIZE['121'](table, row, field),
         cast_funcs_map[_type](value)
     )
 write_table.cmd = 0x1E
@@ -141,8 +165,8 @@ def read_table(self, table, row, field, _type):
     """
 
     cast_funcs_map = {
-        int: bytes_to_int,
-        str: FuncChain(decode, bytearray_strip)
+        int: misc.bytes_to_int,
+        str: misc.FuncChain(misc.decode, misc.bytearray_strip)
     }
 
     if _type not in (cast_funcs_map.keys()):
@@ -153,7 +177,7 @@ def read_table(self, table, row, field, _type):
     result = self.protocol.command(
         0x1F,
         self.admin_password,
-        CAST_SIZE['121'](table, row, field)
+        misc.CAST_SIZE['121'](table, row, field)
     )
     result[u'Значение'] = cast_funcs_map[_type](result[u'Значение'])
 
@@ -168,7 +192,9 @@ def set_time(self, time_):
 
     # TODO: разобраться с округлением секунд до 00
     return self.protocol.command(
-        0x21, self.admin_password, CAST_SIZE['111'](time_.hour, time_.minute, time_.second)
+        0x21,
+        self.admin_password,
+        misc.CAST_SIZE['111'](time_.hour, time_.minute, time_.second)
     )
 set_time.cmd = 0x21
 
@@ -179,7 +205,9 @@ def set_date(self, date):
     """
 
     return self.protocol.command(
-        0x22, self.admin_password, CAST_SIZE['111'](date.day, date.month, date.year - 2000)
+        0x22,
+        self.admin_password,
+        misc.CAST_SIZE['111'](date.day, date.month, date.year - 2000)
     )
 set_date.cmd = 0x22
 
@@ -190,7 +218,9 @@ def confirm_date(self, date):
     """
 
     return self.protocol.command(
-        0x23, self.admin_password, CAST_SIZE['111'](date.day, date.month, date.year - 2000)
+        0x23,
+        self.admin_password,
+        misc.CAST_SIZE['111'](date.day, date.month, date.year - 2000)
     )
 confirm_date.cmd = 0x23
 
@@ -215,7 +245,11 @@ def cut(self, partial=False):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x25, self.password, CAST_SIZE['1'](partial))
+    return self.protocol.command(
+        0x25,
+        self.password,
+        misc.CAST_SIZE['1'](partial)
+    )
 cut.cmd = 0x25
 
 
@@ -224,7 +258,11 @@ def open_drawer(self, box=0):
     Открыть денежный ящик.
     """
 
-    return self.protocol.command(0x28, self.password, CAST_SIZE['1'](box))
+    return self.protocol.command(
+        0x28,
+        self.password,
+        misc.CAST_SIZE['1'](box)
+    )
 open_drawer.cmd = 0x28
 
 
@@ -242,7 +280,10 @@ def feed(self, count, control_tape=False, cash_tape=False, skid_document=False):
 
     self.wait_printing()
     return self.protocol.command(
-        0x29, self.password, CAST_SIZE['1'](control + cash + skid), CAST_SIZE['1'](count)
+        0x29,
+        self.password,
+        misc.CAST_SIZE['1'](control + cash + skid),
+        misc.CAST_SIZE['1'](count)
     )
 feed.cmd = 0x29
 
@@ -253,7 +294,10 @@ def test_stop(self):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x2B, self.password)
+    return self.protocol.command(
+        0x2B,
+        self.password
+    )
 test_stop.cmd = 0x2B
 
 
@@ -262,7 +306,11 @@ def request_table_structure(self, table):
     Запрос структуры таблицы.
     """
 
-    return self.protocol.command(0x2D, self.admin_password, CAST_SIZE['1'](table))
+    return self.protocol.command(
+        0x2D,
+        self.admin_password,
+        misc.CAST_SIZE['1'](table)
+    )
 request_table_structure.cmd = 0x2D
 
 
@@ -271,7 +319,11 @@ def request_field_structure(self, table, field):
     Запрос структуры поля.
     """
 
-    return self.protocol.command(0x2E, self.admin_password, CAST_SIZE['11'](table, field))
+    return self.protocol.command(
+        0x2E,
+        self.admin_password,
+        misc.CAST_SIZE['11'](table, field)
+    )
 request_field_structure.cmd = 0x2E
 
 
@@ -281,7 +333,10 @@ def x_report(self):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x40, self.admin_password)
+    return self.protocol.command(
+        0x40,
+        self.admin_password
+    )
 x_report.cmd = 0x40
 
 
@@ -291,7 +346,10 @@ def z_report(self):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x41, self.admin_password)
+    return self.protocol.command(
+        0x41,
+        self.admin_password
+    )
 z_report.cmd = 0x41
 
 
@@ -304,7 +362,7 @@ def income(self, cash):
     return self.protocol.command(
         0x50,
         self.password,
-        CAST_SIZE['11111'](*int_to_bytes(cash, 5))
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(cash, 5))
     )
 income.cmd = 0x50
 
@@ -318,7 +376,7 @@ def outcome(self, cash):
     return self.protocol.command(
         0x51,
         self.password,
-        CAST_SIZE['11111'](*int_to_bytes(cash, 5))
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(cash, 5))
     )
 outcome.cmd = 0x51
 
@@ -334,11 +392,11 @@ def sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
         return self.protocol.command(
             0x80,
             self.password,
-            CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(price, 5)),
-            CAST_SIZE['1'](department_num),
-            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            prepare_string(text, self.DEFAULT_MAX_LENGTH)
+            misc.CAST_SIZE['11111'](*misc.int_to_bytes(quantity, 5)),
+            misc.CAST_SIZE['11111'](*misc.int_to_bytes(price, 5)),
+            misc.CAST_SIZE['1'](department_num),
+            misc.CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+            misc.prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
     except excepts.Error as exc:
         raise excepts.ItemSaleError(exc)
@@ -355,11 +413,11 @@ def return_sale(self, item, department_num=0, tax1=0, tax2=0, tax3=0, tax4=0):
     return self.protocol.command(
         0x82,
         self.password,
-        CAST_SIZE['11111'](*int_to_bytes(quantity, 5)),
-        CAST_SIZE['11111'](*int_to_bytes(price, 5)),
-        CAST_SIZE['1'](department_num),
-        CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        prepare_string(text, self.DEFAULT_MAX_LENGTH)
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(quantity, 5)),
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(price, 5)),
+        misc.CAST_SIZE['1'](department_num),
+        misc.CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+        misc.prepare_string(text, self.DEFAULT_MAX_LENGTH)
     )
 return_sale.cmd = 0x82
 
@@ -383,14 +441,14 @@ def close_check(self,
         return self.protocol.command(
             0x85,
             self.password,
-            CAST_SIZE['11111'](*int_to_bytes(cash, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(payment_type2, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(payment_type3, 5)),
-            CAST_SIZE['11111'](*int_to_bytes(payment_type4, 5)),
+            misc.CAST_SIZE['11111'](*misc.int_to_bytes(cash, 5)),
+            misc.CAST_SIZE['11111'](*misc.int_to_bytes(payment_type2, 5)),
+            misc.CAST_SIZE['11111'](*misc.int_to_bytes(payment_type3, 5)),
+            misc.CAST_SIZE['11111'](*misc.int_to_bytes(payment_type4, 5)),
             # TODO: проверить скидку/надбавку
-            CAST_SIZE['s2'](discount_allowance),
-            CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-            prepare_string(text, self.DEFAULT_MAX_LENGTH)
+            misc.CAST_SIZE['s2'](discount_allowance),
+            misc.CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+            misc.prepare_string(text, self.DEFAULT_MAX_LENGTH)
         )
     except excepts.ProtocolError as exc:
         raise excepts.CloseCheckError(exc)
@@ -405,9 +463,9 @@ def discount(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
     return self.protocol.command(
         0x86,
         self.password,
-        CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
-        CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        prepare_string(text, self.DEFAULT_MAX_LENGTH)
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(sum_, 5)),
+        misc.CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+        misc.prepare_string(text, self.DEFAULT_MAX_LENGTH)
     )
 discount.cmd = 0x86
 
@@ -420,9 +478,9 @@ def allowance(self, sum_, tax1=0, tax2=0, tax3=0, tax4=0, text=None):
     return self.protocol.command(
         0x87,
         self.password,
-        CAST_SIZE['11111'](*int_to_bytes(sum_, 5)),
-        CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
-        prepare_string(text, self.DEFAULT_MAX_LENGTH)
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(sum_, 5)),
+        misc.CAST_SIZE['1111'](tax1, tax2, tax3, tax4),
+        misc.prepare_string(text, self.DEFAULT_MAX_LENGTH)
     )
 allowance.cmd = 0x87
 
@@ -433,7 +491,10 @@ def cancel_check(self):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x88, self.password)
+    return self.protocol.command(
+        0x88,
+        self.password
+    )
 cancel_check.cmd = 0x88
 
 
@@ -443,7 +504,10 @@ def repeat(self):
     """
 
     self.wait_printing()
-    return self.protocol.command(0x8C, self.password)
+    return self.protocol.command(
+        0x8C,
+        self.password
+    )
 repeat.cmd = 0x8C
 
 
@@ -454,7 +518,11 @@ def open_check(self, check_type):
 
     self.wait_printing()
     try:
-        return self.protocol.command(0x8D, self.password, CAST_SIZE['1'](check_type))
+        return self.protocol.command(
+            0x8D,
+            self.password,
+            misc.CAST_SIZE['1'](check_type)
+        )
     except excepts.Error as exc:
         raise excepts.OpenCheckError(exc)
 open_check.cmd = 0x8D
@@ -465,7 +533,10 @@ def continue_print(self):
     Продолжение печати.
     """
 
-    return self.protocol.command(0xB0, self.admin_password)
+    return self.protocol.command(
+        0xB0,
+        self.admin_password
+    )
 continue_print.cmd = 0xB0
 
 
@@ -474,7 +545,12 @@ def load_graphics(self, line_num, *args):
     Загрузка графики.
     """
 
-    return self.protocol.command(0xC0, self.password, CAST_SIZE['1'](line_num), *args)
+    return self.protocol.command(
+        0xC0,
+        self.password,
+        misc.CAST_SIZE['1'](line_num),
+        *args
+    )
 load_graphics.cmd = 0xC0
 
 
@@ -487,8 +563,8 @@ def print_graphics(self, start_line, end_line):
     return self.protocol.command(
         0xC1,
         self.password,
-        CAST_SIZE['1'](start_line),
-        CAST_SIZE['1'](end_line)
+        misc.CAST_SIZE['1'](start_line),
+        misc.CAST_SIZE['1'](end_line)
     )
 print_graphics.cmd = 0xC1
 
@@ -500,7 +576,9 @@ def print_barcode(self, num):
 
     self.wait_printing()
     return self.protocol.command(
-        0xC2, self.password, CAST_SIZE['11111'](*int_to_bytes(num, 5))
+        0xC2,
+        self.password,
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(num, 5))
     )
 print_barcode.cmd = 0xC2
 
@@ -510,7 +588,10 @@ def open_shift(self):
     Открыть смену.
     """
 
-    return self.protocol.command(0xE0, self.password)
+    return self.protocol.command(
+        0xE0,
+        self.password
+    )
 open_shift.cmd = 0xE0
 
 
@@ -519,7 +600,9 @@ def model(self):
     Получить тип устройства.
     """
 
-    return self.protocol.command_nopass(0xFC)
+    return self.protocol.command_nopass(
+        0xFC
+    )
 model.cmd = 0xFC
 
 

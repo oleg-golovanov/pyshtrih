@@ -3,19 +3,19 @@
 
 import struct
 import locale
-from operator import concat, xor, itemgetter
-from functools import partial
-from datetime import date, time
-from binascii import hexlify
-from itertools import compress
-from collections import namedtuple
+import datetime
+import operator
+import binascii
+import itertools
+import functools
+import collections
 
 
 LOCALE = locale.getpreferredencoding()
 NULL = bytearray((0x00, ))
 
 DEFAULT_MIN_LENGTH = 40
-T_TAPES = namedtuple('Tapes', ['control', 'cash', 'skid'])
+T_TAPES = collections.namedtuple('Tapes', ['control', 'cash', 'skid'])
 
 BAUDRATE_DIRECT = {
     2400: 0,
@@ -29,39 +29,6 @@ BAUDRATE_DIRECT = {
 BAUDRATE_REVERSE = {v: k for k, v in BAUDRATE_DIRECT.items()}
 
 
-def dict_pprint(arg):
-    """
-    Функция преобразования словаря в строку.
-
-    :type arg: dict
-    :param arg: словарь
-
-    :rtype: unicode
-    :return: исходный dict в виде unicode строки
-    """
-
-    if not isinstance(arg, dict):
-        raise TypeError('ожидается тип dict, {} получен'.format(type(arg).__name__))
-
-    format_map = {
-        dict: dict_pprint,
-        unicode: lambda x: u"u'{}'".format(x),
-        str: lambda x: u"'{}'".format(x.decode(LOCALE))
-    }
-
-    result = []
-
-    for k, v in arg.items():
-        k = format_map.get(type(k), lambda x: x)(k)
-
-        result.append(u'{}: {}'.format(
-            k,
-            format_map.get(type(v), lambda x: x)(v))
-        )
-
-    return u'{{{}}}'.format(', '.join(result))
-
-
 def bytearray_cast(arg):
     if not isinstance(arg, bytearray):
         return bytearray(arg)
@@ -73,7 +40,7 @@ def bytearray_concat(*args):
     Функция конкатенирования нескольких bytearray в один.
     """
 
-    return bytearray_cast(reduce(concat, args))
+    return bytearray_cast(reduce(operator.concat, args))
 
 
 def bytearray_strip(arg):
@@ -116,7 +83,7 @@ def lrc(buff):
     Расчет контрольной суммы.
     """
 
-    return reduce(xor, buff)
+    return reduce(operator.xor, buff)
 
 
 def encode(text):
@@ -350,11 +317,11 @@ def handle_version(arg):
 
 def handle_date(arg):
     d, m, y = arg
-    return date(2000 + y, m, d)
+    return datetime.date(2000 + y, m, d)
 
 
 def handle_time(arg):
-    return time(*arg)
+    return datetime.time(*arg)
 
 
 def handle_fr_flags(arg):
@@ -397,8 +364,8 @@ def handle_fr_flags(arg):
 
     return dict(
         zip(
-            compress(get_keys(rev), flags),
-            compress(bits, flags)
+            itertools.compress(get_keys(rev), flags),
+            itertools.compress(bits, flags)
         )
     )
 handle_fr_flags.model = -1
@@ -568,7 +535,7 @@ def handle_fp_flags(arg):
 
 
 def handle_inn(arg):
-    inn = hexlify(arg)
+    inn = binascii.hexlify(arg)
 
     if inn == 'ffffffffffff':
         return -1
@@ -592,7 +559,7 @@ class FuncChain(object):
         return res
 
 
-fetchone = itemgetter(0)
+fetchone = operator.itemgetter(0)
 
 
 def unpack(fmt, string):
@@ -619,10 +586,14 @@ CHAR_SIZE = {
 }
 
 CAST_SIZE = {
-    size: FuncChain(bytearray, partial(struct.pack, fmt)) for size, fmt in CHAR_SIZE.items()
+    size: FuncChain(bytearray, functools.partial(struct.pack, fmt)) for size, fmt in CHAR_SIZE.items()
 }
 
 UNCAST_SIZE = {
-    size: FuncChain(fetchone, partial(unpack, fmt)) if len(size) == 1 else partial(struct.unpack, fmt)
+    size: (
+        FuncChain(fetchone, functools.partial(unpack, fmt))
+        if len(size) == 1
+        else functools.partial(struct.unpack, fmt)
+    )
     for size, fmt in CHAR_SIZE.items()
 }
