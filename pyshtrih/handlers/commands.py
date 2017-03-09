@@ -304,7 +304,7 @@ HANDLERS = {
         (slice(5, 6), misc.FuncChain(hf.handle_fn_warning_flags, misc.UNCAST_SIZE['1']), u'Флаги предупреждения'),
         (slice(6, 11), misc.FuncChain(hf.handle_datetime, misc.UNCAST_SIZE['11111']), u'Дата и время'),
         (slice(11, 27), None, u'Номер ФН'),
-        (slice(27, 32), misc.UNCAST_SIZE['4'], u'Номер последнего ФД'),
+        (slice(27, 31), misc.UNCAST_SIZE['4'], u'Номер последнего ФД'),
     ),
     # Запрос срока действия ФН
     0xFF03: (
@@ -328,9 +328,9 @@ HANDLERS = {
     # Открыть смену в ФН
     0xFF0B: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), misc.UNCAST_SIZE['2'], u'Номер новой открытой смены'),
-        (slice(2, 6), misc.UNCAST_SIZE['4'], u'Номер ФД'),
-        (slice(6, 10), misc.UNCAST_SIZE['4'], u'Фискальный признак')
+        (slice(1, 3), misc.UNCAST_SIZE['2'], u'Номер новой открытой смены'),
+        (slice(3, 7), misc.UNCAST_SIZE['4'], u'Номер ФД'),
+        (slice(7, 11), misc.UNCAST_SIZE['4'], u'Фискальный признак')
     ),
     # Передать произвольную TLV структуру
     0xFF0C: (
@@ -382,8 +382,8 @@ HANDLERS = {
     # Закрыть смену в ФН
     0xFF43: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), misc.UNCAST_SIZE['2'], u'Номер только что закрытой смены'),
-        (slice(2, 6), misc.UNCAST_SIZE['4'], u'Номер ФД'),
-        (slice(6, 10), misc.UNCAST_SIZE['4'], u'Фискальный признак')
+        (slice(1, 3), misc.UNCAST_SIZE['2'], u'Номер только что закрытой смены'),
+        (slice(3, 7), misc.UNCAST_SIZE['4'], u'Номер ФД'),
+        (slice(7, 11), misc.UNCAST_SIZE['4'], u'Фискальный признак')
     )
 }
