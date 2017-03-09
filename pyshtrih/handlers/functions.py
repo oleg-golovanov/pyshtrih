@@ -253,7 +253,7 @@ def handle_inn(arg):
     return int(inn, base=16)
 
 
-def handle_fn_lifestate(arg):
+def handle_fs_lifestate(arg):
     values = (
         u'Закончена передача фискальных данных в ОФД',
         u'Закрыт фискальный режим',
@@ -264,7 +264,7 @@ def handle_fn_lifestate(arg):
     return dict(zip(values, misc.int_to_bits(arg, 4)))
 
 
-def handle_fn_current_document(arg):
+def handle_fs_current_document(arg):
     values = {
         0x00: u'нет открытого документа',
         0x01: u'отчет о фискализации',
@@ -283,7 +283,7 @@ def handle_fn_current_document(arg):
     return values.get(arg, u'неизвестный тип документа')
 
 
-def handle_fn_document_data(arg):
+def handle_fs_document_data(arg):
     values = {
         0: u'нет данных документа',
         1: u'получены данные документа'
@@ -292,7 +292,7 @@ def handle_fn_document_data(arg):
     return values[arg]
 
 
-def handle_fn_shift_state(arg):
+def handle_fs_shift_state(arg):
     values = {
         0: u'смена закрыта',
         1: u'смена открыта'
@@ -301,7 +301,7 @@ def handle_fn_shift_state(arg):
     return values[arg]
 
 
-def handle_fn_warning_flags(arg):
+def handle_fs_warning_flags(arg):
     values = (
         u'Превышено время ожидания ответа ОФД',
         u'Переполнение памяти ФН (Архив ФН заполнен на 90%)',

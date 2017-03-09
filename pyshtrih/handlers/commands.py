@@ -297,11 +297,11 @@ HANDLERS = {
     # Запрос статуса ФН
     0xFF01: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), misc.FuncChain(hf.handle_fn_lifestate, misc.UNCAST_SIZE['1']), u'Состояние фазы жизни'),
-        (slice(2, 3), misc.FuncChain(hf.handle_fn_current_document, misc.UNCAST_SIZE['1']), u'Текущий документ'),
-        (slice(3, 4), misc.FuncChain(hf.handle_fn_document_data, misc.UNCAST_SIZE['1']), u'Данные документа'),
-        (slice(4, 5), misc.FuncChain(hf.handle_fn_shift_state, misc.UNCAST_SIZE['1']), u'Состояние смены'),
-        (slice(5, 6), misc.FuncChain(hf.handle_fn_warning_flags, misc.UNCAST_SIZE['1']), u'Флаги предупреждения'),
+        (slice(1, 2), misc.FuncChain(hf.handle_fs_lifestate, misc.UNCAST_SIZE['1']), u'Состояние фазы жизни'),
+        (slice(2, 3), misc.FuncChain(hf.handle_fs_current_document, misc.UNCAST_SIZE['1']), u'Текущий документ'),
+        (slice(3, 4), misc.FuncChain(hf.handle_fs_document_data, misc.UNCAST_SIZE['1']), u'Данные документа'),
+        (slice(4, 5), misc.FuncChain(hf.handle_fs_shift_state, misc.UNCAST_SIZE['1']), u'Состояние смены'),
+        (slice(5, 6), misc.FuncChain(hf.handle_fs_warning_flags, misc.UNCAST_SIZE['1']), u'Флаги предупреждения'),
         (slice(6, 11), misc.FuncChain(hf.handle_datetime, misc.UNCAST_SIZE['11111']), u'Дата и время'),
         (slice(11, 27), None, u'Номер ФН'),
         (slice(27, 31), misc.UNCAST_SIZE['4'], u'Номер последнего ФД'),
