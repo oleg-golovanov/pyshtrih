@@ -683,7 +683,7 @@ def send_tlv_struct(self, tlv_struct):
 send_tlv_struct.cmd = 0xFF0C
 
 
-def fs_begin_correction_receipt(self):
+def fs_begin_correction_check(self):
     """
     Начать формирование чека коррекции.
     """
@@ -692,10 +692,10 @@ def fs_begin_correction_receipt(self):
         0xFF35,
         self.admin_password
     )
-fs_begin_correction_receipt.cmd = 0xFF35
+fs_begin_correction_check.cmd = 0xFF35
 
 
-def fs_correction_receipt(self, sum_, check_type):
+def fs_correction_check(self, sum_, check_type):
     """
     Сформировать чек коррекции.
     """
@@ -706,7 +706,7 @@ def fs_correction_receipt(self, sum_, check_type):
         misc.CAST_SIZE['11111'](*misc.int_to_bytes (sum_, 5)),
         misc.CAST_SIZE['1'](check_type)
     )
-fs_correction_receipt.cmd = 0xFF36
+fs_correction_check.cmd = 0xFF36
 
 
 def fs_info_exchange(self):
