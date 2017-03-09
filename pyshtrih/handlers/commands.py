@@ -367,7 +367,7 @@ HANDLERS = {
     # Запрос параметров текущей смены
     0xFF40: (
         ERROR_CODE_STRUCT,
-        (slice(1, 2), misc.UNCAST_SIZE['1'], u'Состояние смены'),
+        (slice(1, 2), misc.FuncChain(hf.handle_fs_shift_state, misc.UNCAST_SIZE['1']), u'Состояние смены'),
         (slice(2, 4), misc.UNCAST_SIZE['2'], u'Номер смены'),
         (slice(4, 6), misc.UNCAST_SIZE['2'], u'Номер чека')
     ),
