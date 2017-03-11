@@ -20,6 +20,7 @@ class Device(object):
     DEFAULT_MAX_LENGTH = 40
 
     TAPES = misc.T_TAPES(False, False, False)
+    FS = False
 
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
@@ -38,7 +39,8 @@ class Device(object):
         self.protocol = protocol.Protocol(
             port,
             baudrate,
-            timeout or self.SERIAL_TIMEOUT
+            timeout or self.SERIAL_TIMEOUT,
+            fs=self.FS
         )
 
         self.password = password or self.DEFAULT_CASHIER_PASSWORD
@@ -155,6 +157,7 @@ class ShtrihFR01F(Device):
 
     DEFAULT_MAX_LENGTH = 36
     TAPES = misc.T_TAPES(False, True, False)
+    FS = True
 
 
 class ShtrihAllCommands(Device):

@@ -19,7 +19,7 @@ class Protocol(object):
     MAX_ATTEMPTS = 10
     CHECK_NUM = 3
 
-    def __init__(self, port, baudrate, timeout):
+    def __init__(self, port, baudrate, timeout, fs=False):
         """
         Класс описывающий протокол взаимодействия в устройством.
 
@@ -29,6 +29,8 @@ class Protocol(object):
         :param baudrate: скорость взаимодействия с устройством
         :type timeout: float
         :param timeout: время таймаута ответа устройства
+        :type fs: bool
+        :param fs: признак наличия ФН (фискальный накопитель)
         """
 
         self.port = port
@@ -39,6 +41,7 @@ class Protocol(object):
             timeout=timeout,
             writeTimeout=timeout
         )
+        self.fs = fs
         self.connected = False
 
     def connect(self):
@@ -174,7 +177,7 @@ class Protocol(object):
 
             error = result.get(hc.ERROR_CODE_STR, 0)
             if error != 0:
-                raise excepts.Error(cmd, error)
+                raise excepts.Error(cmd, error, fs=self.fs)
 
             return Response(cmd, result)
 

@@ -267,17 +267,23 @@ class Error(ProtocolError):
         0x20: u'Сообщение от ОФД не может быть принято'
     }
 
-    def __init__(self, cmd=None, code=None, message=None):
+    def __init__(self, cmd=None, code=None, message=None, fs=False):
         self.cmd = cmd or 0x00
         self.cmd_name = hc.COMMANDS.get(cmd, u'Неизвестная команда')
+        self.fs = fs
         self.code = code or 0xFF
+
+        if self.fs and self.code in self.fs_codes:
+            self.code_desc = self.fs_codes[self.code]
+        else:
+            self.code_desc = self.codes.get(self.code, u'Неизвестная ошибка')
 
         if message:
             self.template = u'{message}'
             self.message = message if isinstance(message, unicode) else message.decode(misc.LOCALE)
         else:
             self.template = u'0x{cmd:02X} ({cmd_name}) - {message} (0x{code:02X})'
-            self.message = self.codes.get(code, u'Неизвестная ошибка')
+            self.message = self.code_desc
 
     def __str__(self):
         return unicode(self).encode(misc.LOCALE)
@@ -293,7 +299,7 @@ class CheckError(Error):
 
     def __init__(self, exc):
         if isinstance(exc, Error):
-            super(CheckError, self).__init__(cmd=exc.cmd, code=exc.code)
+            super(CheckError, self).__init__(cmd=exc.cmd, code=exc.code, fs=exc.fs)
         elif isinstance(exc, ProtocolError):
             super(CheckError, self).__init__(message=unicode(exc))
         else:
