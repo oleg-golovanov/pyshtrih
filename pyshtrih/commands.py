@@ -721,6 +721,18 @@ def fs_info_exchange(self):
 fs_info_exchange.cmd = 0xFF39
 
 
+def fs_unconfirmed_document_count(self):
+    """
+    Запрос количества ФД на которые нет квитанции.
+    """
+
+    return self.protocol.command(
+        0xFF3F,
+        self.admin_password
+    )
+fs_unconfirmed_document_count.cmd = 0xFF3F
+
+
 def fs_shift_params(self):
     """
     Запрос параметров текущей смены.
