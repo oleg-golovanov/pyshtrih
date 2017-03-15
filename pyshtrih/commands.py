@@ -606,6 +606,181 @@ def model(self):
 model.cmd = 0xFC
 
 
+def fs_state(self):
+    """
+    Запрос статуса ФН.
+    """
+
+    return self.protocol.command(
+        0xFF01,
+        self.admin_password
+    )
+fs_state.cmd = 0xFF01
+
+
+def fs_expiration_time(self):
+    """
+    Запрос срока действия ФН.
+    """
+
+    return self.protocol.command(
+        0xFF03,
+        self.admin_password
+    )
+fs_expiration_time.cmd = 0xFF03
+
+
+def fs_cancel_document(self):
+    """
+    Отменить документ в ФН.
+    """
+
+    return self.protocol.command(
+        0xFF08,
+        self.admin_password
+    )
+fs_cancel_document.cmd = 0xFF08
+
+
+def fs_find_document_by_num(self, num):
+    """
+    Найти фискальный документ по номеру.
+    """
+
+    return self.protocol.command(
+        0xFF0A,
+        self.admin_password,
+        misc.CAST_SIZE['4'](num)
+    )
+fs_find_document_by_num.cmd = 0xFF0A
+
+
+def fs_open_shift(self):
+    """
+    Открыть смену в ФН.
+    """
+
+    return self.protocol.command(
+        0xFF0B,
+        self.admin_password
+    )
+fs_open_shift.cmd = 0xFF0B
+
+
+def send_tlv_struct(self, tlv_struct):
+    """
+    Передать произвольную TLV структуру.
+    """
+
+    if len(tlv_struct) > 250:
+        raise ValueError(u'Максимальный размер tlv структуры - 250 байт')
+
+    return self.protocol.command(
+        0xFF0C,
+        self.admin_password,
+        tlv_struct
+    )
+send_tlv_struct.cmd = 0xFF0C
+
+
+def fs_begin_correction_check(self):
+    """
+    Начать формирование чека коррекции.
+    """
+
+    return self.protocol.command(
+        0xFF35,
+        self.admin_password
+    )
+fs_begin_correction_check.cmd = 0xFF35
+
+
+def fs_correction_check(self, sum_, check_type):
+    """
+    Сформировать чек коррекции.
+    """
+
+    return self.protocol.command(
+        0xFF36,
+        self.admin_password,
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes (sum_, 5)),
+        misc.CAST_SIZE['1'](check_type)
+    )
+fs_correction_check.cmd = 0xFF36
+
+
+def fs_info_exchange(self):
+    """
+    Получить статус информационного обмена.
+    """
+
+    return self.protocol.command(
+        0xFF39,
+        self.admin_password
+    )
+fs_info_exchange.cmd = 0xFF39
+
+
+def fs_unconfirmed_document_count(self):
+    """
+    Запрос количества ФД на которые нет квитанции.
+    """
+
+    return self.protocol.command(
+        0xFF3F,
+        self.admin_password
+    )
+fs_unconfirmed_document_count.cmd = 0xFF3F
+
+
+def fs_shift_params(self):
+    """
+    Запрос параметров текущей смены.
+    """
+
+    return self.protocol.command(
+        0xFF40,
+        self.admin_password
+    )
+fs_shift_params.cmd = 0xFF40
+
+
+def fs_begin_open_shift(self):
+    """
+    Начать открытие смены.
+    """
+
+    return self.protocol.command(
+        0xFF41,
+        self.admin_password
+    )
+fs_begin_open_shift.cmd = 0xFF41
+
+
+def fs_begin_close_shift(self):
+    """
+    Начать закрытие смены.
+    """
+
+    return self.protocol.command(
+        0xFF42,
+        self.admin_password
+    )
+fs_begin_close_shift.cmd = 0xFF42
+
+
+def fs_close_shift(self):
+    """
+    Закрыть смену в ФН.
+    """
+
+    return self.protocol.command(
+        0xFF43,
+        self.admin_password
+    )
+fs_close_shift.cmd = 0xFF43
+
+
 def wait_printing(self):
     """
     Метод ожидания окончания печати документа.

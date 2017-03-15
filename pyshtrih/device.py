@@ -2,9 +2,10 @@
 
 
 import protocol
-import handlers
 import commands
 import misc
+from handlers import commands as hc
+from handlers import functions as hf
 
 
 class Device(object):
@@ -19,6 +20,7 @@ class Device(object):
     DEFAULT_MAX_LENGTH = 40
 
     TAPES = misc.T_TAPES(False, False, False)
+    FS = False
 
     def __init__(self, port='/dev/ttyS0', baudrate=9600, timeout=None, password=None, admin_password=None):
         """
@@ -37,7 +39,8 @@ class Device(object):
         self.protocol = protocol.Protocol(
             port,
             baudrate,
-            timeout or self.SERIAL_TIMEOUT
+            timeout or self.SERIAL_TIMEOUT,
+            fs=self.FS
         )
 
         self.password = password or self.DEFAULT_CASHIER_PASSWORD
@@ -99,7 +102,7 @@ class Device(object):
 
         if hasattr(self, 'model'):
             self.dev_info = self.model()
-            misc.handle_fr_flags.model = self.dev_info[u'Модель устройства']
+            hf.handle_fr_flags.model = self.dev_info[u'Модель устройства']
 
     def disconnect(self):
         """
@@ -145,5 +148,17 @@ ShtrihFRPTK = ShtrihFRK
 ShtrihComboPTK = ShtrihComboFRK
 
 
+class ShtrihFR01F(Device):
+    SUPPORTED_COMMANDS = (
+        0x10, 0x11, 0x13, 0x14, 0x15, 0x17, 0x19, 0x1A, 0x1B, 0x1E, 0x1F, 0x21, 0x22, 0x23, 0x25, 0x28, 0x29, 0x2B,
+        0x2D, 0x2E, 0x40, 0x41, 0x50, 0x51, 0x80, 0x82, 0x85, 0x86, 0x87, 0x88, 0x8C, 0x8D, 0xB0, 0xC0, 0xC1, 0xC2,
+        0xE0, 0xFC, 0xFF01, 0xFF03, 0xFF08, 0xFF0A, 0xFF0C, 0xFF35, 0xFF36, 0xFF39, 0xFF3F, 0xFF40, 0xFF41, 0xFF42
+    )
+
+    DEFAULT_MAX_LENGTH = 36
+    TAPES = misc.T_TAPES(False, True, False)
+    FS = True
+
+
 class ShtrihAllCommands(Device):
-    SUPPORTED_COMMANDS = handlers.COMMANDS.keys()
+    SUPPORTED_COMMANDS = hc.COMMANDS.keys()

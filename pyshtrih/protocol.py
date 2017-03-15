@@ -6,7 +6,7 @@ import unilog
 
 import misc
 import excepts
-import handlers
+from handlers import commands as hc
 
 
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста
@@ -19,7 +19,7 @@ class Protocol(object):
     MAX_ATTEMPTS = 10
     CHECK_NUM = 3
 
-    def __init__(self, port, baudrate, timeout):
+    def __init__(self, port, baudrate, timeout, fs=False):
         """
         Класс описывающий протокол взаимодействия в устройством.
 
@@ -29,6 +29,8 @@ class Protocol(object):
         :param baudrate: скорость взаимодействия с устройством
         :type timeout: float
         :param timeout: время таймаута ответа устройства
+        :type fs: bool
+        :param fs: признак наличия ФН (фискальный накопитель)
         """
 
         self.port = port
@@ -39,6 +41,7 @@ class Protocol(object):
             timeout=timeout,
             writeTimeout=timeout
         )
+        self.fs = fs
         self.connected = False
 
     def connect(self):
@@ -146,13 +149,20 @@ class Protocol(object):
 
         payload = misc.bytearray_cast(payload)
 
+        # предполагаем, что команда однобайтная
+        cmd_len = 1
         try:
             cmd = payload[0]
+            # если байт полный, то скорее всего команда двубайтная,
+            # т.к. в спецификации Штриха не предусмотрено команды с кодом 0xFF
+            if cmd == 0xFF:
+                cmd_len = 2
+                cmd = misc.bytes_to_int((payload[1], cmd))
         except IndexError:
-            raise excepts.UnexpectedResponseError(u'Не удалось получить байт команды из ответа')
+            raise excepts.UnexpectedResponseError(u'Не удалось получить байт(ы) команды из ответа')
 
-        response = payload[slice(1, None)]
-        handler = handlers.HANDLERS.get(cmd)
+        response = payload[slice(cmd_len, None)]
+        handler = hc.HANDLERS.get(cmd)
 
         if handler:
             result = {}
@@ -165,9 +175,9 @@ class Protocol(object):
                 else:
                     result[name] = None
 
-            error = result.get(handlers.ERROR_CODE_STR, 0)
+            error = result.get(hc.ERROR_CODE_STR, 0)
             if error != 0:
-                raise excepts.Error(cmd, error)
+                raise excepts.Error(cmd, error, fs=self.fs)
 
             return Response(cmd, result)
 
@@ -189,9 +199,10 @@ class Protocol(object):
         if not isinstance(params, bytearray):
             raise TypeError(u'{} expected, got {} instead'.format(bytearray, type(params)))
 
+        cmd_len = len(misc.int_to_bytes(cmd))
         buff = misc.bytearray_concat(
-            misc.CAST_SIZE['1'](1 + len(params)),
-            misc.CAST_SIZE['1'](cmd),
+            misc.CAST_SIZE['1'](cmd_len + len(params)),
+            misc.CAST_CMD[cmd_len](cmd),
             params
         )
         command = misc.bytearray_concat(STX, buff, misc.CAST_SIZE['1'](misc.lrc(buff)))
@@ -283,7 +294,7 @@ class Response(object):
         """
 
         self.cmd = cmd
-        self.cmd_name = handlers.COMMANDS[cmd]
+        self.cmd_name = hc.COMMANDS[cmd]
         self.params = params
 
     def __getitem__(self, item):
