@@ -9,7 +9,7 @@ from .excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, 
     OpenCheckError, ItemSaleError, CloseCheckError
 
 
-__version__ = '1.7.0'
+__version__ = '1.7.1'
 __all__ = (
     'discovery',
     'Protocol',
