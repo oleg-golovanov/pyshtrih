@@ -282,7 +282,7 @@ HANDLERS = {
     ),
     # Открыть смену
     0xE0: (
-        OPERATOR_INDEX_NUMBER_STRUCT,
+        ERROR_CODE_STRUCT,
     ),
     # Получить тип устройства
     0xFC: (
