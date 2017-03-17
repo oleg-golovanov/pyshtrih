@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 
 
-from re import search
-from os.path import join, dirname
+import re
+import os.path
 
-from setuptools import setup
-
-
-with open(join(dirname(__file__), 'pyshtrih', '__init__.py')) as f:
-    version = search(r'__version__\s+=\s+[\'\"]+(.*)[\'\"]+', f.read()).group(1)
+import setuptools
 
 
-setup(
+with open(os.path.join(os.path.dirname(__file__), 'pyshtrih', '__init__.py')) as f:
+    version = re.search(r'__version__\s+=\s+[\'\"]+(.*)[\'\"]+', f.read()).group(1)
+
+
+setuptools.setup(
     name='pyshtrih',
     version=version,
-    packages=['pyshtrih'],
+    packages=[
+        'pyshtrih',
+        'pyshtrih.handlers'
+    ],
     url='https://github.com/oleg-golovanov/pyshtrih',
     license='MIT',
     author='Oleg Golovanov',
@@ -22,7 +25,7 @@ setup(
     description='Реализация драйвера семейства ККМ "Штрих" на Python.',
     zip_safe=False,
     platforms='any',
-    long_description=open(join(dirname(__file__), 'README.rst')).read(),
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
     install_requires=['pyserial', 'unilog'],
     classifiers=[
         'Development Status :: 4 - Beta',
