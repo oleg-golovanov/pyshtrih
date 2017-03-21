@@ -31,6 +31,8 @@ class Discovery(object):
         self.dev_info = self.model()
         self.protocol.disconnect()
 
+    name = device.Device.name
+
 
 def discovery(callback=None, port=None, baudrate=None):
     """
@@ -67,20 +69,19 @@ def discovery(callback=None, port=None, baudrate=None):
             except IOError:
                 pass
             else:
-                model_name = d.dev_info[u'Название устройства']
                 device_cls = None
 
-                if u'ФР-ПТК' in model_name:
+                if u'ФР-ПТК' in d.name:
                     device_cls = device.ShtrihFRPTK
-                elif u'LIGHT-ПТК' in model_name:
+                elif u'LIGHT-ПТК' in d.name:
                     device_cls = device.ShtrihLightPTK
-                elif u'ПТК' in model_name:
+                elif u'ПТК' in d.name:
                     device_cls = device.ShtrihComboPTK
-                elif u'КОМБО-ФР-К' in model_name:
+                elif u'КОМБО-ФР-К' in d.name:
                     device_cls = device.ShtrihComboFRK
-                elif u'ФР-К' in model_name:
+                elif u'ФР-К' in d.name:
                     device_cls = device.ShtrihFRK
-                elif u'ФР-01Ф' in model_name:
+                elif u'ФР-01Ф' in d.name:
                     device_cls = device.ShtrihFR01F
 
                 if device_cls:

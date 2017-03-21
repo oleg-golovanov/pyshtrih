@@ -87,6 +87,16 @@ class Device(object):
 
         return self.protocol.connected
 
+    @property
+    def name(self):
+        """
+        Название устройства.
+
+        :rtype: unicode
+        """
+
+        return self.dev_info[u'Название устройства'] if self.dev_info else u''
+
     def connect(self, force=False):
         """
         Подключиться к ККМ.
