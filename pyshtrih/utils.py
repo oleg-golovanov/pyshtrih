@@ -83,6 +83,8 @@ def discovery(callback=None, port=None, baudrate=None):
                     device_cls = device.ShtrihFRK
                 elif u'ФР-01Ф' in d.name:
                     device_cls = device.ShtrihFR01F
+                elif u'950К' in d.name:
+                    device_cls = device.Shtrih950K
 
                 if device_cls:
                     discovered_device = device_cls(p, b)
