@@ -3,10 +3,7 @@
 
 import struct
 import locale
-import datetime
 import operator
-import binascii
-import itertools
 import functools
 import collections
 
@@ -27,6 +24,8 @@ BAUDRATE_DIRECT = {
     115200: 6
 }
 BAUDRATE_REVERSE = {v: k for k, v in BAUDRATE_DIRECT.items()}
+
+TLV_LEN_MAX = 250
 
 
 def bytearray_cast(arg):
