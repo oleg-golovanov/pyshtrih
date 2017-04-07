@@ -672,8 +672,10 @@ def send_tlv_struct(self, tlv_struct):
     Передать произвольную TLV структуру.
     """
 
-    if len(tlv_struct) > 250:
-        raise ValueError(u'Максимальный размер tlv структуры - 250 байт')
+    if len(tlv_struct) > misc.TLV_LEN_MAX:
+        raise ValueError(
+            u'Максимальный размер tlv структуры - {} байт'.format(misc.TLV_LEN_MAX)
+        )
 
     return self.protocol.command(
         0xFF0C,
@@ -703,7 +705,7 @@ def fs_correction_check(self, sum_, check_type):
     return self.protocol.command(
         0xFF36,
         self.admin_password,
-        misc.CAST_SIZE['11111'](*misc.int_to_bytes (sum_, 5)),
+        misc.CAST_SIZE['11111'](*misc.int_to_bytes(sum_, 5)),
         misc.CAST_SIZE['1'](check_type)
     )
 fs_correction_check.cmd = 0xFF36
@@ -816,11 +818,11 @@ print_graphics.depends = (wait_printing, )
 print_barcode.depends = (wait_printing, )
 
 
-module = sys.modules[__name__]
+module_ = sys.modules[__name__]
 FUNCTIONS = {
-    function.cmd if hasattr(function, 'cmd') else name: function
-    for name, function in inspect.getmembers(module, inspect.isfunction)
-    if function.__module__ == module.__name__
+    function_.cmd if hasattr(function_, 'cmd') else name: function_
+    for name, function_ in inspect.getmembers(module_, inspect.isfunction)
+    if function_.__module__ == module_.__name__
 }
 
 
