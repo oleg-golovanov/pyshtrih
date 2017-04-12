@@ -8,30 +8,39 @@ class FD(object):
     TAGS = {
         # тэг: (тип значения, признак обязательности соблюдения длины, максимальная длина)
         # телефон или электронный адрес покупателя
-        1008: (unicode, False, 64),
-        # адрес расчетов
-        1009: (unicode, False, 256),
-        # кассир
-        1021: (unicode, False, 64),
-        # место расчетов
-        1087: (unicode, False, 256),
-        # наименование поставщика
-        1225: (unicode, False, 256)
+        1008: (unicode, False, 64)
     }
 
     CAST = {
         unicode: lambda x: x.encode('cp866')
     }
     LEN = {
-        str: len
+        str: (len, lambda value, len_: value.ljust(len_))
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, tags=None):
+        """
+        Структура для работы с фискальными данными.
+        
+        :type tags: dict
+        :param tags: словарь {тэг: значение}
+        """
+
         self.data = bytearray()
-        for item in kwargs.items():
+
+        tags = tags or {}
+        for item in tags.items():
             self.set_value(*item)
 
     def set_value(self, tag, value):
+        """
+        Установить значение для тэга.
+        
+        :type tag: int
+        :param tag: тэг
+        :param value: значение тэга
+        """
+
         try:
             type_, len_req, len_max = self.TAGS.get(tag)
         except TypeError:
@@ -43,19 +52,31 @@ class FD(object):
                 u'Значение для тэга {} должно быть {}, получено {}'.format(tag, type_, value_type)
             )
 
-        cast_call = self.CAST.get(type(value))
+        cast_call = self.CAST.get(value_type)
         if cast_call:
             value = cast_call(value)
+            value_type = type(value)
 
-        value = value[:len_max]
+        len_call, fill_call = self.LEN[value_type]
+        if len_call(value) > len_max:
+            raise ValueError(u'Тэг {} имеет ограничение длины - {} байта'.format(tag, len_max))
+        if len_req:
+            value = fill_call(value, len_max)
 
         self.data.extend(
             misc.bytearray_concat(
                 misc.CAST_SIZE['2'](tag),
-                misc.CAST_SIZE['2'](len(value)),
+                misc.CAST_SIZE['2'](len_call(value)),
                 value
             )
         )
 
     def dump(self):
+        """
+        Получить TVL структуру, готовую для передачи в команду send_tlv_struct.
+        
+        :rtype: bytes
+        :return: tlv строка
+        """
+
         return bytes(self.data)
