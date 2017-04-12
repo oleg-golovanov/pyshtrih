@@ -2,6 +2,7 @@
 
 
 import misc
+import excepts
 
 
 class FD(object):
@@ -44,11 +45,11 @@ class FD(object):
         try:
             type_, len_req, len_max = self.TAGS.get(tag)
         except TypeError:
-            raise ValueError(u'Тэг {} не поддерживается'.format(tag))
+            raise excepts.FDError(u'Тэг {} не поддерживается'.format(tag))
 
         value_type = type(value)
         if value_type != type_:
-            raise ValueError(
+            raise excepts.FDError(
                 u'Значение для тэга {} должно быть {}, получено {}'.format(tag, type_, value_type)
             )
 
@@ -59,7 +60,7 @@ class FD(object):
 
         len_call, fill_call = self.LEN[value_type]
         if len_call(value) > len_max:
-            raise ValueError(u'Тэг {} имеет ограничение длины - {} байта'.format(tag, len_max))
+            raise excepts.FDError(u'Тэг {} имеет ограничение длины - {} байта'.format(tag, len_max))
         if len_req:
             value = fill_call(value, len_max)
 

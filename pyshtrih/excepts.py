@@ -36,6 +36,10 @@ class UnexpectedResponseError(ProtocolError):
     pass
 
 
+class FDError(ProtocolError):
+    pass
+
+
 class Error(ProtocolError):
 
     codes = {
