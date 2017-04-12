@@ -5,8 +5,9 @@ from .utils import discovery
 from .protocol import Protocol
 from .device import ShtrihFRK, ShtrihFRPTK, ShtrihComboFRK, ShtrihComboPTK, ShtrihLightPTK, Shtrih950K, \
     ShtrihFR01F, ShtrihAllCommands
-from .excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, Error, CheckError, \
+from .excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, FDError, Error, CheckError, \
     OpenCheckError, ItemSaleError, CloseCheckError
+from .fd import FD
 
 
 __version__ = '1.7.4'
@@ -15,6 +16,7 @@ __all__ = (
     'Protocol',
     'ShtrihFRK', 'ShtrihFRPTK', 'ShtrihComboFRK', 'ShtrihComboPTK', 'ShtrihLightPTK', 'Shtrih950K',
     'ShtrihFR01F', 'ShtrihAllCommands',
-    'ProtocolError', 'NoConnectionError', 'UnexpectedResponseError', 'Error', 'CheckError',
-    'OpenCheckError', 'ItemSaleError', 'CloseCheckError'
+    'ProtocolError', 'NoConnectionError', 'UnexpectedResponseError', 'FDError', 'Error', 'CheckError',
+    'OpenCheckError', 'ItemSaleError', 'CloseCheckError',
+    'FD'
 )
