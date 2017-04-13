@@ -64,6 +64,10 @@ class FD(object):
         if len_req:
             value = fill_call(value, len_max)
 
+        value_len = len_call(value)
+        if not value_len:
+            return
+
         self.data.extend(
             misc.bytearray_concat(
                 misc.CAST_SIZE['2'](tag),
@@ -81,3 +85,6 @@ class FD(object):
         """
 
         return bytes(self.data)
+
+    def __nonzero__(self):
+        return bool(self.data)
