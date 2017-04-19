@@ -711,6 +711,18 @@ def fs_correction_check(self, sum_, check_type):
 fs_correction_check.cmd = 0xFF36
 
 
+def fs_calculation_state_report(self):
+    """
+    Сформировать отчёт о состоянии расчётов.
+    """
+
+    return self.protocol.command(
+        0xFF38,
+        self.admin_password
+    )
+fs_calculation_state_report.cmd = 0xFF38
+
+
 def fs_info_exchange(self):
     """
     Получить статус информационного обмена.
