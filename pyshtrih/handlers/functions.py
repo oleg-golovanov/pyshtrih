@@ -17,7 +17,12 @@ def handle_date(arg):
 
 
 def handle_revdate(arg):
-    return datetime.date(arg[0] + 2000, *arg[1:])
+    try:
+        res = datetime.date(arg[0] + 2000, *arg[1:])
+    except ValueError:
+        res = datetime.date.fromtimestamp(0)
+
+    return res
 
 
 def handle_time(arg):
