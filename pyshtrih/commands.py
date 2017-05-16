@@ -170,8 +170,9 @@ def read_table(self, table, row, field, _type):
     }
 
     if _type not in (cast_funcs_map.keys()):
+        expected_types = ', '.join([str(item) for item in cast_funcs_map.keys()])
         raise ValueError(
-            u'ожидаемые типы {}'.format(', '.join(cast_funcs_map.keys()))
+            'ожидаемые типы {}'.format(expected_types)
         )
 
     result = self.protocol.command(
