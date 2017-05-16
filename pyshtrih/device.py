@@ -164,8 +164,12 @@ class Shtrih950K(Device):
     TAPES = misc.T_TAPES(False, True, True)
 
 
-ShtrihFRPTK = ShtrihFRK
-ShtrihComboPTK = ShtrihComboFRK
+class ShtrihFRPTK(ShtrihFRK):
+    pass
+
+
+class ShtrihComboPTK(ShtrihComboFRK):
+    pass
 
 
 class ShtrihFR01F(Device):
@@ -179,6 +183,10 @@ class ShtrihFR01F(Device):
     DEFAULT_MAX_LENGTH = 36
     TAPES = misc.T_TAPES(False, True, False)
     FS = True
+
+
+class ShtrihOnLine(ShtrihFR01F):
+    pass
 
 
 class ShtrihAllCommands(Device):
