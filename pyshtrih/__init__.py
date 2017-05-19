@@ -10,7 +10,7 @@ from .excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, 
 from .fd import FD
 
 
-__version__ = '1.8.3'
+__version__ = '1.8.4'
 __all__ = (
     'discovery',
     'Protocol',
