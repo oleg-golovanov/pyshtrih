@@ -189,5 +189,9 @@ class ShtrihOnLine(ShtrihFR01F):
     pass
 
 
+class Retail01F(ShtrihFR01F):
+    DEFAULT_MAX_LENGTH = 48
+
+
 class ShtrihAllCommands(Device):
     SUPPORTED_COMMANDS = hc.COMMANDS.keys()
