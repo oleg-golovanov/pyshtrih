@@ -190,7 +190,7 @@ class ShtrihOnLine(ShtrihFR01F):
 
 
 class Retail01F(ShtrihFR01F):
-    DEFAULT_MAX_LENGTH = 48
+    DEFAULT_MAX_LENGTH = 42
 
 
 class ShtrihAllCommands(Device):
