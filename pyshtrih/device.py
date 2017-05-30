@@ -189,6 +189,10 @@ class ShtrihOnLine(ShtrihFR01F):
     pass
 
 
+class ShtrihM01F(ShtrihFR01F):
+    DEFAULT_MAX_LENGTH = 48
+
+
 class Retail01F(ShtrihFR01F):
     DEFAULT_MAX_LENGTH = 42
 
