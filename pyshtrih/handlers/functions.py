@@ -2,6 +2,7 @@
 
 
 import datetime
+import binascii
 import itertools
 
 from pyshtrih import misc
@@ -250,7 +251,7 @@ def handle_fp_flags(arg):
 
 
 def handle_inn(arg):
-    inn = misc.binascii.hexlify(arg)
+    inn = binascii.hexlify(arg)
 
     if inn == 'ffffffffffff':
         return -1
