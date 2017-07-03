@@ -5,6 +5,14 @@ PyShtrih
 
 Реализация драйвера семейства ККМ "Штрих" на Python.
 
+Содержание
+----------
+* `Установка`_
+* `Поддерживаемое оборудование`_
+* `Пример использования`_
+* `Поддерживаемые команды`_
+* `Лицензия`_
+
 Установка
 ---------
 ::
@@ -23,6 +31,48 @@ PyShtrih
 * ШТРИХ-ON-LINE
 * ШТРИХ-М-01Ф
 * РИТЕЙЛ-01Ф
+
+Пример использования
+--------------------
+.. code-block:: python
+
+    import pyshtrih
+
+
+    def discovery_callback(port, baudrate):
+        print port, baudrate
+
+
+    if __name__ == '__main__':
+        devices = pyshtrih.discovery(discovery_callback)
+
+        if not devices:
+            raise Exception(u'Устройства не найдены')
+
+        # для простоты примера, предположим, что подключена только одна ККМ
+        device = devices[0]
+        device.connect()
+
+        print device.model()
+        print device.full_state()
+
+        device.open_check(0)
+        device.sale(
+            (u'Позиция 1', 1000, 1000), tax1=1
+        )
+        device.sale(
+            (u'Позиция 2', 1000, 2000), tax1=2
+        )
+        device.sale(
+            (u'Позиция 3', 1000, 3000), tax1=3
+        )
+        device.sale(
+            (u'Позиция 4', 1000, 4000), tax1=4
+        )
+        device.close_check(10000)
+        device.cut(True)
+
+        device.disconnect()
 
 Поддерживаемые команды
 ----------------------
