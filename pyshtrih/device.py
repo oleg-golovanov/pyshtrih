@@ -197,6 +197,10 @@ class ShtrihLight01F(ShtrihFR01F):
     DEFAULT_MAX_LENGTH = 32
 
 
+class ShtrihMini01F(ShtrihFR01F):
+    DEFAULT_MAX_LENGTH = 50
+
+
 class Retail01F(ShtrihFR01F):
     DEFAULT_MAX_LENGTH = 42
 
