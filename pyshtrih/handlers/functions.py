@@ -2,6 +2,7 @@
 
 
 import datetime
+import binascii
 import itertools
 
 from pyshtrih import misc
@@ -157,13 +158,13 @@ class FRMode(object):
         5: u'Блокировка по неправильному паролю налогового инспектора.',
         6: u'Ожидание подтверждения ввода даты.',
         7: u'Разрешение изменения положения десятичной точки.',
-        8: u'Открытый документ:',
+        8: u'Открытый документ.',
         9: u'Режим разрешения технологического обнуления.',
         10: u'Тестовый прогон.',
-        11: u'Печать полного фис. отчета.',
+        11: u'Печать полного фискального отчета.',
         12: u'Печать отчёта ЭКЛЗ.',
-        13: u'Работа с фискальным подкладным документом:',
-        14: u'Печать подкладного документа:',
+        13: u'Работа с фискальным подкладным документом.',
+        14: u'Печать подкладного документа.',
         15: u'Фискальный подкладной документ сформирован.'
     }
     MODE_STATUS = {
@@ -194,12 +195,11 @@ class FRMode(object):
         self.num = code & 0x0f
         self.status = code >> 4
 
-        if self.num not in self.MODE_STATUS:
-            self.msg = self.MODE_DESCR[self.num]
-        else:
+        self.msg = self.MODE_DESCR.get(self.num, u'Неизвестный режим.')
+        if self.num in self.MODE_STATUS:
             self.msg = u'{} {}'.format(
-                self.MODE_DESCR[self.num],
-                self.MODE_STATUS[self.num][self.status]
+                self.msg.replace(u'.', u':'),
+                self.MODE_STATUS[self.num].get(self.status, u'Неизвестный статус режима.')
             )
 
     @property
@@ -251,7 +251,7 @@ def handle_fp_flags(arg):
 
 
 def handle_inn(arg):
-    inn = misc.binascii.hexlify(arg)
+    inn = binascii.hexlify(arg)
 
     if inn == 'ffffffffffff':
         return -1

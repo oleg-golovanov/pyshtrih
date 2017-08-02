@@ -27,7 +27,8 @@ class FD(object):
         :param tags: словарь {тэг: значение}
         """
 
-        self.data = bytearray()
+        self.data = {}
+        self.b_data = bytearray()
 
         tags = tags or {}
         for item in tags.items():
@@ -68,7 +69,8 @@ class FD(object):
         if not value_len:
             return
 
-        self.data.extend(
+        self.data[tag] = value
+        self.b_data.extend(
             misc.bytearray_concat(
                 misc.CAST_SIZE['2'](tag),
                 misc.CAST_SIZE['2'](len_call(value)),
@@ -84,7 +86,7 @@ class FD(object):
         :return: tlv строка
         """
 
-        return bytes(self.data)
+        return bytes(self.b_data)
 
     def __nonzero__(self):
         return bool(self.data)
