@@ -3,14 +3,10 @@
 
 import serial.tools.list_ports
 
-import device
-import commands
-import protocol
-import misc
+from . import device, commands, protocol, misc, compat
 
 
-class Discovery(object):
-    __metaclass__ = commands.SupportedCommands
+class Discovery(compat.with_metaclass(commands.SupportedCommands)):
     SUPPORTED_COMMANDS = (0xFC, )
     DISCOVERY_TIMEOUT = 0.5
 

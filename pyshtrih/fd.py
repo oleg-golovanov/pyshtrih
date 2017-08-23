@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-import misc
-import excepts
+from . import misc, excepts
+from .compat import unicode
 
 
 class FD(object):

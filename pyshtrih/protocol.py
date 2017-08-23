@@ -4,9 +4,9 @@
 import serial
 import unilog
 
-import misc
-import excepts
-from handlers import commands as hc
+from . import misc, excepts
+from .compat import PY3, unicode, xrange
+from .handlers import commands as hc
 
 
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста

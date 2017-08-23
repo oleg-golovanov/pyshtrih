@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-import misc
-from handlers import commands as hc
+from . import misc
+from .compat import unicode
+from .handlers import commands as hc
 
 
 class ProtocolError(IOError):
