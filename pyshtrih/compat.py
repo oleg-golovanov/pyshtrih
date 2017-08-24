@@ -43,3 +43,10 @@ def str_compat(cls):
             cls.__repr__ = cls.__str__
 
     return cls
+
+
+def bool_compat(cls):
+    if PY2:
+        cls.__nonzero__ = cls.__bool__
+
+    return cls
