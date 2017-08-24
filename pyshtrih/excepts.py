@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from . import misc
-from .compat import unicode
+from .compat import PY2, LOCALE, unicode, str_compat
 from .handlers import commands as hc
 
 
+@str_compat
 class ProtocolError(IOError):
 
     def __str__(self):
@@ -16,13 +16,10 @@ class ProtocolError(IOError):
             # метод __str__ вернет unicode, если strerror является unicode
             message = super(ProtocolError, self).__str__()
 
-        if isinstance(message, str):
-            return message
-        else:
-            return message.encode(misc.LOCALE)
+        if PY2 and isinstance(message, str):
+            message = message.decode(LOCALE)
 
-    def __unicode__(self):
-        return str(self).decode(misc.LOCALE)
+        return message
 
 
 class NoConnectionError(ProtocolError):
@@ -41,6 +38,7 @@ class FDError(ProtocolError):
     pass
 
 
+@str_compat
 class Error(ProtocolError):
 
     codes = {
@@ -285,15 +283,12 @@ class Error(ProtocolError):
 
         if message:
             self.template = u'{message}'
-            self.message = message if isinstance(message, unicode) else message.decode(misc.LOCALE)
+            self.message = message if isinstance(message, unicode) else message.decode(LOCALE)
         else:
             self.template = u'0x{cmd:02X} ({cmd_name}) - {message} (0x{code:02X})'
             self.message = self.code_desc
 
     def __str__(self):
-        return unicode(self).encode(misc.LOCALE)
-
-    def __unicode__(self):
         return self.template.format(**self.__dict__)
 
     def __repr__(self):

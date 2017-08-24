@@ -5,7 +5,7 @@ import serial
 import unilog
 
 from . import misc, excepts
-from .compat import PY3, unicode, xrange
+from .compat import unicode, xrange, str_compat
 from .handlers import commands as hc
 
 
@@ -276,6 +276,7 @@ class Protocol(object):
                     raise
 
 
+@str_compat
 class Response(object):
     __slots__ = (
         'cmd',
@@ -304,9 +305,6 @@ class Response(object):
         self.params[key] = value
 
     def __str__(self):
-        return unicode(self).encode(misc.LOCALE)
-
-    def __unicode__(self):
         return u'0x{:02X} ({}) - {}'.format(
             self.cmd,
             self.cmd_name,
