@@ -6,7 +6,7 @@ import binascii
 import itertools
 
 from .. import misc
-from ..compat import str_compat
+from ..compat import PY2, str_compat
 
 
 def handle_version(arg):
@@ -247,9 +247,10 @@ def handle_fp_flags(arg):
     return dict(zip(keys, bits))
 
 
-# TODO: разобраться с работой функции в python3
 def handle_inn(arg):
     inn = binascii.hexlify(arg)
+    if not PY2:
+        inn = inn.decode()
 
     if inn == 'ffffffffffff':
         return -1
