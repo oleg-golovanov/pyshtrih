@@ -100,7 +100,7 @@ class Protocol(object):
 
             return True
 
-        except serial.writeTimeoutError:
+        except serial.SerialTimeoutException:
             self.serial.flushOutput()
             raise excepts.ProtocolError(u'Не удалось записать байт в ККМ')
         except serial.SerialException as exc:
@@ -218,7 +218,7 @@ class Protocol(object):
                     if byte == ACK:
                         return self.handle_response()
 
-                except serial.writeTimeoutError:
+                except serial.SerialTimeoutException:
                     self.serial.flushOutput()
                     raise excepts.ProtocolError(u'Не удалось записать байт в ККМ')
                 except serial.SerialException as exc:
