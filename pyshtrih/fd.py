@@ -17,7 +17,7 @@ class FD(object):
         unicode: lambda x: x.encode('cp866')
     }
     LEN = {
-        str: (len, lambda value, len_: value.ljust(len_))
+        bytes: (len, lambda value, len_: value.ljust(len_))
     }
 
     def __init__(self, tags=None):
