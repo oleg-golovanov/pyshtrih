@@ -11,10 +11,10 @@ import setuptools
 with open(os.path.join(os.path.dirname(__file__), 'pyshtrih', '__init__.py')) as f:
     version = re.search(r'__version__\s+=\s+[\'\"]+(.*)[\'\"]+', f.read()).group(1)
 
+kwargs = {}
 if sys.version_info[0] >= 3:
-    _long_description = open(os.path.join(os.path.dirname(__file__), 'README.rst'), encoding='utf-8').read()
-else:
-    _long_description = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+    kwargs['encoding'] = 'utf-8'
+_long_description = open(os.path.join(os.path.dirname(__file__), 'README.rst'), **kwargs).read()
 
 setuptools.setup(
     name='pyshtrih',
