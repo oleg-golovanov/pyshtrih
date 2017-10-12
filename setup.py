@@ -2,6 +2,7 @@
 
 
 import re
+import sys
 import os.path
 
 import setuptools
@@ -9,6 +10,10 @@ import setuptools
 
 with open(os.path.join(os.path.dirname(__file__), 'pyshtrih', '__init__.py')) as f:
     version = re.search(r'__version__\s+=\s+[\'\"]+(.*)[\'\"]+', f.read()).group(1)
+
+kwargs = {}
+if sys.version_info.major >= 3:
+    kwargs['encoding'] = 'utf-8'
 
 
 setuptools.setup(
@@ -25,7 +30,7 @@ setuptools.setup(
     description='Реализация драйвера семейства ККМ "Штрих" на Python.',
     zip_safe=False,
     platforms='any',
-    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst'), **kwargs).read(),
     install_requires=['pyserial', 'unilog'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
