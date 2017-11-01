@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-import misc
-import excepts
+from . import misc, excepts
+from .compat import unicode, bool_compat
 
 
+@bool_compat
 class FD(object):
     TAGS = {
         # тэг: (тип значения, признак обязательности соблюдения длины, максимальная длина)
@@ -16,7 +17,7 @@ class FD(object):
         unicode: lambda x: x.encode('cp866')
     }
     LEN = {
-        str: (len, lambda value, len_: value.ljust(len_))
+        bytes: (len, lambda value, len_: value.ljust(len_))
     }
 
     def __init__(self, tags=None):
@@ -88,5 +89,5 @@ class FD(object):
 
         return bytes(self.b_data)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.data)

@@ -5,8 +5,7 @@ import sys
 import time
 import inspect
 
-import misc
-import excepts
+from . import misc, excepts
 
 
 def state(self):

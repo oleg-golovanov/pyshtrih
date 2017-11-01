@@ -2,13 +2,13 @@
 
 
 import struct
-import locale
 import operator
 import functools
 import collections
 
+from .compat import reduce, xrange
 
-LOCALE = locale.getpreferredencoding()
+
 NULL = bytearray((0x00, ))
 
 DEFAULT_MIN_LENGTH = 40

@@ -4,9 +4,9 @@
 import serial
 import unilog
 
-import misc
-import excepts
-from handlers import commands as hc
+from . import misc, excepts
+from .compat import unicode, xrange, str_compat
+from .handlers import commands as hc
 
 
 STX = bytearray((0x02, ))  # START OF TEXT - начало текста
@@ -100,7 +100,7 @@ class Protocol(object):
 
             return True
 
-        except serial.writeTimeoutError:
+        except serial.SerialTimeoutException:
             self.serial.flushOutput()
             raise excepts.ProtocolError(u'Не удалось записать байт в ККМ')
         except serial.SerialException as exc:
@@ -218,7 +218,7 @@ class Protocol(object):
                     if byte == ACK:
                         return self.handle_response()
 
-                except serial.writeTimeoutError:
+                except serial.SerialTimeoutException:
                     self.serial.flushOutput()
                     raise excepts.ProtocolError(u'Не удалось записать байт в ККМ')
                 except serial.SerialException as exc:
@@ -276,6 +276,7 @@ class Protocol(object):
                     raise
 
 
+@str_compat
 class Response(object):
     __slots__ = (
         'cmd',
@@ -304,9 +305,6 @@ class Response(object):
         self.params[key] = value
 
     def __str__(self):
-        return unicode(self).encode(misc.LOCALE)
-
-    def __unicode__(self):
         return u'0x{:02X} ({}) - {}'.format(
             self.cmd,
             self.cmd_name,

@@ -5,7 +5,8 @@ import datetime
 import binascii
 import itertools
 
-from pyshtrih import misc
+from .. import misc
+from ..compat import PY2, str_compat
 
 
 def handle_version(arg):
@@ -148,6 +149,7 @@ def handle_min_max_field_value(arg):
     return result
 
 
+@str_compat
 class FRMode(object):
     MODE_DESCR = {
         0: u'Принтер в рабочем режиме.',
@@ -207,14 +209,12 @@ class FRMode(object):
         return self.num, self.status
 
     def __str__(self):
-        return self.msg.encode(misc.LOCALE)
-
-    def __unicode__(self):
         return self.msg
 
     __repr__ = __str__
 
 
+@str_compat
 class FRSubMode(object):
     SUBMODE_DESCR = {
         0: u'Бумага есть.',
@@ -234,9 +234,6 @@ class FRSubMode(object):
         return self.num
 
     def __str__(self):
-        return self.msg.encode(misc.LOCALE)
-
-    def __unicode__(self):
         return self.msg
 
     __repr__ = __str__
@@ -252,6 +249,8 @@ def handle_fp_flags(arg):
 
 def handle_inn(arg):
     inn = binascii.hexlify(arg)
+    if not PY2:
+        inn = inn.decode()
 
     if inn == 'ffffffffffff':
         return -1

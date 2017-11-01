@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-import functions as hf
-from pyshtrih import misc
+from . import functions as hf
+from .. import misc
 
 
 COMMANDS = {

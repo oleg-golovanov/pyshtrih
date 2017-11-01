@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-import protocol
-import commands
-import misc
-from handlers import commands as hc
-from handlers import functions as hf
+from . import protocol, commands, misc, compat
+from .handlers import commands as hc, functions as hf
 
 
-class Device(object):
-    __metaclass__ = commands.SupportedCommands
-
+class Device(compat.with_metaclass(commands.SupportedCommands)):
     SERIAL_TIMEOUT = 3
     WAIT_TIME = 0.01
 
