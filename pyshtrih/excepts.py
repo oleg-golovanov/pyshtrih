@@ -9,7 +9,7 @@ from .handlers import commands as hc
 class ProtocolError(IOError):
 
     def __str__(self):
-        if self.errno is None:
+        if self.errno is None and PY2:
             message = self.message
         else:
             # метод __str__ вернет str, если strerror является str
