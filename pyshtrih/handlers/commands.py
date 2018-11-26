@@ -11,6 +11,7 @@ COMMANDS = {
     0x13: u'Гудок',
     0x14: u'Установка параметров обмена',
     0x15: u'Чтение параметров обмена',
+    0x16: u'Технологическое обнуление',
     0x17: u'Печать строки',
     0x19: u'Тестовый прогон',
     0x1A: u'Запрос денежного регистра',
@@ -120,6 +121,10 @@ HANDLERS = {
         ERROR_CODE_STRUCT,
         (slice(1, 2), misc.FuncChain(hf.handle_baudrate, misc.UNCAST_SIZE['1']), u'Код скорости обмена'),
         (slice(2, 3), misc.FuncChain(hf.handle_byte_timeout, misc.UNCAST_SIZE['1']), u'Тайм аут приема байта')
+    ),
+    # Технологическое обнуление
+    0x16: (
+        ERROR_CODE_STRUCT,
     ),
     # Печать строки
     0x17: (

@@ -72,6 +72,17 @@ def read_exchange_params(self, port):
 read_exchange_params.cmd = 0x15
 
 
+def reset_settings(self):
+    """
+    Технологическое обнуление.
+    """
+
+    return self.protocol.command_nopass(
+        0x16
+    )
+reset_settings.cmd = 0x16
+
+
 def print_string(self, string, control_tape=True, cash_tape=True):
     """
     Печать строки.
