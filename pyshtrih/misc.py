@@ -89,8 +89,9 @@ def encode(text):
     """
     Кодирование текста для передачи фискальному регистратору.
     """
-
+    
     return text.encode('cp1251')
+
 
 
 def decode(text):
@@ -113,13 +114,14 @@ def prepare_string(string, length=DEFAULT_MIN_LENGTH):
     :rtype: bytearray
     :return: строка, готовая к передаче в ККМ
     """
+    string = encode(string)
 
     # нужно отправить в ККМ не менее DEFAULT_MIN_LENGTH символов
     if length < DEFAULT_MIN_LENGTH:
         length = DEFAULT_MIN_LENGTH
 
     if string:
-        result = bytearray(encode(string)[:length])
+        result = bytearray(string[:length])
         result.extend(NULL * (length - len(string)))
     else:
         result = NULL * length
@@ -208,7 +210,6 @@ def int_to_bytes(num, count=None):
         else:
             q, r = divmod(num.bit_length(), 8)
             bytes_count = q + 1 if r else q
-
     return tuple((num >> (8 * i)) & 0xff for i in xrange(bytes_count))
 
 

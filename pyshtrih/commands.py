@@ -149,7 +149,6 @@ def request_operational_register(self, num):
     )
 request_operational_register.cmd = 0x1B
 
-
 def write_table(self, table, row, field, value, _type):
     """
     Запись таблицы.
@@ -157,7 +156,7 @@ def write_table(self, table, row, field, value, _type):
 
     cast_funcs_map = {
         int: misc.FuncChain(bytearray, misc.int_to_bytes),
-        str: misc.encode
+        str: str:misc.prepare_string
     }
 
     return self.protocol.command(
@@ -248,6 +247,17 @@ set_date.related = (set_datetime, )
 confirm_date.related = (set_datetime, )
 set_datetime.required = (set_time, set_date, confirm_date)
 
+def init_table(self):
+    """
+    Инициализация таблиц начальными значениями
+    """
+
+    return self.protocol.command(
+        0x24,
+        self.admin_password
+    )
+init_table.cmd = 0x24
+
 
 def cut(self, partial=False):
     """
@@ -261,6 +271,17 @@ def cut(self, partial=False):
         misc.CAST_SIZE['1'](partial)
     )
 cut.cmd = 0x25
+
+def reset_summary(self):
+    """
+    Общее гашение
+    """
+
+    return self.protocol.command(
+        0x27,
+        self.admin_password
+    )
+reset_summary.cmd = 0x27
 
 
 def open_drawer(self, box=0):

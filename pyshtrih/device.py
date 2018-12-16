@@ -12,7 +12,7 @@ class Device(compat.with_metaclass(commands.SupportedCommands)):
     DEFAULT_CASHIER_PASSWORD = 1
     DEFAULT_ADMIN_PASSWORD = 30
 
-    DEFAULT_MAX_LENGTH = 40
+    DEFAULT_MAX_LENGTH = 42
 
     TAPES = misc.T_TAPES(False, False, False)
     FS = False
@@ -185,11 +185,11 @@ class ShtrihOnLine(ShtrihFR01F):
 
 
 class ShtrihM01F(ShtrihFR01F):
-    DEFAULT_MAX_LENGTH = 48
+    DEFAULT_MAX_LENGTH = 50
 
 
 class ShtrihM02F(ShtrihFR01F):
-    DEFAULT_MAX_LENGTH = 48
+    DEFAULT_MAX_LENGTH = 50
 
 
 class ShtrihLight01F(ShtrihFR01F):
