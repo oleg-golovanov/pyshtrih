@@ -85,9 +85,11 @@ def discovery(callback=None, port=None, baudrate=None):
                     device_cls = device.ShtrihOnLine
                 elif u'РИТЕЙЛ-01Ф' in d.name:
                     device_cls = device.Retail01F
-                elif u'М-01Ф' in d.name:
+                # Добавлена часть названия с латинской буквой M.
+                # В одной из прошивок наблюдался такой странный баг.
+                elif u'М-01Ф' in d.name or u'M-01Ф' in d.name:
                     device_cls = device.ShtrihM01F
-                elif u'М-02Ф' in d.name:
+                elif u'М-02Ф' in d.name or u'M-02Ф' in d.name:
                     device_cls = device.ShtrihM02F
                 elif u'ЛАЙТ-01Ф' in d.name:
                     device_cls = device.ShtrihLight01F
