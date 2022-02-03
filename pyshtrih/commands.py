@@ -538,6 +538,23 @@ def open_check(self, check_type):
 open_check.cmd = 0x8D
 
 
+def epct_report_by_departments_in_date_range(self, date_first, date_last, report_type=0, department_num=0):
+    """
+    Отчет ЭКЛЗ по отделам в заданном диапазоне дат.
+    """
+
+    self.wait_printing()
+    return self.protocol.command(
+        0xA0,
+        self.admin_password,
+        misc.CAST_SIZE['1'](report_type),
+        misc.CAST_SIZE['1'](department_num),
+        misc.CAST_SIZE['111'](date_first.day, date_first.month, date_first.year % 100),
+        misc.CAST_SIZE['111'](date_last.day, date_last.month, date_last.year % 100)
+    )
+epct_report_by_departments_in_date_range.cmd = 0xA0
+
+
 def continue_print(self):
     """
     Продолжение печати.
