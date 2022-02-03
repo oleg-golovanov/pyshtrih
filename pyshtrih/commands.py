@@ -555,6 +555,22 @@ def epct_report_by_departments_in_date_range(self, date_first, date_last, report
 epct_report_by_departments_in_date_range.cmd = 0xA0
 
 
+def epct_report_by_shifts_closures_in_date_range(self, date_first, date_last, report_type=0):
+    """
+    Отчет ЭКЛЗ по закрытиям смен в заданном диапазоне дат.
+    """
+
+    self.wait_printing()
+    return self.protocol.command(
+        0xA2,
+        self.admin_password,
+        misc.CAST_SIZE['1'](report_type),
+        misc.CAST_SIZE['111'](date_first.day, date_first.month, date_first.year % 100),
+        misc.CAST_SIZE['111'](date_last.day, date_last.month, date_last.year % 100)
+    )
+epct_report_by_shifts_closures_in_date_range.cmd = 0xA2
+
+
 def continue_print(self):
     """
     Продолжение печати.
