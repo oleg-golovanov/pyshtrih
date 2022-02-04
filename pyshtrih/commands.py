@@ -538,7 +538,7 @@ def open_check(self, check_type):
 open_check.cmd = 0x8D
 
 
-def epct_report_by_departments_in_date_range(self, date_first, date_last, report_type=0, department_num=0):
+def epct_report_by_departments_in_date_range(self, date_first, date_last, report_type=0, department_num=1):
     """
     Отчет ЭКЛЗ по отделам в заданном диапазоне дат.
     """
