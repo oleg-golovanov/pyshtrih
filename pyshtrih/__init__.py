@@ -12,7 +12,7 @@ from .excepts import ProtocolError, NoConnectionError, UnexpectedResponseError, 
 from .fd import FD
 
 
-__version__ = '2.0.5'
+__version__ = '2.0.6'
 __all__ = (
     'discovery',
     'Protocol',
