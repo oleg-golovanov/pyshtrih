@@ -150,22 +150,25 @@ def request_operational_register(self, num):
 request_operational_register.cmd = 0x1B
 
 
-def write_table(self, table, row, field, value, _type):
+def write_table(self, table, row, field, value, _type, _count=4):
     """
     Запись таблицы.
     """
 
-    cast_funcs_map = {
-        int: misc.FuncChain(bytearray, misc.int_to_bytes),
-        str: misc.encode
-    }
-
-    return self.protocol.command(
-        0x1E,
-        self.admin_password,
-        misc.CAST_SIZE['121'](table, row, field),
-        cast_funcs_map[_type](value)
-    )
+    if _type==str:
+        return self.protocol.command(
+            0x1E,
+            self.admin_password,
+            misc.CAST_SIZE['121'](table, row, field),
+            misc.encode(value)
+        )
+    else: # _type==int
+        return self.protocol.command(
+            0x1E,
+            self.admin_password,
+            misc.CAST_SIZE['121'](table, row, field),
+            bytearray(misc.int_to_bytes(value, count=_count))
+        )
 write_table.cmd = 0x1E
 
 
